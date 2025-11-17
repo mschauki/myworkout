@@ -41,7 +41,7 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 ## Features Implemented
 
 ### Exercise Library
-- 100+ exercises organized by muscle group (chest, back, legs, shoulders, arms, core)
+- 35+ exercises organized by muscle group (chest, back, legs, shoulders, arms, core)
 - Search functionality with real-time filtering
 - Muscle group filter badges
 - Equipment type badges
@@ -78,20 +78,34 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 - **Navigation**: Fixed bottom navigation bar
 - **Components**: Shadcn UI with consistent spacing and elevation
 
-## API Endpoints (To be implemented in Task 2)
+## API Endpoints
 - `GET /api/exercises` - Fetch all exercises
 - `POST /api/exercises` - Create new exercise
 - `GET /api/workout-routines` - Fetch all workout routines
 - `POST /api/workout-routines` - Create workout routine
+- `PUT /api/workout-routines/:id` - Update workout routine
+- `DELETE /api/workout-routines/:id` - Delete workout routine
 - `GET /api/workout-logs` - Fetch workout history
-- `POST /api/workout-logs` - Log completed workout
+- `GET /api/workout-logs/:id` - Fetch specific workout log
+- `POST /api/workout-logs` - Log completed workout (with server-side validation)
+- `GET /api/progress-records` - Fetch progress data
+- `POST /api/progress-records` - Add progress record
 - `GET /api/body-stats` - Fetch body measurements
 - `POST /api/body-stats` - Add body stats entry
 
+## Data Validation
+- **Client-side**: Weight and reps validated as positive numbers before set completion
+- **Server-side**: Workout logs validate completed sets have weight > 0 and reps > 0
+- **Volume calculation**: Server recomputes totalVolume from validated completed sets
+
 ## Recent Changes
-- Nov 17, 2025: Initial project setup with complete frontend implementation
-- Configured Roboto fonts and blue accent color scheme
-- Built all 5 main pages with bottom navigation
-- Created workout routine builder and active workout tracker
-- Implemented progress charts with Recharts
-- Added body stats tracking with visualizations
+- Nov 17, 2025: **MVP Complete and Tested**
+  - ✅ Complete data schema with Zod validation
+  - ✅ All frontend components built with Roboto fonts and blue accent theme
+  - ✅ Backend API with full CRUD operations and in-memory storage
+  - ✅ 35+ exercises seeded across all muscle groups
+  - ✅ TanStack Query integration for data fetching
+  - ✅ Comprehensive input validation (client + server)
+  - ✅ End-to-end testing passed: routine creation → workout logging → progress tracking
+  - ✅ Active workout tracker with set completion and rest timer
+  - ✅ Progress dashboard with charts and statistics

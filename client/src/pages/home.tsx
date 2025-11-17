@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Flame, TrendingUp, Trophy } from "lucide-react";
+import { Calendar, Dumbbell, Flame, TrendingUp, Trophy } from "lucide-react";
 import { WorkoutLog, BodyStats } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 
