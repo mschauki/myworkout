@@ -7,16 +7,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Exercise } from "@shared/schema";
-import { Plus, X, Dumbbell } from "lucide-react";
+import { Plus, X, Dumbbell, Calendar, Timer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
+
+const WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
 interface RoutineExercise {
   exerciseId: string;
   sets: number;
   reps: number;
+  days: string[];
+  restPeriod?: number;
 }
 
 interface WorkoutRoutineBuilderProps {
@@ -30,6 +35,8 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
   const [selectedExerciseId, setSelectedExerciseId] = useState("");
   const [sets, setSets] = useState("3");
   const [reps, setReps] = useState("10");
+  const [selectedDays, setSelectedDays] = useState<string[]>(["any"]);
+  const [restPeriod, setRestPeriod] = useState("90");
 
   const { toast } = useToast();
 
@@ -51,6 +58,20 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
     },
   });
 
+  const toggleDay = (day: string) => {
+    if (day === "any") {
+      setSelectedDays(["any"]);
+    } else {
+      const newDays = selectedDays.filter(d => d !== "any");
+      if (newDays.includes(day)) {
+        const filtered = newDays.filter(d => d !== day);
+        setSelectedDays(filtered.length === 0 ? ["any"] : filtered);
+      } else {
+        setSelectedDays([...newDays, day]);
+      }
+    }
+  };
+
   const addExercise = () => {
     if (!selectedExerciseId) return;
     
@@ -60,11 +81,15 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
         exerciseId: selectedExerciseId,
         sets: parseInt(sets),
         reps: parseInt(reps),
+        days: selectedDays,
+        restPeriod: parseInt(restPeriod),
       },
     ]);
     setSelectedExerciseId("");
     setSets("3");
     setReps("10");
+    setSelectedDays(["any"]);
+    setRestPeriod("90");
   };
 
   const removeExercise = (index: number) => {
@@ -166,19 +191,80 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                   data-testid="input-reps"
                 />
               </div>
-              <div className="flex items-end">
-                <Button
-                  type="button"
-                  onClick={addExercise}
-                  disabled={!selectedExerciseId}
-                  className="w-full"
-                  data-testid="button-add-exercise"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add
-                </Button>
+              <div>
+                <Label htmlFor="rest" className="text-xs flex items-center gap-1">
+                  <Timer className="w-3 h-3" />
+                  Rest (sec)
+                </Label>
+                <Input
+                  id="rest"
+                  type="number"
+                  min="30"
+                  max="300"
+                  value={restPeriod}
+                  onChange={(e) => setRestPeriod(e.target.value)}
+                  data-testid="input-rest-period"
+                />
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs flex items-center gap-1">
+                <Calendar className="w-3 h-3" />
+                Training Days
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                <div 
+                  className="flex items-center space-x-2 cursor-pointer"
+                  onClick={() => toggleDay("any")}
+                >
+                  <Checkbox
+                    id="day-any"
+                    checked={selectedDays.includes("any")}
+                    data-testid="checkbox-day-any"
+                  />
+                  <label
+                    htmlFor="day-any"
+                    className="text-sm font-medium cursor-pointer"
+                  >
+                    Any Day
+                  </label>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {WEEKDAYS.map((day) => (
+                  <div
+                    key={day}
+                    className="flex items-center space-x-2 cursor-pointer"
+                    onClick={() => toggleDay(day)}
+                  >
+                    <Checkbox
+                      id={`day-${day}`}
+                      checked={selectedDays.includes(day)}
+                      disabled={selectedDays.includes("any")}
+                      data-testid={`checkbox-day-${day}`}
+                    />
+                    <label
+                      htmlFor={`day-${day}`}
+                      className="text-sm capitalize cursor-pointer"
+                    >
+                      {day.slice(0, 3)}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              onClick={addExercise}
+              disabled={!selectedExerciseId}
+              className="w-full"
+              data-testid="button-add-exercise"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Exercise
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -198,6 +284,20 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                       <p className="text-sm text-muted-foreground">
                         {exercise.sets} sets × {exercise.reps} reps
                       </p>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <Badge variant="outline" className="text-xs capitalize">
+                          <Calendar className="w-3 h-3 mr-1" />
+                          {exercise.days.includes("any") 
+                            ? "Any day" 
+                            : exercise.days.map(d => d.slice(0, 3)).join(", ")}
+                        </Badge>
+                        {exercise.restPeriod && (
+                          <Badge variant="outline" className="text-xs">
+                            <Timer className="w-3 h-3 mr-1" />
+                            {exercise.restPeriod}s rest
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <Button

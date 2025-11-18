@@ -26,6 +26,8 @@ export const workoutRoutines = pgTable("workout_routines", {
     exerciseId: string;
     sets: number;
     reps: number;
+    days: string[]; // Array of day names: ["monday", "wednesday"] or ["any"] for any day
+    restPeriod?: number; // Optional rest period in seconds (defaults to 90 if not set)
   }>>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
