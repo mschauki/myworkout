@@ -58,16 +58,21 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 ### Workout Routines
 - Create custom workout routines
 - Add exercises with sets/reps configuration
+- **Day-specific scheduling**: Assign exercises to specific weekdays or "Any Day"
+- **Custom rest periods**: Configure rest time (30-300 seconds) per exercise
 - Save and manage multiple routines
 - Start workout sessions from routines
+- **Day selection dialog**: Choose training day for routines with day-specific exercises
 
 ### Active Workout Tracking
 - Real-time workout session tracker
 - Set-by-set logging with weight and reps
-- Automatic rest timer (90 seconds) after completing sets
+- **Custom rest timer**: Uses configured rest period per exercise (not fixed 90s)
+- **Editable rest timer**: Adjust rest period on-the-fly during active workout
 - Pause/skip rest timer controls
 - Progress tracking (completed sets vs total sets)
 - Elapsed time counter
+- **Per-exercise rest persistence**: Rest edits apply only to current exercise's subsequent sets
 
 ### Progress Dashboard
 - **Overview Tab**:
@@ -117,6 +122,17 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 - **Volume calculation**: Server recomputes totalVolume from validated completed sets
 
 ## Recent Changes
+
+- Nov 18, 2025: **Day-Specific Exercises & Editable Rest Periods**
+  - ✅ **Day-specific exercise scheduling**: Assign exercises to specific weekdays (Monday-Sunday) or "Any Day"
+  - ✅ **Day selection dialog**: Automatically shown when starting routines with day-specific exercises
+  - ✅ **Custom rest periods per exercise**: Configure 30-300 second rest periods in routine builder
+  - ✅ **Editable rest timer**: Adjust rest period during active workout with real-time updates
+  - ✅ **Smart rest persistence**: Rest edits apply only to current exercise's remaining sets
+  - ✅ **Backward compatibility**: Legacy routines without days/restPeriod fields work seamlessly
+  - ✅ **Empty exercise validation**: Prevents starting workout if selected day has no exercises
+  - ✅ **Checkbox UI improvements**: Fixed "Any Day" toggle to properly enable individual day selection
+  - ✅ All features verified with comprehensive end-to-end testing
 
 - Nov 18, 2025: **Database Migration & Feature Expansion**
   - ✅ Migrated from in-memory storage to PostgreSQL with Drizzle ORM

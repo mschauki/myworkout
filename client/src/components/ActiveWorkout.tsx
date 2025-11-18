@@ -13,6 +13,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 interface ActiveWorkoutProps {
   routine: WorkoutRoutine;
+  selectedDay?: string;
   onComplete: () => void;
 }
 
@@ -26,14 +27,17 @@ interface ExerciseLog {
   exerciseId: string;
   exerciseName: string;
   sets: WorkoutSet[];
+  restPeriod: number; // Rest period in seconds for this exercise
 }
 
-export function ActiveWorkout({ routine, onComplete }: ActiveWorkoutProps) {
+export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkoutProps) {
   const [startTime] = useState(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
   const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>([]);
   const [restTimer, setRestTimer] = useState(0);
   const [restPaused, setRestPaused] = useState(false);
+  const [currentRestPeriod, setCurrentRestPeriod] = useState(90);
+  const [currentRestingExerciseIndex, setCurrentRestingExerciseIndex] = useState<number | null>(null);
 
   const { toast } = useToast();
 
@@ -50,6 +54,7 @@ export function ActiveWorkout({ routine, onComplete }: ActiveWorkoutProps) {
       return {
         exerciseId: ex.exerciseId,
         exerciseName: exercise?.name || "Unknown Exercise",
+        restPeriod: ex.restPeriod || 90, // Use custom rest period or default to 90
         sets: Array.from({ length: ex.sets }, () => ({
           weight: 0,
           reps: ex.reps,
@@ -103,6 +108,19 @@ export function ActiveWorkout({ routine, onComplete }: ActiveWorkoutProps) {
     });
   };
 
+  const updateExerciseRestPeriod = (exerciseIndex: number, newRestPeriod: number) => {
+    setExerciseLogs((logs) => {
+      const newLogs = [...logs];
+      if (newLogs[exerciseIndex]) {
+        newLogs[exerciseIndex] = {
+          ...newLogs[exerciseIndex],
+          restPeriod: newRestPeriod,
+        };
+      }
+      return newLogs;
+    });
+  };
+
   const completeSet = (exerciseIndex: number, setIndex: number) => {
     const set = exerciseLogs[exerciseIndex]?.sets[setIndex];
     if (!set || set.weight <= 0 || set.reps <= 0) {
@@ -114,8 +132,12 @@ export function ActiveWorkout({ routine, onComplete }: ActiveWorkoutProps) {
       return;
     }
     updateSet(exerciseIndex, setIndex, "completed", true);
-    setRestTimer(90); // Start 90 second rest timer
+    // Use the custom rest period for this exercise
+    const restPeriod = exerciseLogs[exerciseIndex]?.restPeriod || 90;
+    setCurrentRestPeriod(restPeriod);
+    setRestTimer(restPeriod);
     setRestPaused(false);
+    setCurrentRestingExerciseIndex(exerciseIndex); // Track which exercise is resting
   };
 
   const saveWorkoutMutation = useMutation({
@@ -195,11 +217,34 @@ export function ActiveWorkout({ routine, onComplete }: ActiveWorkoutProps) {
           <Card className="bg-primary text-primary-foreground border-primary">
             <CardContent className="p-4">
               <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-1">
                   <Timer className="w-5 h-5" />
-                  <div>
+                  <div className="flex-1">
                     <p className="text-sm font-medium">Rest Timer</p>
                     <p className="text-2xl font-bold font-mono">{formatTime(restTimer)}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Input
+                        type="number"
+                        min="30"
+                        max="300"
+                        step="15"
+                        value={currentRestPeriod}
+                        onChange={(e) => {
+                          const parsed = parseInt(e.target.value) || 90;
+                          // Clamp value to 30-300 range
+                          const clamped = Math.max(30, Math.min(300, parsed));
+                          setCurrentRestPeriod(clamped);
+                          setRestTimer(clamped);
+                          // Update only the currently resting exercise's rest period for subsequent sets
+                          if (currentRestingExerciseIndex !== null) {
+                            updateExerciseRestPeriod(currentRestingExerciseIndex, clamped);
+                          }
+                        }}
+                        className="w-20 h-8 bg-primary-foreground text-primary text-sm"
+                        data-testid="input-edit-rest"
+                      />
+                      <span className="text-xs">seconds</span>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

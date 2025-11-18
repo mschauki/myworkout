@@ -60,11 +60,17 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
 
   const toggleDay = (day: string) => {
     if (day === "any") {
-      setSelectedDays(["any"]);
+      // If "any" is already selected, uncheck it (enabling individual days)
+      if (selectedDays.includes("any")) {
+        setSelectedDays([]);
+      } else {
+        setSelectedDays(["any"]);
+      }
     } else {
       const newDays = selectedDays.filter(d => d !== "any");
       if (newDays.includes(day)) {
         const filtered = newDays.filter(d => d !== day);
+        // If no days selected, default back to "any"
         setSelectedDays(filtered.length === 0 ? ["any"] : filtered);
       } else {
         setSelectedDays([...newDays, day]);
@@ -75,6 +81,10 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
   const addExercise = () => {
     if (!selectedExerciseId) return;
     
+    // Validate and clamp rest period to 30-300 range
+    const parsedRestPeriod = parseInt(restPeriod) || 90;
+    const clampedRestPeriod = Math.max(30, Math.min(300, parsedRestPeriod));
+    
     setRoutineExercises([
       ...routineExercises,
       {
@@ -82,7 +92,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
         sets: parseInt(sets),
         reps: parseInt(reps),
         days: selectedDays,
-        restPeriod: parseInt(restPeriod),
+        restPeriod: clampedRestPeriod,
       },
     ]);
     setSelectedExerciseId("");
@@ -214,44 +224,47 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                 Training Days
               </Label>
               <div className="flex flex-wrap gap-2">
-                <div 
-                  className="flex items-center space-x-2 cursor-pointer"
-                  onClick={() => toggleDay("any")}
-                >
+                <div className="flex items-center space-x-2">
                   <Checkbox
                     id="day-any"
                     checked={selectedDays.includes("any")}
+                    onCheckedChange={() => toggleDay("any")}
                     data-testid="checkbox-day-any"
                   />
                   <label
                     htmlFor="day-any"
                     className="text-sm font-medium cursor-pointer"
+                    onClick={() => toggleDay("any")}
                   >
                     Any Day
                   </label>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                {WEEKDAYS.map((day) => (
-                  <div
-                    key={day}
-                    className="flex items-center space-x-2 cursor-pointer"
-                    onClick={() => toggleDay(day)}
-                  >
-                    <Checkbox
-                      id={`day-${day}`}
-                      checked={selectedDays.includes(day)}
-                      disabled={selectedDays.includes("any")}
-                      data-testid={`checkbox-day-${day}`}
-                    />
-                    <label
-                      htmlFor={`day-${day}`}
-                      className="text-sm capitalize cursor-pointer"
+                {WEEKDAYS.map((day) => {
+                  const isDisabled = selectedDays.includes("any");
+                  return (
+                    <div
+                      key={day}
+                      className="flex items-center space-x-2"
                     >
-                      {day.slice(0, 3)}
-                    </label>
-                  </div>
-                ))}
+                      <Checkbox
+                        id={`day-${day}`}
+                        checked={selectedDays.includes(day)}
+                        disabled={isDisabled}
+                        onCheckedChange={() => !isDisabled && toggleDay(day)}
+                        data-testid={`checkbox-day-${day}`}
+                      />
+                      <label
+                        htmlFor={`day-${day}`}
+                        className={`text-sm capitalize ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                        onClick={() => !isDisabled && toggleDay(day)}
+                      >
+                        {day.slice(0, 3)}
+                      </label>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
