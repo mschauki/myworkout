@@ -44,6 +44,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
   const [usePerSetConfig, setUsePerSetConfig] = useState(false);
   const [perSetConfig, setPerSetConfig] = useState<Array<{ reps: string; restPeriod: string }>>([]);
   const [hasPerSetEdits, setHasPerSetEdits] = useState(false);
+  const [dayTitles, setDayTitles] = useState<Record<string, string>>({});
   const prevUsePerSetConfig = useRef(false);
   const lastSyncedValues = useRef({ sets: "3", reps: "10", restPeriod: "90" });
 
@@ -210,6 +211,17 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
     setRoutineExercises(routineExercises.filter((_, i) => i !== index));
   };
 
+  const updateDayTitle = (day: string, title: string) => {
+    setDayTitles(prev => {
+      if (title.trim() === "") {
+        const newTitles = { ...prev };
+        delete newTitles[day];
+        return newTitles;
+      }
+      return { ...prev, [day]: title };
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || routineExercises.length === 0) {
@@ -221,6 +233,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
       name,
       description,
       exercises: routineExercises,
+      dayTitles: Object.keys(dayTitles).length > 0 ? dayTitles : undefined,
     });
   };
 
@@ -465,6 +478,36 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                 })}
               </div>
             </div>
+
+            {/* Day Titles Section */}
+            {!selectedDays.includes("any") && routineExercises.some(ex => 
+              ex.days.some(d => d !== "any")
+            ) && (
+              <div className="space-y-3 pt-2 border-t">
+                <Label className="text-xs text-muted-foreground">
+                  Custom Day Titles (optional)
+                </Label>
+                <div className="space-y-2">
+                  {WEEKDAYS.filter(day => 
+                    routineExercises.some(ex => ex.days.includes(day))
+                  ).map((day) => (
+                    <div key={day} className="space-y-1">
+                      <Label htmlFor={`title-${day}`} className="text-xs capitalize">
+                        {day}
+                      </Label>
+                      <Input
+                        id={`title-${day}`}
+                        value={dayTitles[day] || ""}
+                        onChange={(e) => updateDayTitle(day, e.target.value)}
+                        placeholder={`e.g., Arms & Abs, Legs & Glutes`}
+                        className="h-9"
+                        data-testid={`input-day-title-${day}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <Button
               type="button"
