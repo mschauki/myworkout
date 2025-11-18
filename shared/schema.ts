@@ -33,6 +33,7 @@ export const workoutRoutines = pgTable("workout_routines", {
       restPeriod: number; // Rest period in seconds for this specific set
     }>;
   }>>(),
+  dayTitles: jsonb("day_titles").$type<Record<string, string>>(), // Custom titles for each day, e.g., { monday: "Arms and Abs", tuesday: "Legs and Glutes" }
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
