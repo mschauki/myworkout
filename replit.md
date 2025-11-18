@@ -123,6 +123,18 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 
 ## Recent Changes
 
+- Nov 18, 2025: **Custom Exercise Creation & Per-Set Rest Periods**
+  - ✅ **Custom exercise creation**: Dialog-based UI for creating custom exercises with name, muscle group, equipment, and description
+  - ✅ **Per-set rest period configuration**: Configure individual rest periods (30-300 seconds) for each set in a routine
+  - ✅ **Per-set mode toggle**: Switch between simple mode (uniform sets) and per-set mode (individual reps/rest per set)
+  - ✅ **Rest timer scoping**: During active workout, editing rest timer updates ONLY the current set (preserves per-set customization)
+  - ✅ **Workout log normalization**: Backend ensures all sets have numeric restPeriod (falls back to exercise default, then 90s)
+  - ✅ **defaultRestPeriod field**: Workout logs include exercise-level default for proper normalization
+  - ✅ **Full data persistence**: Per-set rest periods correctly saved and retrieved from PostgreSQL JSONB columns
+  - ✅ **Zod validation**: Form validation for exercise creation with client-side feedback
+  - ✅ **Cache invalidation**: TanStack Query properly updates UI after mutations
+  - ✅ All features verified with comprehensive end-to-end testing
+
 - Nov 18, 2025: **Day-Specific Exercises & Editable Rest Periods**
   - ✅ **Day-specific exercise scheduling**: Assign exercises to specific weekdays (Monday-Sunday) or "Any Day"
   - ✅ **Day selection dialog**: Automatically shown when starting routines with day-specific exercises
