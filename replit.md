@@ -61,8 +61,12 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 - **Day-specific scheduling**: Assign exercises to specific weekdays or "Any Day"
 - **Custom rest periods**: Configure rest time (30-300 seconds) per exercise
 - Save and manage multiple routines
-- Start workout sessions from routines
-- **Day selection dialog**: Choose training day for routines with day-specific exercises
+- **3-Level Navigation Flow**: 
+  - Tap routine → View days of week with exercise counts
+  - Tap day → View exercises assigned to that day
+  - Tap "Start Workout" → Begin active workout session
+- **"Any Day" option**: Shown at the end of weekday list for exercises that can be done any day
+- **Delete routines**: Delete button with confirmation dialog on routine details page
 
 ### Active Workout Tracking
 - Real-time workout session tracker
@@ -122,6 +126,17 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 - **Volume calculation**: Server recomputes totalVolume from validated completed sets
 
 ## Recent Changes
+
+- Nov 18, 2025: **Workout Routine Flow Redesign & Delete Functionality**
+  - ✅ **New 3-level navigation**: Routine card → Day selection → Exercise list → Active workout
+  - ✅ **Day-first workflow**: View all days with exercise counts before selecting
+  - ✅ **"Any Day" placement**: Shows at end of weekday list for flexible exercises
+  - ✅ **Exercise preview**: View all exercises for a day before starting workout
+  - ✅ **Delete functionality**: Delete button with confirmation dialog on routine details
+  - ✅ **Proper state management**: Clean navigation between all levels with back buttons
+  - ✅ **Glassmorphism consistency**: All new views use glass surfaces and gradient styling
+  - ✅ **End-to-end tested**: Complete workflow from routine selection to workout start verified
+  - Navigation: Routines list → (tap) → Days view → (tap day) → Exercises view → (tap Start) → Active workout
 
 - Nov 18, 2025: **Complete Glassmorphism UI Redesign**
   - ✅ **Full design system migration** from Material Design to Glassmorphism aesthetic
