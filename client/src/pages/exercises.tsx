@@ -69,19 +69,19 @@ export default function Exercises() {
   });
 
   return (
-    <div className="pb-20 pt-6 max-w-6xl mx-auto">
-      <div className="px-4 mb-6">
+    <div className="pb-24 pt-8 max-w-6xl mx-auto">
+      <div className="px-4 mb-8">
         <div className="flex items-center justify-between gap-4 mb-2">
-          <h1 className="text-3xl font-bold" data-testid="text-page-title">Exercise Library</h1>
+          <h1 className="text-4xl font-bold gradient-text" data-testid="text-page-title">Exercise Library</h1>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="icon" data-testid="button-create-exercise">
+              <Button size="icon" className="glass-button" data-testid="button-create-exercise">
                 <Plus className="w-5 h-5" />
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="glass-surface-elevated">
               <DialogHeader>
-                <DialogTitle>Create Custom Exercise</DialogTitle>
+                <DialogTitle className="text-2xl">Create Custom Exercise</DialogTitle>
               </DialogHeader>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleCreateExercise)} className="space-y-4">
@@ -180,32 +180,34 @@ export default function Exercises() {
             </DialogContent>
           </Dialog>
         </div>
-        <p className="text-muted-foreground">Browse {exercises.length}+ exercises</p>
+        <p className="text-base text-foreground/70">Browse {exercises.length}+ exercises</p>
       </div>
 
       {/* Search */}
-      <div className="px-4 mb-4">
+      <div className="px-4 mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/50" />
           <Input
             type="search"
             placeholder="Search exercises..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-11 glass-input h-12 text-base"
             data-testid="input-search-exercises"
           />
         </div>
       </div>
 
       {/* Muscle Group Filter */}
-      <ScrollArea className="w-full mb-6">
-        <div className="flex gap-2 px-4 pb-2">
+      <ScrollArea className="w-full mb-8">
+        <div className="flex gap-2 px-4 pb-3">
           {MUSCLE_GROUPS.map((group) => (
             <Badge
               key={group}
               variant={selectedMuscleGroup === group ? "default" : "secondary"}
-              className="cursor-pointer whitespace-nowrap"
+              className={`cursor-pointer whitespace-nowrap px-4 py-2 text-sm ${
+                selectedMuscleGroup === group ? "glass-surface-elevated" : "glass-surface"
+              }`}
               onClick={() => setSelectedMuscleGroup(group)}
               data-testid={`badge-filter-${group.toLowerCase()}`}
             >
@@ -222,40 +224,40 @@ export default function Exercises() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <Card key={i}>
-                <CardContent className="p-4">
-                  <Skeleton className="h-32 w-full mb-3 rounded-md" />
-                  <Skeleton className="h-5 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-full" />
+                <CardContent className="p-5">
+                  <Skeleton className="h-40 w-full mb-4 rounded-lg glass-surface" />
+                  <Skeleton className="h-6 w-3/4 mb-2 glass-surface" />
+                  <Skeleton className="h-4 w-full glass-surface" />
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : filteredExercises.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <Dumbbell className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
-              <p className="text-muted-foreground">No exercises found</p>
-              <p className="text-sm text-muted-foreground mt-1">Try a different search or filter</p>
+          <Card className="glass-surface">
+            <CardContent className="p-12 text-center">
+              <Dumbbell className="w-16 h-16 mx-auto mb-4 text-primary/40" />
+              <p className="text-foreground/70 text-lg font-medium">No exercises found</p>
+              <p className="text-sm text-foreground/50 mt-2">Try a different search or filter</p>
             </CardContent>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredExercises.map((exercise) => (
-              <Card key={exercise.id} className="hover-elevate" data-testid={`card-exercise-${exercise.id}`}>
-                <CardContent className="p-4">
-                  <div className="aspect-video bg-muted rounded-md mb-3 flex items-center justify-center">
-                    <Dumbbell className="w-12 h-12 text-muted-foreground" />
+              <Card key={exercise.id} className="hover:scale-[1.02] transition-transform" data-testid={`card-exercise-${exercise.id}`}>
+                <CardContent className="p-5">
+                  <div className="aspect-video glass-surface rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-primary/10 to-purple-500/10">
+                    <Dumbbell className="w-14 h-14 text-primary/50" />
                   </div>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    <Badge variant="secondary" className="text-xs capitalize" data-testid="badge-muscle-group">
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <Badge variant="secondary" className="text-xs capitalize glass-surface" data-testid="badge-muscle-group">
                       {exercise.muscleGroup}
                     </Badge>
                     <Badge variant="outline" className="text-xs capitalize" data-testid="badge-equipment">
                       {exercise.equipment}
                     </Badge>
                   </div>
-                  <h3 className="text-lg font-medium mb-1" data-testid="text-exercise-name">{exercise.name}</h3>
-                  <p className="text-sm text-muted-foreground line-clamp-2">{exercise.description}</p>
+                  <h3 className="text-lg font-semibold mb-2" data-testid="text-exercise-name">{exercise.name}</h3>
+                  <p className="text-sm text-foreground/60 line-clamp-2">{exercise.description}</p>
                 </CardContent>
               </Card>
             ))}
