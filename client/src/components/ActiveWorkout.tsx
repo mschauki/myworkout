@@ -265,21 +265,9 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                           const clamped = Math.max(30, Math.min(300, parsed));
                           setCurrentRestPeriod(clamped);
                           setRestTimer(clamped);
-                          // Update rest period for all remaining uncompleted sets in the current exercise
-                          if (currentRestingExerciseIndex !== null) {
-                            setExerciseLogs((logs) => {
-                              const newLogs = [...logs];
-                              const exercise = newLogs[currentRestingExerciseIndex];
-                              if (exercise) {
-                                // Update all uncompleted sets
-                                exercise.sets.forEach((set, i) => {
-                                  if (!set.completed) {
-                                    set.restPeriod = clamped;
-                                  }
-                                });
-                              }
-                              return newLogs;
-                            });
+                          // Update rest period only for the current resting set
+                          if (currentRestingExerciseIndex !== null && currentRestingSetIndex !== null) {
+                            updateSetRestPeriod(currentRestingExerciseIndex, currentRestingSetIndex, clamped);
                           }
                         }}
                         className="w-20 h-8 bg-primary-foreground text-primary text-sm"
