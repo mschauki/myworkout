@@ -123,6 +123,20 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 
 ## Recent Changes
 
+- Nov 18, 2025: **Complete Glassmorphism UI Redesign**
+  - ✅ **Full design system migration** from Material Design to Glassmorphism aesthetic
+  - ✅ **CSS design tokens** in index.css: glass surfaces, borders, shadows, and gradient backgrounds
+  - ✅ **Tailwind utility classes**: .glass-surface, .glass-surface-elevated, .glass-button, .glass-input, .gradient-text
+  - ✅ **Vibrant gradient backgrounds**: Pink-to-lavender for light mode, purple-to-blue for dark mode
+  - ✅ **Component updates**: Card, Dialog, BottomNav all use frosted glass with backdrop-blur-xl
+  - ✅ **All pages redesigned**: Home, Exercises, Workouts, Progress, Profile with gradient titles and glass cards
+  - ✅ **Bottom navigation**: Glass elevated surface with gradient active tab indicator
+  - ✅ **Accessibility fix**: Removed nested button-in-link for proper semantic structure
+  - ✅ **Theme support**: Seamless light/dark mode transitions with proper contrast
+  - ✅ **Hover effects**: Subtle scale transforms and glass elevation on cards
+  - ✅ **End-to-end tested**: All glassmorphism effects verified in both light and dark modes
+  - Design features: Semi-transparent backgrounds (rgba 0.08-0.15), backdrop blur, gradient text, layered glass surfaces
+
 - Nov 18, 2025: **Custom Exercise Creation & Per-Set Rest Periods**
   - ✅ **Custom exercise creation**: Dialog-based UI for creating custom exercises with name, muscle group, equipment, and description
   - ✅ **Per-set rest period configuration**: Configure individual rest periods (30-300 seconds) for each set in a routine
