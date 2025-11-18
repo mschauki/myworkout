@@ -89,6 +89,7 @@ export class DatabaseStorage implements IStorage {
     if (updateData.name !== undefined) updateValues.name = updateData.name;
     if (updateData.description !== undefined) updateValues.description = updateData.description;
     if (updateData.exercises !== undefined) updateValues.exercises = updateData.exercises;
+    if (updateData.dayTitles !== undefined) updateValues.dayTitles = updateData.dayTitles;
     
     const [routine] = await db
       .update(workoutRoutines)

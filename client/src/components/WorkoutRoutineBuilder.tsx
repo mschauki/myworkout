@@ -101,6 +101,34 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
     prevUsePerSetConfig.current = usePerSetConfig;
   }, [sets, reps, restPeriod, usePerSetConfig, hasPerSetEdits, perSetConfig.length]);
 
+  // Clean up dayTitles when exercises are removed
+  useEffect(() => {
+    // Get all days that currently have exercises
+    const daysWithExercises = new Set<string>();
+    routineExercises.forEach(ex => {
+      ex.days.forEach(day => {
+        if (day !== "any") {
+          daysWithExercises.add(day);
+        }
+      });
+    });
+
+    // Remove titles for days that no longer have exercises
+    setDayTitles(prev => {
+      const updated = { ...prev };
+      let hasChanges = false;
+      
+      Object.keys(updated).forEach(day => {
+        if (!daysWithExercises.has(day)) {
+          delete updated[day];
+          hasChanges = true;
+        }
+      });
+      
+      return hasChanges ? updated : prev;
+    });
+  }, [routineExercises]);
+
   const toggleDay = (day: string) => {
     if (day === "any") {
       // If "any" is already selected, uncheck it (enabling individual days)
@@ -229,11 +257,29 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
       return;
     }
 
+    // Get all unique days that have exercises (excluding "any")
+    const daysWithExercises = new Set<string>();
+    routineExercises.forEach(ex => {
+      ex.days.forEach(day => {
+        if (day !== "any") {
+          daysWithExercises.add(day);
+        }
+      });
+    });
+
+    // Sanitize dayTitles: only include days with exercises and non-empty titles
+    const sanitizedDayTitles: Record<string, string> = {};
+    daysWithExercises.forEach(day => {
+      if (dayTitles[day]?.trim()) {
+        sanitizedDayTitles[day] = dayTitles[day].trim();
+      }
+    });
+
     createRoutineMutation.mutate({
       name,
       description,
       exercises: routineExercises,
-      dayTitles: Object.keys(dayTitles).length > 0 ? dayTitles : undefined,
+      dayTitles: Object.keys(sanitizedDayTitles).length > 0 ? sanitizedDayTitles : undefined,
     });
   };
 
