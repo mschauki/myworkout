@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Play, Dumbbell, Clock, Calendar, ChevronLeft, Trash2, ArrowRight } from "lucide-react";
-import { WorkoutRoutine } from "@shared/schema";
+import { WorkoutRoutine, Exercise } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { WorkoutRoutineBuilder } from "@/components/WorkoutRoutineBuilder";
@@ -37,11 +37,26 @@ export default function Workouts() {
     queryKey: ["/api/workout-routines"],
   });
 
+  const { data: exercises = [] } = useQuery<Exercise[]>({
+    queryKey: ["/api/exercises"],
+  });
+
   const viewingRoutine = routines.find(r => r.id === viewingRoutineId);
   const activeRoutine = routines.find(r => r.id === activeRoutineId);
 
   // Get today's day name
   const todayDayName = WEEKDAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
+
+  // Helper to get exercise name
+  const getExerciseName = (id: string) => {
+    return exercises.find(e => e.id === id)?.name || "Unknown";
+  };
+
+  // Get day title (custom or default)
+  const getDayTitle = (routine: WorkoutRoutine, day: string) => {
+    if (day === "any") return "Any Day";
+    return routine.dayTitles?.[day] || day.charAt(0).toUpperCase() + day.slice(1);
+  };
 
   // Filter exercises for selected day
   const getFilteredRoutine = (routine: WorkoutRoutine, day: string) => {
@@ -113,6 +128,7 @@ export default function Workouts() {
   // Exercise list view for selected day
   if (viewingRoutine && viewingDay) {
     const dayExercises = getExercisesForDay(viewingRoutine, viewingDay);
+    const dayTitle = getDayTitle(viewingRoutine, viewingDay);
     
     return (
       <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
@@ -127,7 +143,7 @@ export default function Workouts() {
             Back to Days
           </Button>
           <h1 className="text-4xl font-bold mb-2 gradient-text">{viewingRoutine.name}</h1>
-          <p className="text-base text-foreground/70 capitalize">{viewingDay === "any" ? "Any Day" : viewingDay}</p>
+          <p className="text-base text-foreground/70">{dayTitle}</p>
         </div>
 
         {dayExercises.length === 0 ? (
@@ -146,7 +162,7 @@ export default function Workouts() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold mb-2" data-testid="text-exercise-name">
-                          {exercise.name}
+                          {getExerciseName(exercise.exerciseId)}
                         </h3>
                         <div className="flex flex-wrap gap-2">
                           <Badge variant="secondary" className="glass-surface">
@@ -184,6 +200,7 @@ export default function Workouts() {
   // Routine detail view (days selection)
   if (viewingRoutine) {
     const allDays = [...WEEKDAYS, "any"];
+    const daysWithExercises = allDays.filter(day => getExercisesForDay(viewingRoutine, day).length > 0);
     
     return (
       <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
@@ -222,23 +239,18 @@ export default function Workouts() {
 
         <div className="space-y-2">
           <h2 className="text-lg font-semibold mb-4 text-foreground/90">Select Training Day</h2>
-          {allDays.map(day => {
+          {daysWithExercises.map(day => {
             const dayExercises = getExercisesForDay(viewingRoutine, day);
             const exerciseCount = dayExercises.length;
             const isToday = day === todayDayName;
             const isAny = day === "any";
+            const dayTitle = getDayTitle(viewingRoutine, day);
             
             return (
               <Card
                 key={day}
-                className={`glass-surface hover:scale-[1.01] transition-all cursor-pointer ${
-                  exerciseCount === 0 ? "opacity-50" : ""
-                }`}
-                onClick={() => {
-                  if (exerciseCount > 0) {
-                    setViewingDay(day);
-                  }
-                }}
+                className="glass-surface hover:scale-[1.01] transition-all cursor-pointer"
+                onClick={() => setViewingDay(day)}
                 data-testid={`card-day-${day}`}
               >
                 <CardContent className="p-5">
@@ -246,8 +258,8 @@ export default function Workouts() {
                     <div className="flex items-center gap-3">
                       <Calendar className="w-5 h-5 text-primary/60" />
                       <div>
-                        <h3 className="font-semibold capitalize">
-                          {isAny ? "Any Day" : day}
+                        <h3 className="font-semibold">
+                          {dayTitle}
                         </h3>
                         {isToday && !isAny && (
                           <Badge variant="secondary" className="text-xs mt-1">Today</Badge>
@@ -258,9 +270,7 @@ export default function Workouts() {
                       <Badge variant="secondary" className="glass-surface">
                         {exerciseCount} exercise{exerciseCount !== 1 ? "s" : ""}
                       </Badge>
-                      {exerciseCount > 0 && (
-                        <ArrowRight className="w-5 h-5 text-foreground/40" />
-                      )}
+                      <ArrowRight className="w-5 h-5 text-foreground/40" />
                     </div>
                   </div>
                 </CardContent>
