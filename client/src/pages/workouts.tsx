@@ -72,21 +72,21 @@ export default function Workouts() {
   }
 
   return (
-    <div className="pb-20 px-4 pt-6 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between gap-4 mb-6">
+    <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
+      <div className="flex items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2" data-testid="text-page-title">My Workouts</h1>
-          <p className="text-muted-foreground">Create and track your routines</p>
+          <h1 className="text-4xl font-bold mb-2 gradient-text" data-testid="text-page-title">My Workouts</h1>
+          <p className="text-base text-foreground/70">Create and track your routines</p>
         </div>
         <Dialog open={isBuilderOpen} onOpenChange={setIsBuilderOpen}>
           <DialogTrigger asChild>
-            <Button size="icon" data-testid="button-create-routine">
+            <Button size="icon" className="glass-button" data-testid="button-create-routine">
               <Plus className="w-5 h-5" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto glass-surface-elevated">
             <DialogHeader>
-              <DialogTitle>Create Workout Routine</DialogTitle>
+              <DialogTitle className="text-2xl">Create Workout Routine</DialogTitle>
             </DialogHeader>
             <WorkoutRoutineBuilder onComplete={() => setIsBuilderOpen(false)} />
           </DialogContent>
@@ -95,9 +95,9 @@ export default function Workouts() {
 
       {/* Day Selection Dialog */}
       <Dialog open={!!daySelectRoutineId} onOpenChange={(open) => !open && setDaySelectRoutineId(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md glass-surface-elevated">
           <DialogHeader>
-            <DialogTitle>Select Training Day</DialogTitle>
+            <DialogTitle className="text-2xl">Select Training Day</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">

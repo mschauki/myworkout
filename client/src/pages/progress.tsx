@@ -34,14 +34,14 @@ export default function Progress() {
   const totalVolume = workoutLogs.reduce((sum, log) => sum + log.totalVolume, 0).toFixed(0);
 
   return (
-    <div className="pb-20 px-4 pt-6 max-w-6xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2" data-testid="text-page-title">Progress</h1>
-        <p className="text-muted-foreground">Track your fitness journey</p>
+    <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold mb-2 gradient-text" data-testid="text-page-title">Progress</h1>
+        <p className="text-base text-foreground/70">Track your fitness journey</p>
       </div>
 
-      <Tabs defaultValue="overview" className="mb-6">
-        <TabsList className="w-full">
+      <Tabs defaultValue="overview" className="mb-8">
+        <TabsList className="w-full glass-surface">
           <TabsTrigger value="overview" className="flex-1" data-testid="tab-overview">Overview</TabsTrigger>
           <TabsTrigger value="exercises" className="flex-1" data-testid="tab-exercises">Exercises</TabsTrigger>
         </TabsList>
@@ -49,30 +49,30 @@ export default function Progress() {
         <TabsContent value="overview" className="space-y-6 mt-6">
           {/* Stats Summary */}
           <div className="grid grid-cols-2 gap-4">
-            <Card data-testid="card-total-workouts">
+            <Card data-testid="card-total-workouts" className="glass-surface-elevated">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Total Workouts</CardTitle>
+                <CardTitle className="text-sm font-medium text-foreground/70">Total Workouts</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
-                  <Skeleton className="h-10 w-16" />
+                  <Skeleton className="h-12 w-20 glass-surface" />
                 ) : (
-                  <div className="text-3xl font-bold font-mono" data-testid="text-total-workouts">{totalWorkouts}</div>
+                  <div className="text-4xl font-bold font-mono gradient-text" data-testid="text-total-workouts">{totalWorkouts}</div>
                 )}
               </CardContent>
             </Card>
 
-            <Card data-testid="card-total-volume">
+            <Card data-testid="card-total-volume" className="glass-surface-elevated">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Total Volume</CardTitle>
+                <CardTitle className="text-sm font-medium text-foreground/70">Total Volume</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
-                  <Skeleton className="h-10 w-20" />
+                  <Skeleton className="h-12 w-24 glass-surface" />
                 ) : (
                   <>
-                    <div className="text-3xl font-bold font-mono" data-testid="text-total-volume">{totalVolume}</div>
-                    <p className="text-xs text-muted-foreground mt-1">lbs</p>
+                    <div className="text-4xl font-bold font-mono gradient-text" data-testid="text-total-volume">{totalVolume}</div>
+                    <p className="text-xs text-foreground/60 mt-2 uppercase tracking-wide">lbs</p>
                   </>
                 )}
               </CardContent>
