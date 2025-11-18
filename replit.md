@@ -6,7 +6,7 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 ## Tech Stack
 - **Frontend**: React, TypeScript, Tailwind CSS, Shadcn UI, Recharts
 - **Backend**: Express.js, Node.js
-- **Storage**: In-memory storage (MemStorage)
+- **Database**: PostgreSQL with Drizzle ORM
 - **Routing**: Wouter (frontend), Express (backend)
 - **State Management**: TanStack Query (React Query)
 - **Forms**: React Hook Form with Zod validation
@@ -28,7 +28,9 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 
 ### Backend (`server/`)
 - `routes.ts` - API endpoints for all features
-- `storage.ts` - In-memory data storage interface
+- `storage.ts` - Database storage interface using Drizzle ORM
+- `db.ts` - PostgreSQL database connection
+- `seed.ts` - Idempotent database seeding script
 
 ### Shared (`shared/`)
 - `schema.ts` - Data models and Zod schemas for:
@@ -41,10 +43,17 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 ## Features Implemented
 
 ### Exercise Library
-- 35+ exercises organized by muscle group (chest, back, legs, shoulders, arms, core)
+- **110 exercises** organized by muscle group with proper distribution:
+  - Chest: 15 exercises
+  - Back: 20 exercises
+  - Legs: 22 exercises
+  - Shoulders: 18 exercises
+  - Arms: 20 exercises
+  - Core: 15 exercises
 - Search functionality with real-time filtering
 - Muscle group filter badges
 - Equipment type badges
+- Exercise descriptions for all exercises
 
 ### Workout Routines
 - Create custom workout routines
@@ -61,10 +70,18 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 - Elapsed time counter
 
 ### Progress Dashboard
-- Workout statistics (total workouts, volume lifted)
-- Volume progression chart with time range filters
-- Exercise-specific progress tracking
-- Body stats integration
+- **Overview Tab**:
+  - Workout statistics (total workouts, volume lifted)
+  - Volume progression chart with time range filters
+  - Calendar heatmap placeholder
+- **Exercises Tab**:
+  - **Personal Records (PR) Tracking**:
+    - Best Weight: Maximum weight lifted for each exercise
+    - Best Reps: Maximum reps completed for each exercise
+    - Best Volume: Volume (weight × reps) from the set with heaviest weight
+    - Date stamps showing when each PR was achieved
+  - Weight progression chart (last 10 workouts)
+  - Empty state handling for exercises with no data
 
 ### Body Stats Tracking
 - Record weight and body fat percentage
@@ -74,6 +91,7 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 ## Design System
 - **Typography**: Roboto (primary), Roboto Mono (stats/numbers)
 - **Colors**: Blue accent theme (Material Design inspired)
+- **Theme**: Dark mode support with ThemeProvider and ThemeToggle component
 - **Layout**: Mobile-first with responsive breakpoints
 - **Navigation**: Fixed bottom navigation bar
 - **Components**: Shadcn UI with consistent spacing and elevation
@@ -99,6 +117,19 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 - **Volume calculation**: Server recomputes totalVolume from validated completed sets
 
 ## Recent Changes
+
+- Nov 18, 2025: **Database Migration & Feature Expansion**
+  - ✅ Migrated from in-memory storage to PostgreSQL with Drizzle ORM
+  - ✅ Created idempotent seed script (deletes existing + inserts) for reliable database reseeding
+  - ✅ Expanded exercise library from 35 to **110 exercises** across all muscle groups
+  - ✅ Implemented dark theme support with ThemeProvider and localStorage persistence
+  - ✅ Added ThemeToggle component in Profile page with smooth icon transitions
+  - ✅ **Personal Records (PR) tracking** in Progress > Exercises tab:
+    - Calculate and display best weight, reps, and volume for each exercise
+    - Show dates when PRs were achieved
+    - Weight progression chart aggregated by workout (last 10 workouts)
+  - ✅ All features verified with end-to-end testing
+
 - Nov 17, 2025: **MVP Complete and Tested**
   - ✅ Complete data schema with Zod validation
   - ✅ All frontend components built with Roboto fonts and blue accent theme

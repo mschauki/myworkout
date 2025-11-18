@@ -176,17 +176,169 @@ export default function Progress() {
                 </SelectContent>
               </Select>
 
-              <div className="mt-6">
-                {!selectedExercise ? (
-                  <div className="h-64 flex items-center justify-center text-muted-foreground">
-                    <p>Select an exercise to view progress</p>
+              {selectedExercise && (() => {
+                // Calculate PRs for selected exercise from workout logs
+                const exerciseSets: { weight: number; reps: number; volume: number; date: Date }[] = [];
+                
+                workoutLogs.forEach(log => {
+                  log.exercises.forEach(ex => {
+                    if (ex.exerciseId === selectedExercise) {
+                      ex.sets.forEach(set => {
+                        if (set.completed) {
+                          exerciseSets.push({
+                            weight: set.weight,
+                            reps: set.reps,
+                            volume: set.weight * set.reps,
+                            date: new Date(log.date)
+                          });
+                        }
+                      });
+                    }
+                  });
+                });
+
+                const selectedExerciseName = exercises.find(e => e.id === selectedExercise)?.name || "";
+
+                if (exerciseSets.length === 0) {
+                  return (
+                    <div className="mt-6 h-64 flex items-center justify-center text-muted-foreground">
+                      <p>No workout data for this exercise yet</p>
+                    </div>
+                  );
+                }
+
+                // Calculate personal records
+                const maxWeight = Math.max(...exerciseSets.map(s => s.weight));
+                const maxReps = Math.max(...exerciseSets.map(s => s.reps));
+                
+                // Best volume is the volume from the set with the best (heaviest) weight
+                const bestWeightSet = exerciseSets.find(s => s.weight === maxWeight);
+                const maxVolume = bestWeightSet ? bestWeightSet.volume : 0;
+                
+                // Get dates when PRs were achieved
+                const maxWeightDate = bestWeightSet?.date;
+                const maxRepsDate = exerciseSets.find(s => s.reps === maxReps)?.date;
+                const maxVolumeDate = bestWeightSet?.date;
+
+                // Prepare chart data (last 10 workouts with this exercise)
+                // Group sets by workout date and take the max weight per workout
+                const workoutsByDate = new Map<string, { weight: number; volume: number; date: Date }>();
+                exerciseSets.forEach(set => {
+                  const dateKey = set.date.toDateString();
+                  const existing = workoutsByDate.get(dateKey);
+                  if (!existing || set.weight > existing.weight) {
+                    workoutsByDate.set(dateKey, set);
+                  }
+                });
+                
+                const exerciseHistory = Array.from(workoutsByDate.values())
+                  .sort((a, b) => b.date.getTime() - a.date.getTime())
+                  .slice(0, 10)
+                  .reverse()
+                  .map((workout, idx) => ({
+                    workout: idx + 1,
+                    date: workout.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                    weight: workout.weight,
+                    volume: workout.volume,
+                  }));
+
+                return (
+                  <div className="mt-6 space-y-6">
+                    {/* Personal Records */}
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-medium text-muted-foreground mb-3">Personal Records</h3>
+                      <div className="grid grid-cols-1 gap-3">
+                        <div className="flex items-center justify-between p-3 rounded-md border" data-testid="pr-max-weight">
+                          <div>
+                            <p className="text-sm text-muted-foreground">Best Weight</p>
+                            <p className="text-2xl font-bold font-mono">{maxWeight} lbs</p>
+                          </div>
+                          <div className="text-right">
+                            <Badge variant="secondary">{exerciseSets.find(s => s.weight === maxWeight)?.reps} reps</Badge>
+                            {maxWeightDate && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {maxWeightDate.toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between p-3 rounded-md border" data-testid="pr-max-reps">
+                          <div>
+                            <p className="text-sm text-muted-foreground">Best Reps</p>
+                            <p className="text-2xl font-bold font-mono">{maxReps} reps</p>
+                          </div>
+                          <div className="text-right">
+                            <Badge variant="secondary">{exerciseSets.find(s => s.reps === maxReps)?.weight} lbs</Badge>
+                            {maxRepsDate && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {maxRepsDate.toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between p-3 rounded-md border" data-testid="pr-max-volume">
+                          <div>
+                            <p className="text-sm text-muted-foreground">Best Volume (Single Set)</p>
+                            <p className="text-2xl font-bold font-mono">{maxVolume} lbs</p>
+                          </div>
+                          <div className="text-right">
+                            <Badge variant="secondary">
+                              {bestWeightSet?.weight} lbs × {bestWeightSet?.reps}
+                            </Badge>
+                            {maxVolumeDate && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {maxVolumeDate.toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Progress Chart */}
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-3">Weight Progress</h3>
+                      {exerciseHistory.length > 0 ? (
+                        <ResponsiveContainer width="100%" height={250}>
+                          <LineChart data={exerciseHistory}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                            <XAxis 
+                              dataKey="date" 
+                              stroke="hsl(var(--muted-foreground))"
+                              fontSize={12}
+                            />
+                            <YAxis 
+                              stroke="hsl(var(--muted-foreground))"
+                              fontSize={12}
+                            />
+                            <Tooltip 
+                              contentStyle={{
+                                backgroundColor: "hsl(var(--popover))",
+                                border: "1px solid hsl(var(--popover-border))",
+                                borderRadius: "6px",
+                              }}
+                            />
+                            <Line 
+                              type="monotone" 
+                              dataKey="weight" 
+                              stroke="hsl(var(--primary))" 
+                              strokeWidth={2}
+                              dot={{ fill: "hsl(var(--primary))", r: 4 }}
+                              name="Weight (lbs)"
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <div className="h-64 flex items-center justify-center text-muted-foreground">
+                          <p>Not enough data to display chart</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                ) : (
-                  <div className="h-64 flex items-center justify-center text-muted-foreground">
-                    <p>Exercise progress chart will appear here</p>
-                  </div>
-                )}
-              </div>
+                );
+              })()}
             </CardContent>
           </Card>
         </TabsContent>
