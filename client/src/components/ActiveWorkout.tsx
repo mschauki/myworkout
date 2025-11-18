@@ -21,13 +21,14 @@ interface WorkoutSet {
   weight: number;
   reps: number;
   completed: boolean;
+  restPeriod: number; // Rest period in seconds for this specific set
 }
 
 interface ExerciseLog {
   exerciseId: string;
   exerciseName: string;
+  defaultRestPeriod?: number;
   sets: WorkoutSet[];
-  restPeriod: number; // Rest period in seconds for this exercise
 }
 
 export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkoutProps) {
@@ -38,6 +39,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
   const [restPaused, setRestPaused] = useState(false);
   const [currentRestPeriod, setCurrentRestPeriod] = useState(90);
   const [currentRestingExerciseIndex, setCurrentRestingExerciseIndex] = useState<number | null>(null);
+  const [currentRestingSetIndex, setCurrentRestingSetIndex] = useState<number | null>(null);
 
   const { toast } = useToast();
 
@@ -51,16 +53,36 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
     
     const logs: ExerciseLog[] = routine.exercises.map((ex) => {
       const exercise = exercises.find((e) => e.id === ex.exerciseId);
-      return {
-        exerciseId: ex.exerciseId,
-        exerciseName: exercise?.name || "Unknown Exercise",
-        restPeriod: ex.restPeriod || 90, // Use custom rest period or default to 90
-        sets: Array.from({ length: ex.sets }, () => ({
-          weight: 0,
-          reps: ex.reps,
-          completed: false,
-        })),
-      };
+      
+      // Check if per-set configuration exists
+      const defaultRestPeriod = ex.restPeriod || 90;
+      if (ex.setsConfig && ex.setsConfig.length > 0) {
+        // Use per-set configuration
+        return {
+          exerciseId: ex.exerciseId,
+          exerciseName: exercise?.name || "Unknown Exercise",
+          defaultRestPeriod,
+          sets: ex.setsConfig.map((setConfig) => ({
+            weight: 0,
+            reps: setConfig.reps,
+            completed: false,
+            restPeriod: setConfig.restPeriod,
+          })),
+        };
+      } else {
+        // Use legacy simple configuration
+        return {
+          exerciseId: ex.exerciseId,
+          exerciseName: exercise?.name || "Unknown Exercise",
+          defaultRestPeriod,
+          sets: Array.from({ length: ex.sets }, () => ({
+            weight: 0,
+            reps: ex.reps,
+            completed: false,
+            restPeriod: defaultRestPeriod,
+          })),
+        };
+      }
     });
     setExerciseLogs(logs);
   }, [exercises, routine, exerciseLogs.length]);
@@ -77,7 +99,14 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
   useEffect(() => {
     if (restTimer > 0 && !restPaused) {
       const interval = setInterval(() => {
-        setRestTimer((prev) => Math.max(0, prev - 1));
+        setRestTimer((prev) => {
+          if (prev <= 1) {
+            // Rest timer finished, clear the current resting indices
+            setCurrentRestingExerciseIndex(null);
+            setCurrentRestingSetIndex(null);
+          }
+          return Math.max(0, prev - 1);
+        });
       }, 1000);
       return () => clearInterval(interval);
     }
@@ -108,12 +137,12 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
     });
   };
 
-  const updateExerciseRestPeriod = (exerciseIndex: number, newRestPeriod: number) => {
+  const updateSetRestPeriod = (exerciseIndex: number, setIndex: number, newRestPeriod: number) => {
     setExerciseLogs((logs) => {
       const newLogs = [...logs];
-      if (newLogs[exerciseIndex]) {
-        newLogs[exerciseIndex] = {
-          ...newLogs[exerciseIndex],
+      if (newLogs[exerciseIndex]?.sets[setIndex]) {
+        newLogs[exerciseIndex].sets[setIndex] = {
+          ...newLogs[exerciseIndex].sets[setIndex],
           restPeriod: newRestPeriod,
         };
       }
@@ -132,12 +161,13 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
       return;
     }
     updateSet(exerciseIndex, setIndex, "completed", true);
-    // Use the custom rest period for this exercise
-    const restPeriod = exerciseLogs[exerciseIndex]?.restPeriod || 90;
+    // Use the per-set rest period
+    const restPeriod = set.restPeriod || 90;
     setCurrentRestPeriod(restPeriod);
     setRestTimer(restPeriod);
     setRestPaused(false);
-    setCurrentRestingExerciseIndex(exerciseIndex); // Track which exercise is resting
+    setCurrentRestingExerciseIndex(exerciseIndex);
+    setCurrentRestingSetIndex(setIndex);
   };
 
   const saveWorkoutMutation = useMutation({
@@ -235,9 +265,21 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                           const clamped = Math.max(30, Math.min(300, parsed));
                           setCurrentRestPeriod(clamped);
                           setRestTimer(clamped);
-                          // Update only the currently resting exercise's rest period for subsequent sets
+                          // Update rest period for all remaining uncompleted sets in the current exercise
                           if (currentRestingExerciseIndex !== null) {
-                            updateExerciseRestPeriod(currentRestingExerciseIndex, clamped);
+                            setExerciseLogs((logs) => {
+                              const newLogs = [...logs];
+                              const exercise = newLogs[currentRestingExerciseIndex];
+                              if (exercise) {
+                                // Update all uncompleted sets
+                                exercise.sets.forEach((set, i) => {
+                                  if (!set.completed) {
+                                    set.restPeriod = clamped;
+                                  }
+                                });
+                              }
+                              return newLogs;
+                            });
                           }
                         }}
                         className="w-20 h-8 bg-primary-foreground text-primary text-sm"

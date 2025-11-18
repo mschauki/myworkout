@@ -79,11 +79,7 @@ export class DatabaseStorage implements IStorage {
   async createWorkoutRoutine(insertRoutine: InsertWorkoutRoutine): Promise<WorkoutRoutine> {
     const [routine] = await db
       .insert(workoutRoutines)
-      .values({
-        name: insertRoutine.name,
-        description: insertRoutine.description,
-        exercises: insertRoutine.exercises,
-      })
+      .values(insertRoutine)
       .returning();
     return routine;
   }
@@ -121,15 +117,24 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createWorkoutLog(insertLog: InsertWorkoutLog): Promise<WorkoutLog> {
+    const normalizedExercises = insertLog.exercises.map(exercise => ({
+      ...exercise,
+      sets: exercise.sets.map(set => ({
+        ...set,
+        restPeriod: set.restPeriod ?? exercise.defaultRestPeriod ?? 90,
+      })),
+    }));
+    
+    const logData = {
+      routineName: insertLog.routineName,
+      duration: insertLog.duration,
+      exercises: normalizedExercises,
+      totalVolume: insertLog.totalVolume,
+      date: insertLog.date ? new Date(insertLog.date) : undefined,
+    };
     const [log] = await db
       .insert(workoutLogs)
-      .values({
-        routineName: insertLog.routineName,
-        duration: insertLog.duration,
-        exercises: insertLog.exercises,
-        totalVolume: insertLog.totalVolume,
-        date: insertLog.date ? new Date(insertLog.date) : undefined,
-      })
+      .values(logData)
       .returning();
     return log;
   }
@@ -151,10 +156,7 @@ export class DatabaseStorage implements IStorage {
     const [record] = await db
       .insert(progressRecords)
       .values({
-        exerciseId: insertRecord.exerciseId,
-        weight: insertRecord.weight,
-        reps: insertRecord.reps,
-        volume: insertRecord.volume,
+        ...insertRecord,
         date: insertRecord.date ? new Date(insertRecord.date) : undefined,
       })
       .returning();
@@ -175,9 +177,7 @@ export class DatabaseStorage implements IStorage {
     const [stats] = await db
       .insert(bodyStats)
       .values({
-        weight: insertStats.weight,
-        bodyFat: insertStats.bodyFat,
-        measurements: insertStats.measurements,
+        ...insertStats,
         date: insertStats.date ? new Date(insertStats.date) : undefined,
       })
       .returning();

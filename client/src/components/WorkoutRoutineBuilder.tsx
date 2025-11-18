@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,10 @@ interface RoutineExercise {
   reps: number;
   days: string[];
   restPeriod?: number;
+  setsConfig?: Array<{
+    reps: number;
+    restPeriod: number;
+  }>;
 }
 
 interface WorkoutRoutineBuilderProps {
@@ -37,6 +41,11 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
   const [reps, setReps] = useState("10");
   const [selectedDays, setSelectedDays] = useState<string[]>(["any"]);
   const [restPeriod, setRestPeriod] = useState("90");
+  const [usePerSetConfig, setUsePerSetConfig] = useState(false);
+  const [perSetConfig, setPerSetConfig] = useState<Array<{ reps: string; restPeriod: string }>>([]);
+  const [hasPerSetEdits, setHasPerSetEdits] = useState(false);
+  const prevUsePerSetConfig = useRef(false);
+  const lastSyncedValues = useRef({ sets: "3", reps: "10", restPeriod: "90" });
 
   const { toast } = useToast();
 
@@ -57,6 +66,39 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
       toast({ title: "Failed to create routine", variant: "destructive" });
     },
   });
+
+  // Synchronize perSetConfig with simple mode values only when user hasn't made per-set edits
+  useEffect(() => {
+    // Skip sync if we just toggled from per-set to simple mode
+    const justToggledFromPerSet = prevUsePerSetConfig.current && !usePerSetConfig;
+    
+    // Check if simple values have changed since last tracked values
+    const simpleValuesChanged = 
+      lastSyncedValues.current.sets !== sets ||
+      lastSyncedValues.current.reps !== reps ||
+      lastSyncedValues.current.restPeriod !== restPeriod;
+    
+    // Sync if: in simple mode, no custom edits, not just toggled, AND (empty OR values changed)
+    if (!usePerSetConfig && !hasPerSetEdits && !justToggledFromPerSet && (perSetConfig.length === 0 || simpleValuesChanged)) {
+      // Sanitize and validate inputs
+      const targetCount = Math.max(1, parseInt(sets?.trim()) || 3);
+      const targetReps = Math.max(1, parseInt(reps?.trim()) || 10).toString();
+      const targetRest = Math.max(30, Math.min(300, parseInt(restPeriod?.trim()) || 90)).toString();
+      
+      setPerSetConfig(Array.from({ length: targetCount }, () => ({
+        reps: targetReps,
+        restPeriod: targetRest,
+      })));
+    }
+    
+    // Always update lastSyncedValues when in simple mode to track current values
+    if (!usePerSetConfig) {
+      lastSyncedValues.current = { sets, reps, restPeriod };
+    }
+    
+    // Update ref for next render
+    prevUsePerSetConfig.current = usePerSetConfig;
+  }, [sets, reps, restPeriod, usePerSetConfig, hasPerSetEdits, perSetConfig.length]);
 
   const toggleDay = (day: string) => {
     if (day === "any") {
@@ -81,25 +123,87 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
   const addExercise = () => {
     if (!selectedExerciseId) return;
     
-    // Validate and clamp rest period to 30-300 range
-    const parsedRestPeriod = parseInt(restPeriod) || 90;
-    const clampedRestPeriod = Math.max(30, Math.min(300, parsedRestPeriod));
+    let exerciseData: RoutineExercise;
     
-    setRoutineExercises([
-      ...routineExercises,
-      {
+    if (usePerSetConfig) {
+      // Use per-set configuration
+      const setsConfig = perSetConfig.map(set => ({
+        reps: parseInt(set.reps || "10") || 10,
+        restPeriod: Math.max(30, Math.min(300, parseInt(set.restPeriod || "90") || 90)),
+      }));
+      
+      exerciseData = {
         exerciseId: selectedExerciseId,
-        sets: parseInt(sets),
-        reps: parseInt(reps),
+        sets: setsConfig.length,
+        reps: setsConfig[0]?.reps || 10, // Use first set's reps as default
+        days: selectedDays,
+        setsConfig,
+      };
+    } else {
+      // Use simple configuration
+      const parsedRestPeriod = parseInt(restPeriod || "90") || 90;
+      const clampedRestPeriod = Math.max(30, Math.min(300, parsedRestPeriod));
+      
+      exerciseData = {
+        exerciseId: selectedExerciseId,
+        sets: parseInt(sets || "3") || 3,
+        reps: parseInt(reps || "10") || 10,
         days: selectedDays,
         restPeriod: clampedRestPeriod,
-      },
-    ]);
+      };
+    }
+    
+    setRoutineExercises([...routineExercises, exerciseData]);
     setSelectedExerciseId("");
     setSets("3");
     setReps("10");
     setSelectedDays(["any"]);
     setRestPeriod("90");
+    setUsePerSetConfig(false);
+    setPerSetConfig([]);
+    setHasPerSetEdits(false);
+  };
+
+  const updateSetCount = (newCount: number) => {
+    const count = Math.max(1, Math.min(10, newCount));
+    setSets(String(count));
+    
+    // Clear hasPerSetEdits when user changes simple mode values
+    setHasPerSetEdits(false);
+    
+    // Update perSetConfig array to match new count
+    const currentConfig = [...perSetConfig];
+    if (count > currentConfig.length) {
+      // Add new sets
+      const lastSet = currentConfig[currentConfig.length - 1] || { reps: "10", restPeriod: "90" };
+      while (currentConfig.length < count) {
+        currentConfig.push({ ...lastSet });
+      }
+    } else {
+      // Remove sets
+      currentConfig.splice(count);
+    }
+    setPerSetConfig(currentConfig);
+  };
+
+  const updatePerSet = (index: number, field: 'reps' | 'restPeriod', value: string) => {
+    const updated = [...perSetConfig];
+    updated[index] = { ...updated[index], [field]: value };
+    setPerSetConfig(updated);
+    setHasPerSetEdits(true);
+  };
+  
+  // Reset per-set edits and resync from simple mode
+  const resetPerSetEdits = () => {
+    setHasPerSetEdits(false);
+    const targetCount = Math.max(1, parseInt(sets?.trim()) || 3);
+    const targetReps = Math.max(1, parseInt(reps?.trim()) || 10).toString();
+    const targetRest = Math.max(30, Math.min(300, parseInt(restPeriod?.trim()) || 90)).toString();
+    
+    setPerSetConfig(Array.from({ length: targetCount }, () => ({
+      reps: targetReps,
+      restPeriod: targetRest,
+    })));
   };
 
   const removeExercise = (index: number) => {
@@ -178,45 +282,139 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
               </Select>
             )}
 
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="sets" className="text-xs">Sets</Label>
-                <Input
-                  id="sets"
-                  type="number"
-                  min="1"
-                  value={sets}
-                  onChange={(e) => setSets(e.target.value)}
-                  data-testid="input-sets"
-                />
-              </div>
-              <div>
-                <Label htmlFor="reps" className="text-xs">Reps</Label>
-                <Input
-                  id="reps"
-                  type="number"
-                  min="1"
-                  value={reps}
-                  onChange={(e) => setReps(e.target.value)}
-                  data-testid="input-reps"
-                />
-              </div>
-              <div>
-                <Label htmlFor="rest" className="text-xs flex items-center gap-1">
-                  <Timer className="w-3 h-3" />
-                  Rest (sec)
+            {/* Configuration Mode Toggle */}
+            <div className="flex items-center justify-between">
+              <Label className="text-xs">Configuration</Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="per-set-toggle" className="text-xs text-muted-foreground cursor-pointer">
+                  Per-Set Rest
                 </Label>
-                <Input
-                  id="rest"
-                  type="number"
-                  min="30"
-                  max="300"
-                  value={restPeriod}
-                  onChange={(e) => setRestPeriod(e.target.value)}
-                  data-testid="input-rest-period"
+                <Checkbox
+                  id="per-set-toggle"
+                  checked={usePerSetConfig}
+                  onCheckedChange={(checked) => setUsePerSetConfig(Boolean(checked))}
+                  data-testid="checkbox-per-set-config"
                 />
               </div>
             </div>
+
+            {!usePerSetConfig ? (
+              /* Simple Mode */
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="sets" className="text-xs">Sets</Label>
+                  <Input
+                    id="sets"
+                    type="number"
+                    min="1"
+                    value={sets}
+                    onChange={(e) => updateSetCount(parseInt(e.target.value))}
+                    data-testid="input-sets"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="reps" className="text-xs">Reps</Label>
+                  <Input
+                    id="reps"
+                    type="number"
+                    min="1"
+                    value={reps}
+                    onChange={(e) => {
+                      setReps(e.target.value);
+                      setHasPerSetEdits(false); // Clear edits when simple mode values change
+                    }}
+                    data-testid="input-reps"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="rest" className="text-xs flex items-center gap-1">
+                    <Timer className="w-3 h-3" />
+                    Rest (sec)
+                  </Label>
+                  <Input
+                    id="rest"
+                    type="number"
+                    min="30"
+                    max="300"
+                    value={restPeriod}
+                    onChange={(e) => {
+                      setRestPeriod(e.target.value);
+                      setHasPerSetEdits(false); // Clear edits when simple mode values change
+                    }}
+                    data-testid="input-rest-period"
+                  />
+                </div>
+              </div>
+            ) : (
+              /* Per-Set Configuration Mode */
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs">Number of Sets</Label>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => updateSetCount(parseInt(sets) - 1)}
+                      disabled={parseInt(sets) <= 1}
+                      data-testid="button-decrease-sets"
+                    >
+                      -
+                    </Button>
+                    <span className="text-sm font-medium w-8 text-center">{sets}</span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => updateSetCount(parseInt(sets) + 1)}
+                      disabled={parseInt(sets) >= 10}
+                      data-testid="button-increase-sets"
+                    >
+                      +
+                    </Button>
+                  </div>
+                </div>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {perSetConfig.map((set, index) => (
+                    <Card key={index} className="bg-muted/50">
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium min-w-[40px]">Set {index + 1}</span>
+                          <div className="flex-1 grid grid-cols-2 gap-2">
+                            <div>
+                              <Input
+                                type="number"
+                                min="1"
+                                value={set.reps}
+                                onChange={(e) => updatePerSet(index, 'reps', e.target.value)}
+                                placeholder="Reps"
+                                className="h-8 text-xs"
+                                data-testid={`input-set-${index}-reps`}
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Timer className="w-3 h-3 text-muted-foreground" />
+                              <Input
+                                type="number"
+                                min="30"
+                                max="300"
+                                value={set.restPeriod}
+                                onChange={(e) => updatePerSet(index, 'restPeriod', e.target.value)}
+                                placeholder="Rest (s)"
+                                className="h-8 text-xs"
+                                data-testid={`input-set-${index}-rest`}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label className="text-xs flex items-center gap-1">

@@ -24,10 +24,14 @@ export const workoutRoutines = pgTable("workout_routines", {
   description: text("description"),
   exercises: jsonb("exercises").notNull().$type<Array<{
     exerciseId: string;
-    sets: number;
-    reps: number;
+    sets: number; // Legacy: total number of sets (used if setsConfig not present)
+    reps: number; // Legacy: reps per set (used if setsConfig not present)
     days: string[]; // Array of day names: ["monday", "wednesday"] or ["any"] for any day
-    restPeriod?: number; // Optional rest period in seconds (defaults to 90 if not set)
+    restPeriod?: number; // Legacy: rest period in seconds (used if setsConfig not present, defaults to 90)
+    setsConfig?: Array<{  // New: individual configuration per set (overrides sets/reps/restPeriod if present)
+      reps: number;
+      restPeriod: number; // Rest period in seconds for this specific set
+    }>;
   }>>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -49,10 +53,12 @@ export const workoutLogs = pgTable("workout_logs", {
   exercises: jsonb("exercises").notNull().$type<Array<{
     exerciseId: string;
     exerciseName: string;
+    defaultRestPeriod?: number; // Default rest period from routine (used for normalization)
     sets: Array<{
       weight: number;
       reps: number;
       completed: boolean;
+      restPeriod?: number; // Optional: rest period in seconds for this set (from per-set configuration)
     }>;
   }>>(),
   totalVolume: doublePrecision("total_volume").notNull(),
