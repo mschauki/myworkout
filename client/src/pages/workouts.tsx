@@ -209,7 +209,10 @@ export default function Workouts() {
             <Button
               variant="destructive"
               size="icon"
-              onClick={() => setDeleteRoutineId(viewingRoutine.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeleteRoutineId(viewingRoutine.id);
+              }}
               data-testid="button-delete-routine"
             >
               <Trash2 className="w-5 h-5" />
@@ -265,6 +268,28 @@ export default function Workouts() {
             );
           })}
         </div>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={!!deleteRoutineId} onOpenChange={(open) => !open && setDeleteRoutineId(null)}>
+          <AlertDialogContent className="glass-surface-elevated">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Routine?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete this workout routine. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => deleteRoutineId && deleteMutation.mutate(deleteRoutineId)}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                data-testid="button-confirm-delete"
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     );
   }
@@ -290,28 +315,6 @@ export default function Workouts() {
           </DialogContent>
         </Dialog>
       </div>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteRoutineId} onOpenChange={(open) => !open && setDeleteRoutineId(null)}>
-        <AlertDialogContent className="glass-surface-elevated">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Routine?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete this workout routine. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deleteRoutineId && deleteMutation.mutate(deleteRoutineId)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              data-testid="button-confirm-delete"
-            >
-              {deleteMutation.isPending ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {isLoading ? (
         <div className="space-y-4">
