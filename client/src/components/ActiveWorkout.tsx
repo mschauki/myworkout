@@ -40,6 +40,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
   const [currentRestPeriod, setCurrentRestPeriod] = useState(90);
   const [currentRestingExerciseIndex, setCurrentRestingExerciseIndex] = useState<number | null>(null);
   const [currentRestingSetIndex, setCurrentRestingSetIndex] = useState<number | null>(null);
+  const [expandedExercises, setExpandedExercises] = useState<string[]>(["exercise-0"]);
 
   const { toast } = useToast();
 
@@ -161,6 +162,19 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
       return;
     }
     updateSet(exerciseIndex, setIndex, "completed", true);
+    
+    // Check if this is the last set of the current exercise
+    const currentExercise = exerciseLogs[exerciseIndex];
+    const isLastSet = setIndex === currentExercise.sets.length - 1;
+    
+    // If this is the last set and there's a next exercise, auto-expand it
+    if (isLastSet && exerciseIndex < exerciseLogs.length - 1) {
+      const nextExerciseKey = `exercise-${exerciseIndex + 1}`;
+      if (!expandedExercises.includes(nextExerciseKey)) {
+        setExpandedExercises(prev => [...prev, nextExerciseKey]);
+      }
+    }
+    
     // Use the per-set rest period
     const restPeriod = set.restPeriod || 90;
     setCurrentRestPeriod(restPeriod);
@@ -317,7 +331,11 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
 
       {/* Exercise List */}
       <div className="px-4 pt-6 max-w-6xl mx-auto">
-        <Accordion type="multiple" defaultValue={exerciseLogs.map((_, i) => `exercise-${i}`)}>
+        <Accordion 
+          type="multiple" 
+          value={expandedExercises}
+          onValueChange={setExpandedExercises}
+        >
           {exerciseLogs.map((log, exerciseIndex) => (
             <AccordionItem key={exerciseIndex} value={`exercise-${exerciseIndex}`}>
               <AccordionTrigger className="text-lg font-medium" data-testid={`accordion-exercise-${exerciseIndex}`}>
