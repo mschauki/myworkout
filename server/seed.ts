@@ -130,7 +130,9 @@ const seedExercises = async () => {
     { name: "Dragon Flag", description: "Advanced exercise holding body straight while anchored", muscleGroup: "core", equipment: "bodyweight", imageUrl: null },
   ];
 
-  await db.insert(exercises).values(exerciseData);
+  // Mark all seeded exercises as not custom
+  const exerciseDataWithIsCustom = exerciseData.map(ex => ({ ...ex, isCustom: false }));
+  await db.insert(exercises).values(exerciseDataWithIsCustom);
   console.log("✅ Seeded", exerciseData.length, "exercises");
 };
 

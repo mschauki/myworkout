@@ -44,6 +44,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/exercises/:id", async (req, res) => {
+    try {
+      const validatedData = insertExerciseSchema.partial().parse(req.body);
+      const exercise = await storage.updateExercise(req.params.id, validatedData);
+      if (!exercise) {
+        return res.status(404).json({ error: "Exercise not found" });
+      }
+      res.json(exercise);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid exercise data" });
+    }
+  });
+
   // Workout Routines
   app.get("/api/workout-routines", async (req, res) => {
     try {
