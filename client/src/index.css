@@ -342,16 +342,19 @@
   }
 
   .glass-button {
-    background: var(--glass-surface);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid var(--glass-border);
+    background: hsl(var(--primary) / 0.9);
+    color: hsl(var(--primary-foreground));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--primary) / 0.4);
+    box-shadow: var(--glass-shadow);
     transition: all 0.3s ease;
   }
 
   .glass-button:hover {
-    background: var(--glass-surface-elevated);
+    background: hsl(var(--primary));
     transform: translateY(-1px);
+    box-shadow: var(--glass-shadow-lg);
   }
 
   .glass-input {

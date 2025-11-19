@@ -98,12 +98,15 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 - Historical data tracking
 
 ## Design System
-- **Typography**: Roboto (primary), Roboto Mono (stats/numbers)
-- **Colors**: Blue accent theme (Material Design inspired)
+- **Typography**: Inter (primary), JetBrains Mono (stats/numbers)
+- **Colors**: Blue and orange gradient theme with Glassmorphism aesthetic
+  - Gradients: Blue-to-orange backgrounds and text
+  - Primary: Blue (hsl(210, 85%, 45-52%))
+  - Accent: Orange (hsl(25, 85%, 22-88%))
 - **Theme**: Dark mode support with ThemeProvider and ThemeToggle component
-- **Layout**: Mobile-first with responsive breakpoints
-- **Navigation**: Fixed bottom navigation bar
-- **Components**: Shadcn UI with consistent spacing and elevation
+- **Layout**: Mobile-first with responsive breakpoints, frosted glass surfaces
+- **Navigation**: Fixed bottom navigation bar with glass styling
+- **Components**: Shadcn UI with glassmorphism effects (backdrop-blur, semi-transparent backgrounds)
 
 ## API Endpoints
 - `GET /api/exercises` - Fetch all exercises
@@ -127,7 +130,28 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 
 ## Recent Changes
 
-- Nov 18, 2025: **Workout Routine Flow Redesign & Delete Functionality**
+- Nov 19, 2025: **Color Scheme Update & Critical Bug Fixes**
+  - ✅ **Color scheme**: Changed from pink/purple to blue/orange gradients
+    - Light mode: Blue-to-orange gradient background (hsl(210, 80%, 94%) to hsl(25, 75%, 96%))
+    - Dark mode: Deep blue-to-orange gradient (#0f172a to #1e3a5f to #1a1410)
+    - Gradient text: Blue-to-orange (used in page titles and CTAs)
+    - Primary colors: Blue tones throughout
+    - Accent: Orange highlights
+  - ✅ **Fixed delete functionality**: Added missing DELETE route for workout routines
+    - DELETE endpoint now properly removes routines from database
+    - Confirmation dialog works correctly
+    - Backend storage function was already implemented, just needed route wiring
+  - ✅ **Fixed button visibility**: Updated glass-button styling for better contrast
+    - Changed from transparent glass to visible blue primary color
+    - Background: Primary color with 90% opacity
+    - Text: White for clear contrast
+    - Buttons now clearly visible against gradient backgrounds
+  - ✅ **Day titles with day names**: Custom titles now show alongside day names
+    - Format: "Monday - Arms & abs" instead of just "Arms & abs"
+    - Falls back to just day name if no custom title
+  - ✅ **All fixes verified with end-to-end testing**
+
+- Nov 18, 2025: **Workflow Routine Flow Redesign & Delete Functionality**
   - ✅ **New 3-level navigation**: Routine card → Day selection → Exercise list → Active workout
   - ✅ **Day-first workflow**: View all days with exercise counts before selecting
   - ✅ **"Any Day" placement**: Shows at end of weekday list for flexible exercises

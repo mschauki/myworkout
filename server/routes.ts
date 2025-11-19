@@ -74,6 +74,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/workout-routines/:id", async (req, res) => {
+    try {
+      // Manual validation for partial updates
+      const updateData: Partial<InsertWorkoutRoutine> = {};
+      if (req.body.name !== undefined) updateData.name = req.body.name;
+      if (req.body.description !== undefined) updateData.description = req.body.description;
+      if (req.body.exercises !== undefined) updateData.exercises = req.body.exercises;
+      if (req.body.dayTitles !== undefined) updateData.dayTitles = req.body.dayTitles;
+      
+      const routine = await storage.updateWorkoutRoutine(req.params.id, updateData);
+      if (!routine) {
+        return res.status(404).json({ error: "Workout routine not found" });
+      }
+      res.json(routine);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update workout routine" });
+    }
+  });
+
+  app.delete("/api/workout-routines/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteWorkoutRoutine(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Workout routine not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete workout routine" });
+    }
+  });
+
   // Workout Logs
   app.get("/api/workout-logs", async (req, res) => {
     try {
