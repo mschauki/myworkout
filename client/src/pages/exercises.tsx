@@ -206,7 +206,9 @@ export default function Exercises() {
               key={group}
               variant={selectedMuscleGroup === group ? "default" : "secondary"}
               className={`cursor-pointer whitespace-nowrap px-4 py-2 text-sm ${
-                selectedMuscleGroup === group ? "glass-surface-elevated" : "glass-surface"
+                selectedMuscleGroup === group 
+                  ? "glass-surface-elevated text-primary-foreground" 
+                  : "glass-surface"
               }`}
               onClick={() => setSelectedMuscleGroup(group)}
               data-testid={`badge-filter-${group.toLowerCase()}`}
@@ -245,8 +247,17 @@ export default function Exercises() {
             {filteredExercises.map((exercise) => (
               <Card key={exercise.id} className="hover:scale-[1.02] transition-transform" data-testid={`card-exercise-${exercise.id}`}>
                 <CardContent className="p-5">
-                  <div className="aspect-video glass-surface rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-primary/10 to-purple-500/10">
-                    <Dumbbell className="w-14 h-14 text-primary/50" />
+                  <div className="aspect-video glass-surface rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-primary/10 to-purple-500/10 overflow-hidden">
+                    {exercise.imageUrl ? (
+                      <img 
+                        src={exercise.imageUrl} 
+                        alt={exercise.name}
+                        className="w-full h-full object-cover"
+                        data-testid="img-exercise"
+                      />
+                    ) : (
+                      <Dumbbell className="w-14 h-14 text-primary/50" />
+                    )}
                   </div>
                   <div className="flex flex-wrap gap-2 mb-3">
                     <Badge variant="secondary" className="text-xs capitalize glass-surface" data-testid="badge-muscle-group">

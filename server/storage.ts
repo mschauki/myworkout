@@ -35,6 +35,7 @@ export interface IStorage {
   getAllWorkoutLogs(): Promise<WorkoutLog[]>;
   getWorkoutLog(id: string): Promise<WorkoutLog | undefined>;
   createWorkoutLog(log: InsertWorkoutLog): Promise<WorkoutLog>;
+  deleteWorkoutLog(id: string): Promise<boolean>;
   
   // Progress Records
   getAllProgressRecords(): Promise<ProgressRecord[]>;
@@ -138,6 +139,14 @@ export class DatabaseStorage implements IStorage {
       .values(logData)
       .returning();
     return log;
+  }
+
+  async deleteWorkoutLog(id: string): Promise<boolean> {
+    const result = await db
+      .delete(workoutLogs)
+      .where(eq(workoutLogs.id, id))
+      .returning();
+    return result.length > 0;
   }
 
   // Progress Records

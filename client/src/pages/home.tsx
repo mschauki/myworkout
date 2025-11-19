@@ -1,16 +1,47 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Dumbbell, Flame, TrendingUp, Trophy } from "lucide-react";
+import { Calendar, Dumbbell, Flame, TrendingUp, Trophy, Trash2 } from "lucide-react";
 import { WorkoutLog, BodyStats } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export default function Home() {
+  const [deleteLogId, setDeleteLogId] = useState<string | null>(null);
+  const { toast } = useToast();
+
   const { data: workoutLogs, isLoading: logsLoading } = useQuery<WorkoutLog[]>({
     queryKey: ["/api/workout-logs"],
   });
 
   const { data: bodyStats, isLoading: statsLoading } = useQuery<BodyStats[]>({
     queryKey: ["/api/body-stats"],
+  });
+
+  const deleteWorkoutMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest("DELETE", `/api/workout-logs/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/workout-logs"] });
+      toast({ title: "Workout deleted successfully" });
+      setDeleteLogId(null);
+    },
+    onError: () => {
+      toast({ title: "Failed to delete workout", variant: "destructive" });
+    },
   });
 
   // Calculate stats
@@ -144,9 +175,19 @@ export default function Home() {
                         {new Date(log.date).toLocaleDateString()} • {Math.floor(log.duration / 60)} min • {log.totalVolume.toFixed(0)} lbs
                       </p>
                     </div>
-                    <div className="text-right glass-surface px-3 py-2 rounded-lg">
-                      <p className="text-lg font-bold font-mono gradient-text">{log.exercises.length}</p>
-                      <p className="text-xs text-foreground/60 uppercase tracking-wide">exercises</p>
+                    <div className="flex items-center gap-2">
+                      <div className="text-right glass-surface px-3 py-2 rounded-lg">
+                        <p className="text-lg font-bold font-mono gradient-text">{log.exercises.length}</p>
+                        <p className="text-xs text-foreground/60 uppercase tracking-wide">exercises</p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setDeleteLogId(log.id)}
+                        data-testid={`button-delete-workout-${log.id}`}
+                      >
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
@@ -155,6 +196,28 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteLogId !== null} onOpenChange={(open) => !open && setDeleteLogId(null)}>
+        <AlertDialogContent className="glass-surface-elevated">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Workout</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this workout log? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteLogId && deleteWorkoutMutation.mutate(deleteLogId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-delete"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -206,6 +206,20 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  // Calculate 1RM using Epley formula: 1RM = weight × (1 + reps/30)
+  const calculate1RM = (weight: number, reps: number): number => {
+    if (weight <= 0 || reps <= 0) return 0;
+    if (reps === 1) return weight;
+    return weight * (1 + reps / 30);
+  };
+
+  // Get the best estimated 1RM from completed sets for an exercise
+  const getBest1RM = (sets: WorkoutSet[]): number => {
+    const completedSets = sets.filter(s => s.completed && s.weight > 0 && s.reps > 0);
+    if (completedSets.length === 0) return 0;
+    return Math.max(...completedSets.map(s => calculate1RM(s.weight, s.reps)));
+  };
+
   const completedSets = exerciseLogs.reduce((sum, log) => 
     sum + log.sets.filter(s => s.completed).length, 0
   );
@@ -307,11 +321,16 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
           {exerciseLogs.map((log, exerciseIndex) => (
             <AccordionItem key={exerciseIndex} value={`exercise-${exerciseIndex}`}>
               <AccordionTrigger className="text-lg font-medium" data-testid={`accordion-exercise-${exerciseIndex}`}>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                   <span>{log.exerciseName}</span>
                   <Badge variant="outline" className="text-xs">
                     {log.sets.filter(s => s.completed).length}/{log.sets.length}
                   </Badge>
+                  {getBest1RM(log.sets) > 0 && (
+                    <Badge variant="default" className="text-xs bg-primary/90" data-testid={`badge-1rm-${exerciseIndex}`}>
+                      Est. 1RM: {Math.round(getBest1RM(log.sets))} lbs
+                    </Badge>
+                  )}
                 </div>
               </AccordionTrigger>
               <AccordionContent>
