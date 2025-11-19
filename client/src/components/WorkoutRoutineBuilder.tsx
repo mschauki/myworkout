@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Exercise } from "@shared/schema";
 import { Plus, X, Dumbbell, Timer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -49,6 +50,13 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
     { reps: "10", restPeriod: "90" }
   ]);
 
+  // Custom exercise creation state
+  const [isCustomExerciseDialogOpen, setIsCustomExerciseDialogOpen] = useState(false);
+  const [customExerciseName, setCustomExerciseName] = useState("");
+  const [customMuscleGroup, setCustomMuscleGroup] = useState("");
+  const [customEquipment, setCustomEquipment] = useState("");
+  const [customDescription, setCustomDescription] = useState("");
+
   const { toast } = useToast();
 
   const { data: exercises = [], isLoading } = useQuery<Exercise[]>({
@@ -66,6 +74,42 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
     },
     onError: () => {
       toast({ title: "Failed to create routine", variant: "destructive" });
+    },
+  });
+
+  const createCustomExerciseMutation = useMutation<Exercise, Error, any>({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("POST", "/api/exercises", data);
+      const created = await response.json() as Exercise;
+      if (!created.id) {
+        throw new Error("Failed to create exercise: missing ID");
+      }
+      return created;
+    },
+    onSuccess: (newExercise: Exercise) => {
+      // Optimistically add the new exercise to the cache immediately
+      // De-duplicate by ID to prevent duplicate entries from retries or double-submits
+      queryClient.setQueryData<Exercise[]>(["/api/exercises"], (oldData) => {
+        if (!oldData) return [newExercise];
+        const exists = oldData.some(ex => ex.id === newExercise.id);
+        return exists ? oldData : [...oldData, newExercise];
+      });
+      
+      // Also invalidate to ensure data is fresh
+      queryClient.invalidateQueries({ queryKey: ["/api/exercises"] });
+      
+      toast({ title: "Custom exercise created successfully" });
+      setSelectedExerciseId(newExercise.id);
+      setIsCustomExerciseDialogOpen(false);
+      
+      // Reset form
+      setCustomExerciseName("");
+      setCustomMuscleGroup("");
+      setCustomEquipment("");
+      setCustomDescription("");
+    },
+    onError: () => {
+      toast({ title: "Failed to create exercise", variant: "destructive" });
     },
   });
 
@@ -137,6 +181,31 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
         return newTitles;
       }
       return { ...prev, [day]: title };
+    });
+  };
+
+  const handleCreateCustomExercise = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Explicit validation for required fields (Radix Select doesn't honor "required" attribute)
+    if (!customExerciseName.trim()) {
+      toast({ title: "Exercise name is required", variant: "destructive" });
+      return;
+    }
+    if (!customMuscleGroup || customMuscleGroup.trim() === "") {
+      toast({ title: "Please select a muscle group", variant: "destructive" });
+      return;
+    }
+    if (!customEquipment || customEquipment.trim() === "") {
+      toast({ title: "Please select equipment type", variant: "destructive" });
+      return;
+    }
+    
+    createCustomExerciseMutation.mutate({
+      name: customExerciseName.trim(),
+      muscleGroup: customMuscleGroup,
+      equipment: customEquipment,
+      description: customDescription.trim() || undefined,
     });
   };
 
@@ -318,9 +387,111 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
               {/* Add Exercise Card */}
               <Card>
                 <CardContent className="p-4 space-y-4">
-                  <Label className="text-sm font-medium">
-                    Add Exercise to {day === "any" ? "Any Day" : day.charAt(0).toUpperCase() + day.slice(1)}
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">
+                      Add Exercise to {day === "any" ? "Any Day" : day.charAt(0).toUpperCase() + day.slice(1)}
+                    </Label>
+                    <Dialog open={isCustomExerciseDialogOpen} onOpenChange={setIsCustomExerciseDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          data-testid={`button-create-custom-exercise-${day}`}
+                        >
+                          <Plus className="w-3 h-3 mr-1" />
+                          Custom
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="glass-surface-elevated max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Create Custom Exercise</DialogTitle>
+                        </DialogHeader>
+                        <form onSubmit={handleCreateCustomExercise} className="space-y-4">
+                          <div>
+                            <Label htmlFor="custom-exercise-name">Exercise Name *</Label>
+                            <Input
+                              id="custom-exercise-name"
+                              value={customExerciseName}
+                              onChange={(e) => setCustomExerciseName(e.target.value)}
+                              placeholder="e.g., Seated Calf Raise"
+                              data-testid="input-custom-exercise-name"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="custom-muscle-group">Muscle Group *</Label>
+                            <Select value={customMuscleGroup} onValueChange={setCustomMuscleGroup} required>
+                              <SelectTrigger id="custom-muscle-group" data-testid="select-custom-muscle-group">
+                                <SelectValue placeholder="Select muscle group" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="chest">Chest</SelectItem>
+                                <SelectItem value="back">Back</SelectItem>
+                                <SelectItem value="shoulders">Shoulders</SelectItem>
+                                <SelectItem value="biceps">Biceps</SelectItem>
+                                <SelectItem value="triceps">Triceps</SelectItem>
+                                <SelectItem value="legs">Legs</SelectItem>
+                                <SelectItem value="glutes">Glutes</SelectItem>
+                                <SelectItem value="abs">Abs</SelectItem>
+                                <SelectItem value="calves">Calves</SelectItem>
+                                <SelectItem value="forearms">Forearms</SelectItem>
+                                <SelectItem value="cardio">Cardio</SelectItem>
+                                <SelectItem value="full body">Full Body</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label htmlFor="custom-equipment">Equipment *</Label>
+                            <Select value={customEquipment} onValueChange={setCustomEquipment} required>
+                              <SelectTrigger id="custom-equipment" data-testid="select-custom-equipment">
+                                <SelectValue placeholder="Select equipment" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="barbell">Barbell</SelectItem>
+                                <SelectItem value="dumbbell">Dumbbell</SelectItem>
+                                <SelectItem value="machine">Machine</SelectItem>
+                                <SelectItem value="cable">Cable</SelectItem>
+                                <SelectItem value="bodyweight">Bodyweight</SelectItem>
+                                <SelectItem value="kettlebell">Kettlebell</SelectItem>
+                                <SelectItem value="resistance band">Resistance Band</SelectItem>
+                                <SelectItem value="other">Other</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label htmlFor="custom-description">Description (optional)</Label>
+                            <Textarea
+                              id="custom-description"
+                              value={customDescription}
+                              onChange={(e) => setCustomDescription(e.target.value)}
+                              placeholder="Exercise instructions or notes..."
+                              data-testid="input-custom-description"
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => setIsCustomExerciseDialogOpen(false)}
+                              className="flex-1"
+                              data-testid="button-cancel-custom-exercise"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              type="submit"
+                              disabled={createCustomExerciseMutation.isPending}
+                              className="flex-1"
+                              data-testid="button-save-custom-exercise"
+                            >
+                              {createCustomExerciseMutation.isPending ? "Creating..." : "Create Exercise"}
+                            </Button>
+                          </div>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                   
                   {isLoading ? (
                     <Skeleton className="h-10 w-full" />

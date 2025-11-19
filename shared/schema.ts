@@ -6,7 +6,7 @@ import { z } from "zod";
 export const exercises = pgTable("exercises", {
   id: varchar("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: varchar("name", { length: 255 }).notNull(),
-  description: text("description").notNull(),
+  description: text("description"),
   muscleGroup: varchar("muscle_group", { length: 100 }).notNull(),
   equipment: varchar("equipment", { length: 100 }).notNull(),
   imageUrl: varchar("image_url", { length: 500 }),
