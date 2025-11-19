@@ -57,15 +57,22 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 
 ### Workout Routines
 - Create custom workout routines
-- Add exercises with sets/reps configuration
-- **Day-specific scheduling**: Assign exercises to specific weekdays or "Any Day"
-- **Custom rest periods**: Configure rest time (30-300 seconds) per exercise
+- **Day-by-Day Builder Workflow**:
+  - Day tabs (Monday-Sunday + "Any Day") for organized exercise assignment
+  - Select a day → Add exercises to that specific day → Move to next day
+  - Visual tab badges show exercise count per day
+  - Custom day titles per weekday (e.g., "Chest & Triceps", "Leg Day")
+- **Per-Set Configuration (Default)**:
+  - Configure reps and rest period individually for each set
+  - Defaults to 3 sets with 10 reps and 90s rest
+  - Adjustable set count (1-10 sets)
+  - Rest periods: 30-300 seconds per set
 - Save and manage multiple routines
 - **3-Level Navigation Flow**: 
   - Tap routine → View days of week with exercise counts
   - Tap day → View exercises assigned to that day
   - Tap "Start Workout" → Begin active workout session
-- **"Any Day" option**: Shown at the end of weekday list for exercises that can be done any day
+- **"Any Day" option**: Tab for exercises that can be done any day of the week
 - **Delete routines**: Delete button with confirmation dialog on routine details page
 
 ### Active Workout Tracking
@@ -129,6 +136,17 @@ A comprehensive fitness tracking application inspired by Jefit, featuring exerci
 - **Volume calculation**: Server recomputes totalVolume from validated completed sets
 
 ## Recent Changes
+
+- Nov 19, 2025: **Day-by-Day Routine Builder Redesign**
+  - ✅ **Complete workflow redesign**: New tab-based interface for organizing exercises by day
+  - ✅ **Day tabs**: Monday-Sunday tabs plus "Any Day" option with exercise count badges
+  - ✅ **Per-set configuration default**: Removed simple mode toggle - always uses per-set rest configuration
+  - ✅ **Day-specific exercise assignment**: Select day → configure exercise → add to that specific day
+  - ✅ **Custom day titles**: Optional title input for each weekday (e.g., "Chest & Triceps", "Back & Biceps")
+  - ✅ **Visual feedback**: Tab badges show exercise count per day
+  - ✅ **Generic routine name placeholder**: Changed from "Push Day" to "My Weekly Routine, Full Body Split"
+  - ✅ **Simplified state management**: `exercisesByDay` keyed by day name for clearer organization
+  - ✅ **End-to-end tested**: Complete routine creation workflow verified with day tabs, custom titles, and per-set configuration
 
 - Nov 19, 2025: **Color Scheme Update & Critical Bug Fixes**
   - ✅ **Color scheme**: Changed from pink/purple to blue/orange gradients
