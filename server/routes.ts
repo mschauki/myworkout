@@ -46,8 +46,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/exercises/:id", async (req, res) => {
     try {
+      // First, check if the exercise exists and is custom
+      const existingExercise = await storage.getExercise(req.params.id);
+      if (!existingExercise) {
+        return res.status(404).json({ error: "Exercise not found" });
+      }
+      if (!existingExercise.isCustom) {
+        return res.status(403).json({ error: "Cannot edit seeded exercises" });
+      }
+      
       const validatedData = insertExerciseSchema.partial().parse(req.body);
-      const exercise = await storage.updateExercise(req.params.id, validatedData);
+      // Strip isCustom from the update to prevent clients from toggling the flag
+      const { isCustom, ...updateData } = validatedData as any;
+      const exercise = await storage.updateExercise(req.params.id, updateData);
       if (!exercise) {
         return res.status(404).json({ error: "Exercise not found" });
       }
