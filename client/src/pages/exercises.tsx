@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Dumbbell, Plus } from "lucide-react";
+import { Search, Dumbbell, Plus, Pencil } from "lucide-react";
 import { Exercise, insertExerciseSchema } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -25,6 +25,8 @@ export default function Exercises() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState("All");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
   const { toast } = useToast();
 
   const { data: exercises = [], isLoading } = useQuery<Exercise[]>({
@@ -32,6 +34,16 @@ export default function Exercises() {
   });
 
   const form = useForm({
+    resolver: zodResolver(insertExerciseSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      muscleGroup: "",
+      equipment: "",
+    },
+  });
+
+  const editForm = useForm({
     resolver: zodResolver(insertExerciseSchema),
     defaultValues: {
       name: "",
@@ -58,6 +70,39 @@ export default function Exercises() {
 
   const handleCreateExercise = (data: any) => {
     createExerciseMutation.mutate(data);
+  };
+
+  const updateExerciseMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      return apiRequest("PUT", `/api/exercises/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/exercises"] });
+      toast({ title: "Exercise updated successfully" });
+      setIsEditDialogOpen(false);
+      setEditingExercise(null);
+      editForm.reset();
+    },
+    onError: () => {
+      toast({ title: "Failed to update exercise", variant: "destructive" });
+    },
+  });
+
+  const handleEditExercise = (exercise: Exercise) => {
+    setEditingExercise(exercise);
+    editForm.reset({
+      name: exercise.name,
+      description: exercise.description || "",
+      muscleGroup: exercise.muscleGroup,
+      equipment: exercise.equipment,
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateExercise = (data: any) => {
+    if (editingExercise) {
+      updateExerciseMutation.mutate({ id: editingExercise.id, data });
+    }
   };
 
   const filteredExercises = exercises.filter((exercise) => {
@@ -183,6 +228,109 @@ export default function Exercises() {
         <p className="text-base text-foreground/70">Browse {exercises.length}+ exercises</p>
       </div>
 
+      {/* Edit Exercise Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="glass-surface-elevated">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Edit Exercise</DialogTitle>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(handleUpdateExercise)} className="space-y-4">
+              <FormField
+                control={editForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Exercise Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="e.g., Bulgarian Split Squat"
+                        data-testid="input-edit-exercise-name"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editForm.control}
+                name="muscleGroup"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Muscle Group</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-edit-muscle-group">
+                          <SelectValue placeholder="Select muscle group" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {MUSCLE_GROUPS.filter(g => g !== "All").map((group) => (
+                          <SelectItem key={group} value={group.toLowerCase()}>
+                            {group}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editForm.control}
+                name="equipment"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Equipment</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-edit-equipment">
+                          <SelectValue placeholder="Select equipment" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {EQUIPMENT_OPTIONS.map((equipment) => (
+                          <SelectItem key={equipment} value={equipment.toLowerCase()}>
+                            {equipment}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="Describe how to perform this exercise..."
+                        data-testid="input-edit-exercise-description"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={updateExerciseMutation.isPending}
+                data-testid="button-update-exercise"
+              >
+                {updateExerciseMutation.isPending ? "Updating..." : "Update Exercise"}
+              </Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
       {/* Search */}
       <div className="px-4 mb-6">
         <div className="relative">
@@ -245,8 +393,19 @@ export default function Exercises() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredExercises.map((exercise) => (
-              <Card key={exercise.id} className="hover:scale-[1.02] transition-transform" data-testid={`card-exercise-${exercise.id}`}>
+              <Card key={exercise.id} className="hover:scale-[1.02] transition-transform relative" data-testid={`card-exercise-${exercise.id}`}>
                 <CardContent className="p-5">
+                  {exercise.isCustom && (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="absolute top-2 right-2 h-8 w-8 glass-surface"
+                      onClick={() => handleEditExercise(exercise)}
+                      data-testid={`button-edit-exercise-${exercise.id}`}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  )}
                   <div className="aspect-video glass-surface rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-primary/10 to-purple-500/10 overflow-hidden">
                     {exercise.imageUrl ? (
                       <img 
@@ -266,6 +425,11 @@ export default function Exercises() {
                     <Badge variant="outline" className="text-xs capitalize" data-testid="badge-equipment">
                       {exercise.equipment}
                     </Badge>
+                    {exercise.isCustom && (
+                      <Badge variant="default" className="text-xs glass-surface-elevated" data-testid="badge-custom">
+                        Custom
+                      </Badge>
+                    )}
                   </div>
                   <h3 className="text-lg font-semibold mb-2" data-testid="text-exercise-name">{exercise.name}</h3>
                   <p className="text-sm text-foreground/60 line-clamp-2">{exercise.description}</p>
