@@ -358,6 +358,8 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
               ...lastSet,  // Clone all properties from last set
             });
             updatedExercise.setsConfig = setsConfig;
+            // Update legacy sets field to match setsConfig length
+            updatedExercise.sets = setsConfig.length;
           } else if (ex.sets && ex.reps) {
             // Legacy exercise - convert to setsConfig and add one more set
             const setsConfig = Array.from({ length: ex.sets + 1 }, (_, idx) => ({
@@ -365,6 +367,8 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
               restPeriod: ex.restPeriod || 90,
             }));
             updatedExercise.setsConfig = setsConfig;
+            // Update legacy sets field to match setsConfig length
+            updatedExercise.sets = ex.sets + 1;
           }
           
           return updatedExercise;
