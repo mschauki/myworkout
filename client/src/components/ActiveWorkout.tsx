@@ -6,10 +6,20 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { WorkoutRoutine, Exercise } from "@shared/schema";
-import { X, Check, Timer, Pause, Play } from "lucide-react";
+import { X, Check, Timer, Pause, Play, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ActiveWorkoutProps {
   routine: WorkoutRoutine;
@@ -41,6 +51,12 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
   const [currentRestingExerciseIndex, setCurrentRestingExerciseIndex] = useState<number | null>(null);
   const [currentRestingSetIndex, setCurrentRestingSetIndex] = useState<number | null>(null);
   const [expandedExercises, setExpandedExercises] = useState<string[]>(["exercise-0"]);
+  const [showRestPeriodDialog, setShowRestPeriodDialog] = useState(false);
+  const [pendingRestPeriodChange, setPendingRestPeriodChange] = useState<{
+    exerciseIndex: number;
+    setIndex: number;
+    newRestPeriod: number;
+  } | null>(null);
 
   const { toast } = useToast();
 
@@ -151,6 +167,26 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
     });
   };
 
+  const addSet = (exerciseIndex: number) => {
+    setExerciseLogs((logs) => {
+      const newLogs = [...logs];
+      const exercise = newLogs[exerciseIndex];
+      if (exercise) {
+        // Add a new set with default values from the exercise
+        const lastSet = exercise.sets[exercise.sets.length - 1];
+        const newSet: WorkoutSet = {
+          weight: lastSet?.weight || 0,
+          reps: lastSet?.reps || 10,
+          completed: false,
+          restPeriod: exercise.defaultRestPeriod || 90,
+        };
+        exercise.sets.push(newSet);
+      }
+      return newLogs;
+    });
+    toast({ title: "Set added" });
+  };
+
   const completeSet = (exerciseIndex: number, setIndex: number) => {
     const set = exerciseLogs[exerciseIndex]?.sets[setIndex];
     if (!set || set.weight <= 0 || set.reps <= 0) {
@@ -197,6 +233,120 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
       toast({ title: "Failed to save workout", variant: "destructive" });
     },
   });
+
+  const updateRoutineRestPeriodMutation = useMutation({
+    mutationFn: async ({ routineId, exerciseId, setIndex, newRestPeriod }: {
+      routineId: string;
+      exerciseId: string;
+      setIndex: number;
+      newRestPeriod: number;
+    }) => {
+      // Get the current routine
+      const response = await apiRequest("GET", `/api/workout-routines/${routineId}`);
+      const currentRoutine = await response.json();
+      
+      let wasUpdated = false;
+      
+      // Update the specific exercise's setsConfig preserving all other properties
+      const updatedExercises = currentRoutine.exercises.map((ex: any) => {
+        if (ex.exerciseId === exerciseId) {
+          // Clone the existing exercise to preserve all properties
+          const updatedExercise = { ...ex };
+          
+          if (ex.setsConfig && ex.setsConfig.length > 0) {
+            // Exercise already has setsConfig - verify setIndex is in bounds
+            if (setIndex < ex.setsConfig.length) {
+              // Deep clone and update only the specific set
+              const setsConfig = ex.setsConfig.map((cfg: any) => ({ ...cfg }));
+              setsConfig[setIndex] = {
+                ...setsConfig[setIndex],
+                restPeriod: newRestPeriod,
+              };
+              updatedExercise.setsConfig = setsConfig;
+              wasUpdated = true;
+            }
+            // If setIndex out of bounds, skip (don't save dynamically added sets)
+          } else if (ex.sets && ex.reps) {
+            // Legacy exercise - convert to setsConfig only if setIndex is in bounds
+            if (setIndex < ex.sets) {
+              const setsConfig = Array.from({ length: ex.sets }, (_, idx) => ({
+                reps: ex.reps,
+                restPeriod: idx === setIndex ? newRestPeriod : (ex.restPeriod || 90),
+              }));
+              updatedExercise.setsConfig = setsConfig;
+              wasUpdated = true;
+            }
+          }
+          
+          return updatedExercise;
+        }
+        return ex;
+      });
+      
+      // Send back the full routine object to prevent data loss
+      const updatedRoutine = {
+        ...currentRoutine,
+        exercises: updatedExercises,
+      };
+      
+      const result = await apiRequest("PUT", `/api/workout-routines/${routineId}`, updatedRoutine);
+      return { result, wasUpdated };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/workout-routines"] });
+      if (data.wasUpdated) {
+        toast({ title: "Rest period saved for future workouts" });
+      } else {
+        toast({ 
+          title: "Cannot save rest period for dynamically added sets",
+          description: "This set was added during the workout and is not part of the routine",
+          variant: "destructive"
+        });
+      }
+    },
+    onError: () => {
+      toast({ title: "Failed to update routine", variant: "destructive" });
+    },
+  });
+
+  const handleRestPeriodChange = (newRestPeriod: number) => {
+    const clamped = Math.max(30, Math.min(300, newRestPeriod));
+    setCurrentRestPeriod(clamped);
+    setRestTimer(clamped);
+    
+    // Show dialog to ask if user wants to make it permanent
+    if (currentRestingExerciseIndex !== null && currentRestingSetIndex !== null) {
+      setPendingRestPeriodChange({
+        exerciseIndex: currentRestingExerciseIndex,
+        setIndex: currentRestingSetIndex,
+        newRestPeriod: clamped,
+      });
+      setShowRestPeriodDialog(true);
+    }
+  };
+
+  const confirmRestPeriodChange = (makePermanent: boolean) => {
+    if (pendingRestPeriodChange) {
+      const { exerciseIndex, setIndex, newRestPeriod } = pendingRestPeriodChange;
+      
+      // Update current set's rest period
+      updateSetRestPeriod(exerciseIndex, setIndex, newRestPeriod);
+      
+      // If user wants to make it permanent, update the routine
+      if (makePermanent && routine.id) {
+        const exerciseLog = exerciseLogs[exerciseIndex];
+        updateRoutineRestPeriodMutation.mutate({
+          routineId: routine.id,
+          exerciseId: exerciseLog.exerciseId,
+          setIndex: setIndex,
+          newRestPeriod: newRestPeriod,
+        });
+      }
+    }
+    
+    setShowRestPeriodDialog(false);
+    setPendingRestPeriodChange(null);
+  };
 
   const finishWorkout = () => {
     const totalVolume = exerciseLogs.reduce((total, log) => {
@@ -289,13 +439,17 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                         value={currentRestPeriod}
                         onChange={(e) => {
                           const parsed = parseInt(e.target.value) || 90;
-                          // Clamp value to 30-300 range
                           const clamped = Math.max(30, Math.min(300, parsed));
                           setCurrentRestPeriod(clamped);
-                          setRestTimer(clamped);
-                          // Update rest period only for the current resting set
-                          if (currentRestingExerciseIndex !== null && currentRestingSetIndex !== null) {
-                            updateSetRestPeriod(currentRestingExerciseIndex, currentRestingSetIndex, clamped);
+                        }}
+                        onBlur={(e) => {
+                          const parsed = parseInt(e.target.value) || 90;
+                          handleRestPeriodChange(parsed);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            const parsed = parseInt(e.currentTarget.value) || 90;
+                            handleRestPeriodChange(parsed);
                           }
                         }}
                         className="w-20 h-8 bg-primary-foreground text-primary text-sm"
@@ -418,6 +572,18 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                       </div>
                     </div>
                   ))}
+                  
+                  {/* Add Set Button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addSet(exerciseIndex)}
+                    className="mt-2 w-full"
+                    data-testid={`button-add-set-${exerciseIndex}`}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Set
+                  </Button>
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -437,6 +603,33 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
           </Button>
         </div>
       </div>
+
+      {/* Rest Period Change Confirmation Dialog */}
+      <AlertDialog open={showRestPeriodDialog} onOpenChange={setShowRestPeriodDialog}>
+        <AlertDialogContent data-testid="dialog-rest-period-confirmation">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Save Rest Period Change?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You've changed the rest period to {pendingRestPeriodChange?.newRestPeriod} seconds.
+              Would you like to save this change for future workout sessions?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={() => confirmRestPeriodChange(false)}
+              data-testid="button-rest-period-temporary"
+            >
+              No, just this session
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => confirmRestPeriodChange(true)}
+              data-testid="button-rest-period-permanent"
+            >
+              Yes, save for future workouts
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
