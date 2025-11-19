@@ -57,6 +57,10 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
     setIndex: number;
     newRestPeriod: number;
   } | null>(null);
+  const [showAddSetDialog, setShowAddSetDialog] = useState(false);
+  const [pendingSetAddition, setPendingSetAddition] = useState<{
+    exerciseIndex: number;
+  } | null>(null);
 
   const { toast } = useToast();
 
@@ -168,23 +172,46 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
   };
 
   const addSet = (exerciseIndex: number) => {
-    setExerciseLogs((logs) => {
-      const newLogs = [...logs];
-      const exercise = newLogs[exerciseIndex];
-      if (exercise) {
-        // Add a new set with default values from the exercise
-        const lastSet = exercise.sets[exercise.sets.length - 1];
-        const newSet: WorkoutSet = {
-          weight: lastSet?.weight || 0,
-          reps: lastSet?.reps || 10,
-          completed: false,
-          restPeriod: exercise.defaultRestPeriod || 90,
-        };
-        exercise.sets.push(newSet);
+    // Show dialog to ask if user wants to save permanently
+    setPendingSetAddition({ exerciseIndex });
+    setShowAddSetDialog(true);
+  };
+
+  const confirmAddSet = (makePermanent: boolean) => {
+    if (pendingSetAddition) {
+      const { exerciseIndex } = pendingSetAddition;
+      
+      // Add set to current workout session
+      setExerciseLogs((logs) => {
+        const newLogs = [...logs];
+        const exercise = newLogs[exerciseIndex];
+        if (exercise) {
+          const lastSet = exercise.sets[exercise.sets.length - 1];
+          const newSet: WorkoutSet = {
+            weight: lastSet?.weight || 0,
+            reps: lastSet?.reps || 10,
+            completed: false,
+            restPeriod: exercise.defaultRestPeriod || 90,
+          };
+          exercise.sets.push(newSet);
+        }
+        return newLogs;
+      });
+      
+      // If user wants to make it permanent, update the routine
+      if (makePermanent && routine.id) {
+        const exerciseLog = exerciseLogs[exerciseIndex];
+        addSetToRoutineMutation.mutate({
+          routineId: routine.id,
+          exerciseId: exerciseLog.exerciseId,
+        });
+      } else {
+        toast({ title: "Set added for this session only" });
       }
-      return newLogs;
-    });
-    toast({ title: "Set added" });
+    }
+    
+    setShowAddSetDialog(false);
+    setPendingSetAddition(null);
   };
 
   const completeSet = (exerciseIndex: number, setIndex: number) => {
@@ -303,6 +330,59 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
           variant: "destructive"
         });
       }
+    },
+    onError: () => {
+      toast({ title: "Failed to update routine", variant: "destructive" });
+    },
+  });
+
+  const addSetToRoutineMutation = useMutation({
+    mutationFn: async ({ routineId, exerciseId }: {
+      routineId: string;
+      exerciseId: string;
+    }) => {
+      // Get the current routine
+      const response = await apiRequest("GET", `/api/workout-routines/${routineId}`);
+      const currentRoutine = await response.json();
+      
+      // Update the specific exercise's setsConfig by adding a new set
+      const updatedExercises = currentRoutine.exercises.map((ex: any) => {
+        if (ex.exerciseId === exerciseId) {
+          const updatedExercise = { ...ex };
+          
+          if (ex.setsConfig && ex.setsConfig.length > 0) {
+            // Clone existing setsConfig and add a new set based on the last set
+            const setsConfig = ex.setsConfig.map((cfg: any) => ({ ...cfg }));
+            const lastSet = setsConfig[setsConfig.length - 1];
+            setsConfig.push({
+              ...lastSet,  // Clone all properties from last set
+            });
+            updatedExercise.setsConfig = setsConfig;
+          } else if (ex.sets && ex.reps) {
+            // Legacy exercise - convert to setsConfig and add one more set
+            const setsConfig = Array.from({ length: ex.sets + 1 }, (_, idx) => ({
+              reps: ex.reps,
+              restPeriod: ex.restPeriod || 90,
+            }));
+            updatedExercise.setsConfig = setsConfig;
+          }
+          
+          return updatedExercise;
+        }
+        return ex;
+      });
+      
+      // Send back the full routine object
+      const updatedRoutine = {
+        ...currentRoutine,
+        exercises: updatedExercises,
+      };
+      
+      return apiRequest("PUT", `/api/workout-routines/${routineId}`, updatedRoutine);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/workout-routines"] });
+      toast({ title: "Set count saved for future workouts" });
     },
     onError: () => {
       toast({ title: "Failed to update routine", variant: "destructive" });
@@ -624,6 +704,32 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
             <AlertDialogAction 
               onClick={() => confirmRestPeriodChange(true)}
               data-testid="button-rest-period-permanent"
+            >
+              Yes, save for future workouts
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Add Set Confirmation Dialog */}
+      <AlertDialog open={showAddSetDialog} onOpenChange={setShowAddSetDialog}>
+        <AlertDialogContent data-testid="dialog-add-set-confirmation">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Save Set Count Change?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You're adding a new set to this exercise. Would you like to save this change for future workout sessions?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={() => confirmAddSet(false)}
+              data-testid="button-add-set-temporary"
+            >
+              No, just this session
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => confirmAddSet(true)}
+              data-testid="button-add-set-permanent"
             >
               Yes, save for future workouts
             </AlertDialogAction>
