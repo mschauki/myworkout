@@ -416,7 +416,6 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                               onChange={(e) => setCustomExerciseName(e.target.value)}
                               placeholder="e.g., Seated Calf Raise"
                               data-testid="input-custom-exercise-name"
-                              required
                             />
                           </div>
                           <div>
