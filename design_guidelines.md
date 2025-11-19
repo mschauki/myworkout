@@ -13,17 +13,17 @@
 ## Color System
 
 **Dark Mode Primary** (default experience):
-- Background Gradients: Deep purple-to-blue diagonal (from #1a0b2e via #2d1b4e to #0f172a), or teal-to-purple radial overlays
+- Background Gradients: Deep blue-to-orange diagonal (from #0f172a via #1e3a5f and #1e2a4a to #1a1410)
 - Glass Surface Base: rgba(255, 255, 255, 0.08) with backdrop-blur-xl
 - Glass Surface Elevated: rgba(255, 255, 255, 0.12) for active cards
 - Text Primary: rgba(255, 255, 255, 0.95) for high readability
 - Text Secondary: rgba(255, 255, 255, 0.65)
-- Accent Gradients: Cyan-to-purple (#06b6d4 to #8b5cf6) for CTAs, stats highlights
+- Accent Gradients: Blue-to-orange (hsl(210, 85%, 52%) to hsl(25, 85%, 55%)) for CTAs, gradient text, stats highlights
 - Success/Complete: Emerald glow (#10b981)
 - Rest Timer: Amber (#f59e0b)
 
 **Light Mode Adaptation**:
-- Background Gradients: Soft pink-to-lavender (#fce7f3 to #e0e7ff)
+- Background Gradients: Soft blue-to-orange (hsl(210, 80%, 94%) to hsl(200, 70%, 96%) to hsl(25, 75%, 96%))
 - Glass Surface: rgba(255, 255, 255, 0.7) with backdrop-blur-xl
 - Text Primary: rgba(0, 0, 0, 0.9)
 - Borders: rgba(255, 255, 255, 0.3) with 1px stroke

@@ -55,7 +55,9 @@ export default function Workouts() {
   // Get day title (custom or default)
   const getDayTitle = (routine: WorkoutRoutine, day: string) => {
     if (day === "any") return "Any Day";
-    return routine.dayTitles?.[day] || day.charAt(0).toUpperCase() + day.slice(1);
+    const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+    const customTitle = routine.dayTitles?.[day];
+    return customTitle ? `${dayName} - ${customTitle}` : dayName;
   };
 
   // Filter exercises for selected day
