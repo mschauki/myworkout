@@ -1,4 +1,4 @@
-import { pgTable, varchar, text, jsonb, integer, timestamp, doublePrecision } from "drizzle-orm/pg-core";
+import { pgTable, varchar, text, jsonb, integer, timestamp, doublePrecision, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -10,9 +10,10 @@ export const exercises = pgTable("exercises", {
   muscleGroup: varchar("muscle_group", { length: 100 }).notNull(),
   equipment: varchar("equipment", { length: 100 }).notNull(),
   imageUrl: varchar("image_url", { length: 500 }),
+  isCustom: boolean("is_custom").notNull().default(false),
 });
 
-export const insertExerciseSchema = createInsertSchema(exercises).omit({ id: true });
+export const insertExerciseSchema = createInsertSchema(exercises).omit({ id: true, isCustom: true });
 export const selectExerciseSchema = createSelectSchema(exercises);
 export type Exercise = typeof exercises.$inferSelect;
 export type InsertExercise = z.infer<typeof insertExerciseSchema>;
