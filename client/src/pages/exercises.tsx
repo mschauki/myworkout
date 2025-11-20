@@ -373,11 +373,11 @@ export default function Exercises() {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i}>
+              <Card key={i} className="glass-surface">
                 <CardContent className="p-5">
-                  <Skeleton className="h-40 w-full mb-4 rounded-lg glass-surface" />
-                  <Skeleton className="h-6 w-3/4 mb-2 glass-surface" />
-                  <Skeleton className="h-4 w-full glass-surface" />
+                  <Skeleton className="h-40 w-full mb-4 rounded-lg" />
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-full" />
                 </CardContent>
               </Card>
             ))}
@@ -393,7 +393,7 @@ export default function Exercises() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredExercises.map((exercise) => (
-              <Card key={exercise.id} className="hover:scale-[1.02] transition-transform relative" data-testid={`card-exercise-${exercise.id}`}>
+              <Card key={exercise.id} className="glass-surface hover:scale-[1.02] transition-transform relative" data-testid={`card-exercise-${exercise.id}`}>
                 <CardContent className="p-5">
                   {exercise.isCustom && (
                     <Button

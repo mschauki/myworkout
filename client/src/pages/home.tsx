@@ -147,10 +147,10 @@ export default function Home() {
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <Card key={i}>
+              <Card key={i} className="glass-surface">
                 <CardContent className="p-5">
-                  <Skeleton className="h-6 w-40 mb-2 glass-surface" />
-                  <Skeleton className="h-4 w-56 glass-surface" />
+                  <Skeleton className="h-6 w-40 mb-2" />
+                  <Skeleton className="h-4 w-56" />
                 </CardContent>
               </Card>
             ))}
@@ -166,7 +166,7 @@ export default function Home() {
         ) : (
           <div className="space-y-3">
             {recentWorkouts.map((log) => (
-              <Card key={log.id} className="hover:scale-[1.01] transition-all" data-testid={`card-workout-log-${log.id}`}>
+              <Card key={log.id} className="glass-surface hover:scale-[1.01] transition-all" data-testid={`card-workout-log-${log.id}`}>
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">

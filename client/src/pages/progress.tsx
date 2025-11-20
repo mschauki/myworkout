@@ -80,7 +80,7 @@ export default function Progress() {
           </div>
 
           {/* Volume Chart */}
-          <Card>
+          <Card className="glass-surface">
             <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
               <CardTitle className="text-base">Volume Progression</CardTitle>
               <div className="flex items-center gap-2">
@@ -142,7 +142,7 @@ export default function Progress() {
           </Card>
 
           {/* Calendar Heatmap Placeholder */}
-          <Card>
+          <Card className="glass-surface">
             <CardHeader>
               <CardTitle className="text-base">Workout Calendar</CardTitle>
             </CardHeader>
@@ -158,7 +158,7 @@ export default function Progress() {
         </TabsContent>
 
         <TabsContent value="exercises" className="space-y-6 mt-6">
-          <Card>
+          <Card className="glass-surface">
             <CardHeader>
               <CardTitle className="text-base">Exercise Progress</CardTitle>
             </CardHeader>

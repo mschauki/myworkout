@@ -348,7 +348,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                   </Label>
                   <div className="space-y-2">
                     {exercisesByDay[day].map((exercise, index) => (
-                      <Card key={index} data-testid={`card-exercise-${day}-${index}`}>
+                      <Card key={index} className="glass-surface" data-testid={`card-exercise-${day}-${index}`}>
                         <CardContent className="p-3 flex items-center justify-between gap-4">
                           <div className="flex items-center gap-3 flex-1 min-w-0">
                             <Dumbbell className="w-4 h-4 text-muted-foreground flex-shrink-0" />
@@ -385,7 +385,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
               )}
 
               {/* Add Exercise Card */}
-              <Card>
+              <Card className="glass-surface">
                 <CardContent className="p-4 space-y-4">
                   <div className="flex items-center justify-between">
                     <Label className="text-sm font-medium">
@@ -546,7 +546,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                     </div>
                     <div className="space-y-2 max-h-64 overflow-y-auto">
                       {perSetConfig.map((set, index) => (
-                        <Card key={index} className="bg-muted/50">
+                        <Card key={index} className="glass-surface bg-muted/30">
                           <CardContent className="p-3">
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-medium min-w-[40px]">Set {index + 1}</span>

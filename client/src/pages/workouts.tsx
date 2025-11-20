@@ -331,7 +331,7 @@ export default function Workouts() {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <Card key={i}>
+            <Card key={i} className="glass-surface">
               <CardContent className="p-4">
                 <Skeleton className="h-6 w-48 mb-3" />
                 <Skeleton className="h-4 w-full mb-2" />
@@ -341,7 +341,7 @@ export default function Workouts() {
           ))}
         </div>
       ) : routines.length === 0 ? (
-        <Card>
+        <Card className="glass-surface">
           <CardContent className="p-12 text-center">
             <Dumbbell className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-xl font-semibold mb-2">No workout routines yet</h3>
@@ -357,7 +357,7 @@ export default function Workouts() {
           {routines.map((routine) => (
             <Card
               key={routine.id}
-              className="hover:scale-[1.01] transition-all cursor-pointer"
+              className="glass-surface hover:scale-[1.01] transition-all cursor-pointer"
               onClick={() => setViewingRoutineId(routine.id)}
               data-testid={`card-routine-${routine.id}`}
             >

@@ -506,7 +506,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
       {/* Rest Timer */}
       {restTimer > 0 && (
         <div className="sticky top-[120px] z-30 mx-4 mt-4">
-          <Card className="bg-primary text-primary-foreground border-primary">
+          <Card className="glass-surface-elevated bg-primary/90 text-primary-foreground border-primary">
             <CardContent className="p-4">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 flex-1">

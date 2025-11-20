@@ -114,7 +114,7 @@ export default function Profile() {
       </div>
 
       {/* Add Stats Form */}
-      <Card className="mb-6">
+      <Card className="mb-6 glass-surface">
         <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0">
           <CardTitle className="text-base">Body Measurements</CardTitle>
           <Button
@@ -191,7 +191,7 @@ export default function Profile() {
       </Card>
 
       {/* Weight Chart */}
-      <Card>
+      <Card className="glass-surface">
         <CardHeader>
           <CardTitle className="text-base">Weight Progress</CardTitle>
         </CardHeader>
@@ -242,7 +242,7 @@ export default function Profile() {
       </Card>
 
       {/* Settings */}
-      <Card className="mb-6">
+      <Card className="mb-6 glass-surface">
         <CardHeader>
           <CardTitle>Settings</CardTitle>
         </CardHeader>
