@@ -481,7 +481,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                             <Button
                               type="submit"
                               disabled={createCustomExerciseMutation.isPending}
-                              className="flex-1 gradient-primary text-primary-foreground font-bold"
+                              className="flex-1"
                               data-testid="button-save-custom-exercise"
                             >
                               {createCustomExerciseMutation.isPending ? "Creating..." : "Create Exercise"}
@@ -587,7 +587,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                     type="button"
                     onClick={addExerciseToDay}
                     disabled={!selectedExerciseId}
-                    className="w-full gradient-primary text-primary-foreground font-bold"
+                    className="w-full"
                     data-testid={`button-add-exercise-${day}`}
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -608,7 +608,6 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
         <Button 
           type="submit" 
           disabled={createRoutineMutation.isPending}
-          className="gradient-primary text-primary-foreground font-bold px-8"
           data-testid="button-create-routine"
         >
           Create Routine

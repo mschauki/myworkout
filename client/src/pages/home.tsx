@@ -64,82 +64,78 @@ export default function Home() {
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-5xl font-black mb-2 gradient-text tracking-tight uppercase" data-testid="text-page-title">Dashboard</h1>
-        <p className="text-base text-muted-foreground">Track your fitness journey</p>
+        <h1 className="text-4xl font-bold mb-2 gradient-text" data-testid="text-page-title">Dashboard</h1>
+        <p className="text-base text-foreground/70">Track your fitness journey</p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <Card data-testid="card-stat-workouts" className="athletic-card hover:scale-[1.02] transition-transform relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative z-10">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider">This Month</CardTitle>
-            <Calendar className="w-6 h-6 text-primary" />
+        <Card data-testid="card-stat-workouts" className="glass-surface-elevated hover:scale-[1.02] transition-transform">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">This Month</CardTitle>
+            <Calendar className="w-5 h-5 text-primary/60" />
           </CardHeader>
-          <CardContent className="relative z-10">
+          <CardContent>
             {isLoading ? (
-              <Skeleton className="h-14 w-20 bg-muted" />
+              <Skeleton className="h-12 w-20 glass-surface" />
             ) : (
               <>
-                <div className="text-5xl font-black font-mono gradient-text" data-testid="text-stat-workouts">{thisMonthWorkouts}</div>
-                <p className="text-[10px] text-muted-foreground mt-2 uppercase tracking-wider font-semibold">Workouts</p>
+                <div className="text-4xl font-bold font-mono gradient-text" data-testid="text-stat-workouts">{thisMonthWorkouts}</div>
+                <p className="text-xs text-foreground/60 mt-2 uppercase tracking-wide">Workouts</p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card data-testid="card-stat-volume" className="athletic-card hover:scale-[1.02] transition-transform relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent" />
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative z-10">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider">Total Volume</CardTitle>
-            <TrendingUp className="w-6 h-6 text-accent" />
+        <Card data-testid="card-stat-volume" className="glass-surface-elevated hover:scale-[1.02] transition-transform">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Volume</CardTitle>
+            <TrendingUp className="w-5 h-5 text-primary/60" />
           </CardHeader>
-          <CardContent className="relative z-10">
+          <CardContent>
             {isLoading ? (
-              <Skeleton className="h-14 w-24 bg-muted" />
+              <Skeleton className="h-12 w-24 glass-surface" />
             ) : (
               <>
-                <div className="text-5xl font-black font-mono gradient-text" data-testid="text-stat-volume">{totalVolume}</div>
-                <p className="text-[10px] text-muted-foreground mt-2 uppercase tracking-wider font-semibold">lbs lifted</p>
+                <div className="text-4xl font-bold font-mono gradient-text" data-testid="text-stat-volume">{totalVolume}</div>
+                <p className="text-xs text-foreground/60 mt-2 uppercase tracking-wide">lbs lifted</p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card data-testid="card-stat-streak" className="athletic-card hover:scale-[1.02] transition-transform relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-chart-4/10 to-transparent" />
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative z-10">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider">Streak</CardTitle>
-            <Flame className="w-6 h-6 text-chart-4" />
+        <Card data-testid="card-stat-streak" className="glass-surface-elevated hover:scale-[1.02] transition-transform">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Streak</CardTitle>
+            <Flame className="w-5 h-5 text-amber-400/80" />
           </CardHeader>
-          <CardContent className="relative z-10">
+          <CardContent>
             {isLoading ? (
-              <Skeleton className="h-14 w-16 bg-muted" />
+              <Skeleton className="h-12 w-16 glass-surface" />
             ) : (
               <>
-                <div className="text-5xl font-black font-mono gradient-text" data-testid="text-stat-streak">0</div>
-                <p className="text-[10px] text-muted-foreground mt-2 uppercase tracking-wider font-semibold">Days</p>
+                <div className="text-4xl font-bold font-mono gradient-text" data-testid="text-stat-streak">0</div>
+                <p className="text-xs text-foreground/60 mt-2 uppercase tracking-wide">Days</p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card data-testid="card-stat-weight" className="athletic-card hover:scale-[1.02] transition-transform relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-chart-3/10 to-transparent" />
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative z-10">
-            <CardTitle className="text-sm font-bold uppercase tracking-wider">Body Weight</CardTitle>
-            <Trophy className="w-6 h-6 text-chart-3" />
+        <Card data-testid="card-stat-weight" className="glass-surface-elevated hover:scale-[1.02] transition-transform">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Body Weight</CardTitle>
+            <Trophy className="w-5 h-5 text-emerald-400/80" />
           </CardHeader>
-          <CardContent className="relative z-10">
+          <CardContent>
             {isLoading ? (
-              <Skeleton className="h-14 w-20 bg-muted" />
+              <Skeleton className="h-12 w-20 glass-surface" />
             ) : currentWeight ? (
               <>
-                <div className="text-5xl font-black font-mono gradient-text" data-testid="text-stat-weight">{currentWeight}</div>
-                <p className="text-[10px] text-muted-foreground mt-2 uppercase tracking-wider font-semibold">lbs</p>
+                <div className="text-4xl font-bold font-mono gradient-text" data-testid="text-stat-weight">{currentWeight}</div>
+                <p className="text-xs text-foreground/60 mt-2 uppercase tracking-wide">lbs</p>
               </>
             ) : (
-              <p className="text-sm text-muted-foreground">No data</p>
+              <p className="text-sm text-foreground/50">No data</p>
             )}
           </CardContent>
         </Card>
@@ -147,43 +143,42 @@ export default function Home() {
 
       {/* Recent Workouts */}
       <div className="mb-8">
-        <h2 className="text-3xl font-black mb-6 uppercase tracking-tight gradient-text">Recent Workouts</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-foreground">Recent Workouts</h2>
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="athletic-card">
-                <CardContent className="p-6">
-                  <Skeleton className="h-6 w-40 mb-2 bg-muted" />
-                  <Skeleton className="h-4 w-56 bg-muted" />
+              <Card key={i} className="glass-surface">
+                <CardContent className="p-5">
+                  <Skeleton className="h-6 w-40 mb-2" />
+                  <Skeleton className="h-4 w-56" />
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : recentWorkouts.length === 0 ? (
-          <Card className="athletic-card">
-            <CardContent className="p-16 text-center">
-              <Dumbbell className="w-20 h-20 mx-auto mb-6 text-primary" />
-              <p className="text-foreground text-xl font-bold mb-2">No workouts yet</p>
-              <p className="text-sm text-muted-foreground">Start your first workout to see it here</p>
+          <Card className="glass-surface">
+            <CardContent className="p-12 text-center">
+              <Dumbbell className="w-16 h-16 mx-auto mb-4 text-primary/40" />
+              <p className="text-foreground/70 text-lg font-medium">No workouts yet</p>
+              <p className="text-sm text-foreground/50 mt-2">Start your first workout to see it here</p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-3">
             {recentWorkouts.map((log) => (
-              <Card key={log.id} className="athletic-card hover:scale-[1.01] transition-all relative overflow-hidden" data-testid={`card-workout-log-${log.id}`}>
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent" />
-                <CardContent className="p-6 pl-8">
+              <Card key={log.id} className="glass-surface hover:scale-[1.01] transition-all" data-testid={`card-workout-log-${log.id}`}>
+                <CardContent className="p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-xl font-bold truncate mb-2" data-testid="text-workout-name">{log.routineName}</h3>
-                      <p className="text-sm text-muted-foreground font-medium">
+                      <h3 className="text-lg font-semibold truncate mb-1" data-testid="text-workout-name">{log.routineName}</h3>
+                      <p className="text-sm text-foreground/60">
                         {new Date(log.date).toLocaleDateString()} • {Math.floor(log.duration / 60)} min • {log.totalVolume.toFixed(0)} lbs
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="text-right bg-muted/30 px-4 py-3 rounded-lg border border-card-border">
-                        <p className="text-2xl font-black font-mono gradient-text">{log.exercises.length}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">exercises</p>
+                      <div className="text-right glass-surface px-3 py-2 rounded-lg">
+                        <p className="text-lg font-bold font-mono gradient-text">{log.exercises.length}</p>
+                        <p className="text-xs text-foreground/60 uppercase tracking-wide">exercises</p>
                       </div>
                       <Button
                         variant="ghost"
@@ -191,7 +186,7 @@ export default function Home() {
                         onClick={() => setDeleteLogId(log.id)}
                         data-testid={`button-delete-workout-${log.id}`}
                       >
-                        <Trash2 className="w-5 h-5 text-destructive" />
+                        <Trash2 className="w-4 h-4 text-destructive" />
                       </Button>
                     </div>
                   </div>
@@ -204,10 +199,10 @@ export default function Home() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteLogId !== null} onOpenChange={(open) => !open && setDeleteLogId(null)}>
-        <AlertDialogContent className="athletic-card">
+        <AlertDialogContent className="glass-surface-elevated">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl font-bold">Delete Workout</AlertDialogTitle>
-            <AlertDialogDescription className="text-muted-foreground">
+            <AlertDialogTitle>Delete Workout</AlertDialogTitle>
+            <AlertDialogDescription>
               Are you sure you want to delete this workout log? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -215,7 +210,7 @@ export default function Home() {
             <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteLogId && deleteWorkoutMutation.mutate(deleteLogId)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               data-testid="button-confirm-delete"
             >
               Delete
