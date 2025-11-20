@@ -14,7 +14,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 h-16 bg-card border-t border-card-border z-50 safe-area-padding-bottom">
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary via-accent to-primary" />
+      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-primary via-accent to-primary opacity-90" />
       <div className="flex items-center justify-around h-full max-w-6xl mx-auto px-2">
         {navItems.map((item) => {
           const isActive = location === item.path;
