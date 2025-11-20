@@ -17,11 +17,11 @@
 - Card surfaces: #1a1a1c with subtle borders
 - Elevated surfaces: #242426 for active/selected states
 
-**Vibrant Accent System**:
-- Primary Electric: Vivid orange #ff4500 to #ff6b35 gradient (CTAs, progress bars, active states)
-- Secondary Power: Electric blue #0080ff to #00bfff (stats highlights, chart accents)
-- Success Energy: Neon green #00ff88 (completed sets, achievements)
-- Warning Pulse: Bright amber #ffaa00 (rest timers, alerts)
+**Vibrant Accent System (Orange-Focused)**:
+- Primary Electric: Vivid orange hsl(20, 100%, 55%) to hsl(30, 100%, 60%) gradient (CTAs, progress bars, active states, all primary actions)
+- Secondary Warm: Amber hsl(30, 100%, 60%) (stats highlights, chart accents, secondary emphasis)
+- Success Energy: Neon green hsl(135, 100%, 55%) (completed sets, achievements)
+- Warning Pulse: Bright amber hsl(45, 100%, 60%) (rest timers, alerts)
 
 **Text Hierarchy**:
 - Primary: Pure white #ffffff (headers, key stats)
