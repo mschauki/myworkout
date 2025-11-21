@@ -84,7 +84,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
           exerciseName: exercise?.name || "Unknown Exercise",
           defaultRestPeriod,
           sets: ex.setsConfig.map((setConfig) => ({
-            weight: 0,
+            weight: setConfig.weight || 0, // Use weight from routine if available
             reps: setConfig.reps,
             completed: false,
             restPeriod: setConfig.restPeriod,
@@ -216,10 +216,19 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
 
   const completeSet = (exerciseIndex: number, setIndex: number) => {
     const set = exerciseLogs[exerciseIndex]?.sets[setIndex];
-    if (!set || set.weight <= 0 || set.reps <= 0) {
+    const exerciseLog = exerciseLogs[exerciseIndex];
+    const exercise = exercises.find(e => e.id === exerciseLog?.exerciseId);
+    const isBodyweight = exercise?.equipment?.toLowerCase() === "bodyweight";
+    
+    // For bodyweight exercises, weight can be 0; for others, weight must be > 0
+    const weightValid = isBodyweight || (set && set.weight > 0);
+    
+    if (!set || !weightValid || set.reps <= 0) {
       toast({ 
         title: "Invalid set data", 
-        description: "Please enter positive values for weight and reps",
+        description: isBodyweight 
+          ? "Please enter positive values for reps"
+          : "Please enter positive values for weight and reps",
         variant: "destructive" 
       });
       return;
@@ -647,7 +656,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                             variant="outline"
                             size="icon"
                             onClick={() => completeSet(exerciseIndex, setIndex)}
-                            disabled={!set.weight || set.weight <= 0 || !set.reps || set.reps <= 0}
+                            disabled={!set.reps || set.reps <= 0}
                             data-testid={`button-complete-${exerciseIndex}-${setIndex}`}
                           >
                             <Check className="w-5 h-5" />
