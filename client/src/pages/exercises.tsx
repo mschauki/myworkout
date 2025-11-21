@@ -34,10 +34,10 @@ export default function Exercises() {
   const [selectedRoutineId, setSelectedRoutineId] = useState<string>("");
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [numberOfSets, setNumberOfSets] = useState(3);
-  const [perSetConfig, setPerSetConfig] = useState<Array<{ reps: number; restPeriod: number }>>([
-    { reps: 10, restPeriod: 90 },
-    { reps: 10, restPeriod: 90 },
-    { reps: 10, restPeriod: 90 },
+  const [perSetConfig, setPerSetConfig] = useState<Array<{ reps: number; restPeriod: number; weight?: number }>>([
+    { reps: 10, restPeriod: 90, weight: undefined },
+    { reps: 10, restPeriod: 90, weight: undefined },
+    { reps: 10, restPeriod: 90, weight: undefined },
   ]);
   const { toast } = useToast();
 
@@ -161,9 +161,9 @@ export default function Exercises() {
     setSelectedDays([]);
     setNumberOfSets(3);
     setPerSetConfig([
-      { reps: 10, restPeriod: 90 },
-      { reps: 10, restPeriod: 90 },
-      { reps: 10, restPeriod: 90 },
+      { reps: 10, restPeriod: 90, weight: undefined },
+      { reps: 10, restPeriod: 90, weight: undefined },
+      { reps: 10, restPeriod: 90, weight: undefined },
     ]);
   };
 
@@ -197,10 +197,18 @@ export default function Exercises() {
     setPerSetConfig(currentConfig);
   };
 
-  const updatePerSet = (index: number, field: 'reps' | 'restPeriod', value: string) => {
+  const updatePerSet = (index: number, field: 'reps' | 'restPeriod' | 'weight', value: string) => {
     const newConfig = [...perSetConfig];
-    const numValue = parseInt(value) || (field === 'reps' ? 1 : 30);
-    newConfig[index] = { ...newConfig[index], [field]: numValue };
+    if (field === 'weight') {
+      const weightValue = parseFloat(value);
+      newConfig[index] = { 
+        ...newConfig[index], 
+        weight: isNaN(weightValue) || weightValue <= 0 ? undefined : weightValue 
+      };
+    } else {
+      const numValue = parseInt(value) || (field === 'reps' ? 1 : 30);
+      newConfig[index] = { ...newConfig[index], [field]: numValue };
+    }
     setPerSetConfig(newConfig);
   };
 
@@ -729,49 +737,71 @@ export default function Exercises() {
                 </div>
               </div>
               <div className="space-y-2 max-h-64 overflow-y-auto">
-                {perSetConfig.map((set, index) => (
-                  <Card key={index} className="glass-surface bg-muted/30">
-                    <CardContent className="p-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium min-w-[40px]">Set {index + 1}</span>
-                        <div className="flex-1 grid grid-cols-2 gap-2">
-                          <div>
-                            <Label htmlFor={`reps-${index}`} className="text-xs text-muted-foreground mb-1 block">
-                              Reps
-                            </Label>
-                            <Input
-                              id={`reps-${index}`}
-                              type="number"
-                              min="1"
-                              value={set.reps}
-                              onChange={(e) => updatePerSet(index, 'reps', e.target.value)}
-                              placeholder="Reps"
-                              className="h-9 text-sm"
-                              data-testid={`input-set-${index}-reps`}
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor={`rest-${index}`} className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-                              <Timer className="w-3 h-3" />
-                              Rest (s)
-                            </Label>
-                            <Input
-                              id={`rest-${index}`}
-                              type="number"
-                              min="30"
-                              max="300"
-                              value={set.restPeriod}
-                              onChange={(e) => updatePerSet(index, 'restPeriod', e.target.value)}
-                              placeholder="Rest (s)"
-                              className="h-9 text-sm"
-                              data-testid={`input-set-${index}-rest`}
-                            />
+                {perSetConfig.map((set, index) => {
+                  const isBodyweight = selectedExercise?.equipment?.toLowerCase() === "bodyweight";
+                  
+                  return (
+                    <Card key={index} className="glass-surface bg-muted/30">
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium min-w-[40px]">Set {index + 1}</span>
+                          <div className={`flex-1 grid gap-2 ${isBodyweight ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                            {!isBodyweight && (
+                              <div>
+                                <Label htmlFor={`weight-${index}`} className="text-xs text-muted-foreground mb-1 block">
+                                  Weight (lbs)
+                                </Label>
+                                <Input
+                                  id={`weight-${index}`}
+                                  type="number"
+                                  min="0"
+                                  step="0.5"
+                                  value={set.weight || ""}
+                                  onChange={(e) => updatePerSet(index, 'weight', e.target.value)}
+                                  placeholder="Weight"
+                                  className="h-9 text-sm"
+                                  data-testid={`input-set-${index}-weight`}
+                                />
+                              </div>
+                            )}
+                            <div>
+                              <Label htmlFor={`reps-${index}`} className="text-xs text-muted-foreground mb-1 block">
+                                Reps
+                              </Label>
+                              <Input
+                                id={`reps-${index}`}
+                                type="number"
+                                min="1"
+                                value={set.reps}
+                                onChange={(e) => updatePerSet(index, 'reps', e.target.value)}
+                                placeholder="Reps"
+                                className="h-9 text-sm"
+                                data-testid={`input-set-${index}-reps`}
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`rest-${index}`} className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                                <Timer className="w-3 h-3" />
+                                Rest (s)
+                              </Label>
+                              <Input
+                                id={`rest-${index}`}
+                                type="number"
+                                min="30"
+                                max="300"
+                                value={set.restPeriod}
+                                onChange={(e) => updatePerSet(index, 'restPeriod', e.target.value)}
+                                placeholder="Rest (s)"
+                                className="h-9 text-sm"
+                                data-testid={`input-set-${index}-rest`}
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
 
