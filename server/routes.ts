@@ -68,6 +68,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/exercises/:id", async (req, res) => {
+    try {
+      const exerciseId = req.params.id;
+      
+      // Check if exercise exists
+      const exercise = await storage.getExercise(exerciseId);
+      if (!exercise) {
+        return res.status(404).json({ error: "Exercise not found" });
+      }
+      
+      // Check if exercise is used in any routines
+      const routines = await storage.getAllWorkoutRoutines();
+      const usedInRoutines = routines.some(routine => 
+        routine.exercises.some(ex => ex.exerciseId === exerciseId)
+      );
+      
+      if (usedInRoutines) {
+        return res.status(409).json({ 
+          error: "Cannot delete exercise that is used in workout routines" 
+        });
+      }
+      
+      // Check if exercise is used in any workout logs
+      const logs = await storage.getAllWorkoutLogs();
+      const usedInLogs = logs.some(log =>
+        log.exercises.some(ex => ex.exerciseId === exerciseId)
+      );
+      
+      if (usedInLogs) {
+        return res.status(409).json({ 
+          error: "Cannot delete exercise that is used in workout logs" 
+        });
+      }
+      
+      // Safe to delete
+      const deleted = await storage.deleteExercise(exerciseId);
+      if (!deleted) {
+        return res.status(404).json({ error: "Exercise not found" });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete exercise" });
+    }
+  });
+
   // Workout Routines
   app.get("/api/workout-routines", async (req, res) => {
     try {
