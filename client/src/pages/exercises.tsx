@@ -19,7 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const MUSCLE_GROUPS = ["All", "Chest", "Back", "Legs", "Shoulders", "Arms", "Core"];
+const MUSCLE_GROUPS = ["All", "Chest", "Back", "Legs", "Shoulders", "Arms", "Core", "Biceps", "Triceps", "Glutes", "Abs", "Calves", "Forearms", "Cardio", "Full Body"];
 const EQUIPMENT_OPTIONS = ["Barbell", "Dumbbell", "Machine", "Cable", "Bodyweight", "Resistance Band", "Other"];
 const DAYS_OF_WEEK = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "any"] as const;
 
@@ -108,12 +108,14 @@ export default function Exercises() {
 
   const handleEditExercise = (exercise: Exercise) => {
     setEditingExercise(exercise);
+    // Normalize muscle groups to lowercase for consistent comparison with form options
+    const normalizedOtherMuscleGroups = (exercise.otherMuscleGroups || []).map((g) => g.toLowerCase());
     editForm.reset({
       name: exercise.name,
       description: exercise.description || "",
-      muscleGroup: exercise.muscleGroup,
-      otherMuscleGroups: (exercise.otherMuscleGroups || []) as any,
-      equipment: exercise.equipment,
+      muscleGroup: exercise.muscleGroup?.toLowerCase() || "",
+      otherMuscleGroups: normalizedOtherMuscleGroups as any,
+      equipment: exercise.equipment?.toLowerCase() || "",
     });
     setIsEditDialogOpen(true);
   };
