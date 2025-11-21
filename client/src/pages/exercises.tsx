@@ -4,11 +4,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Dumbbell, Plus, Pencil, ListPlus, Timer } from "lucide-react";
+import { Search, Dumbbell, Plus, Pencil, ListPlus, Timer, Trash2 } from "lucide-react";
 import { Exercise, insertExerciseSchema, WorkoutRoutine } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -41,6 +51,7 @@ export default function Exercises() {
     { reps: 10, restPeriod: 90, weight: undefined },
     { reps: 10, restPeriod: 90, weight: undefined },
   ]);
+  const [deletingExercise, setDeletingExercise] = useState<Exercise | null>(null);
   const { toast } = useToast();
 
   const { data: exercises = [], isLoading } = useQuery<Exercise[]>({
@@ -125,6 +136,36 @@ export default function Exercises() {
   const handleUpdateExercise = (data: any) => {
     if (editingExercise) {
       updateExerciseMutation.mutate({ id: editingExercise.id, data });
+    }
+  };
+
+  const deleteExerciseMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest("DELETE", `/api/exercises/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/exercises"] });
+      toast({ title: "Exercise deleted successfully" });
+      setDeletingExercise(null);
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.message || "Failed to delete exercise";
+      toast({ 
+        title: errorMessage.includes("used in")
+          ? "Cannot delete exercise"
+          : "Failed to delete exercise",
+        description: errorMessage.includes("used in")
+          ? errorMessage
+          : undefined,
+        variant: "destructive" 
+      });
+      setDeletingExercise(null);
+    },
+  });
+
+  const handleDeleteExercise = () => {
+    if (deletingExercise) {
+      deleteExerciseMutation.mutate(deletingExercise.id);
     }
   };
 
@@ -605,17 +646,28 @@ export default function Exercises() {
                 {filteredExercises.map((exercise) => (
               <Card key={exercise.id} className="glass-surface hover:scale-[1.02] transition-transform relative" data-testid={`card-exercise-${exercise.id}`}>
                 <CardContent className="p-5">
-                  {exercise.isCustom && (
+                  <div className="absolute top-2 right-2 flex gap-1">
+                    {exercise.isCustom && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 glass-surface"
+                        onClick={() => handleEditExercise(exercise)}
+                        data-testid={`button-edit-exercise-${exercise.id}`}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    )}
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="absolute top-2 right-2 h-8 w-8 glass-surface"
-                      onClick={() => handleEditExercise(exercise)}
-                      data-testid={`button-edit-exercise-${exercise.id}`}
+                      className="h-8 w-8 glass-surface"
+                      onClick={() => setDeletingExercise(exercise)}
+                      data-testid={`button-delete-exercise-${exercise.id}`}
                     >
-                      <Pencil className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4 text-destructive" />
                     </Button>
-                  )}
+                  </div>
                   <div className="aspect-video glass-surface rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-primary/10 to-purple-500/10 overflow-hidden">
                     {exercise.imageUrl ? (
                       <img 
@@ -844,6 +896,34 @@ export default function Exercises() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deletingExercise} onOpenChange={(open) => !open && setDeletingExercise(null)}>
+        <AlertDialogContent className="glass-surface-elevated">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Exercise</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{deletingExercise?.name}"? This action cannot be undone.
+              {deletingExercise && !deletingExercise.isCustom && (
+                <span className="block mt-2 text-yellow-600 dark:text-yellow-500 font-medium">
+                  Note: This is a seeded exercise. It will still be deleted if not in use.
+                </span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteExercise}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteExerciseMutation.isPending}
+              data-testid="button-confirm-delete"
+            >
+              {deleteExerciseMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
         </TabsContent>
       </Tabs>
     </div>
