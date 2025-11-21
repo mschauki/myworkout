@@ -33,6 +33,7 @@ export const workoutRoutines = pgTable("workout_routines", {
     setsConfig?: Array<{  // New: individual configuration per set (overrides sets/reps/restPeriod if present)
       reps: number;
       restPeriod: number; // Rest period in seconds for this specific set
+      weight?: number; // Optional weight in lbs/kg for this set (not used for bodyweight exercises)
     }>;
   }>>(),
   dayTitles: jsonb("day_titles").$type<Record<string, string>>(), // Custom titles for each day, e.g., { monday: "Arms and Abs", tuesday: "Legs and Glutes" }
