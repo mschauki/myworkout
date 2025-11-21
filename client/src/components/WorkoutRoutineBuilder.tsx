@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Exercise } from "@shared/schema";
 import { Plus, X, Dumbbell, Timer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -17,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 const ALL_DAYS = [...WEEKDAYS, "any"];
+const MUSCLE_GROUPS = ["Chest", "Back", "Legs", "Shoulders", "Arms", "Core", "Biceps", "Triceps", "Glutes", "Abs", "Calves", "Forearms", "Cardio", "Full Body"];
 
 interface RoutineExercise {
   exerciseId: string;
@@ -54,6 +56,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
   const [isCustomExerciseDialogOpen, setIsCustomExerciseDialogOpen] = useState(false);
   const [customExerciseName, setCustomExerciseName] = useState("");
   const [customMuscleGroup, setCustomMuscleGroup] = useState("");
+  const [customOtherMuscleGroups, setCustomOtherMuscleGroups] = useState<string[]>([]);
   const [customEquipment, setCustomEquipment] = useState("");
   const [customDescription, setCustomDescription] = useState("");
 
@@ -105,6 +108,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
       // Reset form
       setCustomExerciseName("");
       setCustomMuscleGroup("");
+      setCustomOtherMuscleGroups([]);
       setCustomEquipment("");
       setCustomDescription("");
     },
@@ -193,7 +197,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
       return;
     }
     if (!customMuscleGroup || customMuscleGroup.trim() === "") {
-      toast({ title: "Please select a muscle group", variant: "destructive" });
+      toast({ title: "Please select a main muscle group", variant: "destructive" });
       return;
     }
     if (!customEquipment || customEquipment.trim() === "") {
@@ -204,6 +208,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
     createCustomExerciseMutation.mutate({
       name: customExerciseName.trim(),
       muscleGroup: customMuscleGroup,
+      otherMuscleGroups: customOtherMuscleGroups.length > 0 ? customOtherMuscleGroups : undefined,
       equipment: customEquipment,
       description: customDescription.trim() || undefined,
     });
@@ -419,26 +424,50 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                             />
                           </div>
                           <div>
-                            <Label htmlFor="custom-muscle-group">Muscle Group *</Label>
+                            <Label htmlFor="custom-muscle-group">Main Muscle Group *</Label>
                             <Select value={customMuscleGroup} onValueChange={setCustomMuscleGroup} required>
                               <SelectTrigger id="custom-muscle-group" data-testid="select-custom-muscle-group">
-                                <SelectValue placeholder="Select muscle group" />
+                                <SelectValue placeholder="Select main muscle group" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="chest">Chest</SelectItem>
-                                <SelectItem value="back">Back</SelectItem>
-                                <SelectItem value="shoulders">Shoulders</SelectItem>
-                                <SelectItem value="biceps">Biceps</SelectItem>
-                                <SelectItem value="triceps">Triceps</SelectItem>
-                                <SelectItem value="legs">Legs</SelectItem>
-                                <SelectItem value="glutes">Glutes</SelectItem>
-                                <SelectItem value="abs">Abs</SelectItem>
-                                <SelectItem value="calves">Calves</SelectItem>
-                                <SelectItem value="forearms">Forearms</SelectItem>
-                                <SelectItem value="cardio">Cardio</SelectItem>
-                                <SelectItem value="full body">Full Body</SelectItem>
+                                {MUSCLE_GROUPS.map((group) => (
+                                  <SelectItem key={group} value={group.toLowerCase()}>
+                                    {group}
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
+                          </div>
+                          <div>
+                            <Label>Other Muscle Groups (Optional)</Label>
+                            <div className="grid grid-cols-2 gap-2 glass-surface p-3 rounded-lg mt-2">
+                              {MUSCLE_GROUPS.map((group) => {
+                                const groupValue = group.toLowerCase();
+                                const isChecked = customOtherMuscleGroups.includes(groupValue);
+                                return (
+                                  <div key={group} className="flex items-center space-x-2">
+                                    <Checkbox
+                                      id={`custom-other-muscle-${groupValue}`}
+                                      checked={isChecked}
+                                      onCheckedChange={(checked) => {
+                                        if (checked) {
+                                          setCustomOtherMuscleGroups([...customOtherMuscleGroups, groupValue]);
+                                        } else {
+                                          setCustomOtherMuscleGroups(customOtherMuscleGroups.filter((v) => v !== groupValue));
+                                        }
+                                      }}
+                                      data-testid={`checkbox-custom-other-muscle-${groupValue}`}
+                                    />
+                                    <Label
+                                      htmlFor={`custom-other-muscle-${groupValue}`}
+                                      className="text-sm font-normal cursor-pointer"
+                                    >
+                                      {group}
+                                    </Label>
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
                           <div>
                             <Label htmlFor="custom-equipment">Equipment *</Label>

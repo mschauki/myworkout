@@ -112,7 +112,7 @@ export default function Exercises() {
       name: exercise.name,
       description: exercise.description || "",
       muscleGroup: exercise.muscleGroup,
-      otherMuscleGroups: exercise.otherMuscleGroups || [],
+      otherMuscleGroups: (exercise.otherMuscleGroups || []) as any,
       equipment: exercise.equipment,
     });
     setIsEditDialogOpen(true);
