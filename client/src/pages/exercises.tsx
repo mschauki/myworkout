@@ -55,6 +55,7 @@ export default function Exercises() {
       name: "",
       description: "",
       muscleGroup: "",
+      otherMuscleGroups: [],
       equipment: "",
     },
   });
@@ -65,6 +66,7 @@ export default function Exercises() {
       name: "",
       description: "",
       muscleGroup: "",
+      otherMuscleGroups: [],
       equipment: "",
     },
   });
@@ -110,6 +112,7 @@ export default function Exercises() {
       name: exercise.name,
       description: exercise.description || "",
       muscleGroup: exercise.muscleGroup,
+      otherMuscleGroups: exercise.otherMuscleGroups || [],
       equipment: exercise.equipment,
     });
     setIsEditDialogOpen(true);
@@ -254,11 +257,11 @@ export default function Exercises() {
                     name="muscleGroup"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Muscle Group</FormLabel>
+                        <FormLabel>Main Muscle Group</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger data-testid="select-muscle-group">
-                              <SelectValue placeholder="Select muscle group" />
+                              <SelectValue placeholder="Select main muscle group" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -269,6 +272,45 @@ export default function Exercises() {
                             ))}
                           </SelectContent>
                         </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="otherMuscleGroups"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Other Muscle Groups (Optional)</FormLabel>
+                        <div className="grid grid-cols-2 gap-2 glass-surface p-3 rounded-lg">
+                          {MUSCLE_GROUPS.filter(g => g !== "All").map((group) => {
+                            const groupValue = group.toLowerCase();
+                            const currentValue = (field.value || []) as string[];
+                            const isChecked = currentValue.includes(groupValue);
+                            return (
+                              <div key={group} className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={`other-muscle-${groupValue}`}
+                                  checked={isChecked}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      field.onChange([...currentValue, groupValue]);
+                                    } else {
+                                      field.onChange(currentValue.filter((v: string) => v !== groupValue));
+                                    }
+                                  }}
+                                  data-testid={`checkbox-other-muscle-${groupValue}`}
+                                />
+                                <Label
+                                  htmlFor={`other-muscle-${groupValue}`}
+                                  className="text-sm font-normal cursor-pointer"
+                                >
+                                  {group}
+                                </Label>
+                              </div>
+                            );
+                          })}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -360,11 +402,11 @@ export default function Exercises() {
                 name="muscleGroup"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Muscle Group</FormLabel>
+                    <FormLabel>Main Muscle Group</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger data-testid="select-edit-muscle-group">
-                          <SelectValue placeholder="Select muscle group" />
+                          <SelectValue placeholder="Select main muscle group" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -375,6 +417,45 @@ export default function Exercises() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editForm.control}
+                name="otherMuscleGroups"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Other Muscle Groups (Optional)</FormLabel>
+                    <div className="grid grid-cols-2 gap-2 glass-surface p-3 rounded-lg">
+                      {MUSCLE_GROUPS.filter(g => g !== "All").map((group) => {
+                        const groupValue = group.toLowerCase();
+                        const currentValue = (field.value || []) as string[];
+                        const isChecked = currentValue.includes(groupValue);
+                        return (
+                          <div key={group} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`edit-other-muscle-${groupValue}`}
+                              checked={isChecked}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  field.onChange([...currentValue, groupValue]);
+                                } else {
+                                  field.onChange(currentValue.filter((v: string) => v !== groupValue));
+                                }
+                              }}
+                              data-testid={`checkbox-edit-other-muscle-${groupValue}`}
+                            />
+                            <Label
+                              htmlFor={`edit-other-muscle-${groupValue}`}
+                              className="text-sm font-normal cursor-pointer"
+                            >
+                              {group}
+                            </Label>
+                          </div>
+                        );
+                      })}
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
