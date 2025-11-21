@@ -8,6 +8,7 @@ export const exercises = pgTable("exercises", {
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
   muscleGroup: varchar("muscle_group", { length: 100 }).notNull(),
+  otherMuscleGroups: text("other_muscle_groups").array(),
   equipment: varchar("equipment", { length: 100 }).notNull(),
   imageUrl: varchar("image_url", { length: 500 }),
   isCustom: boolean("is_custom").notNull().default(false),
