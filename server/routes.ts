@@ -131,6 +131,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/workout-routines/:id/add-exercise", async (req, res) => {
+    try {
+      const { exerciseId, days, setsConfig } = req.body;
+      
+      // Validate required fields
+      if (!exerciseId || !days || !Array.isArray(days) || days.length === 0) {
+        return res.status(400).json({ error: "exerciseId and days are required" });
+      }
+      
+      if (!setsConfig || !Array.isArray(setsConfig) || setsConfig.length === 0) {
+        return res.status(400).json({ error: "setsConfig is required and must have at least one set" });
+      }
+      
+      // Validate setsConfig structure
+      const isValidSetsConfig = setsConfig.every(
+        (set: any) => typeof set.reps === 'number' && typeof set.restPeriod === 'number'
+      );
+      
+      if (!isValidSetsConfig) {
+        return res.status(400).json({ error: "Invalid setsConfig format" });
+      }
+      
+      // Get the existing routine
+      const routine = await storage.getWorkoutRoutine(req.params.id);
+      if (!routine) {
+        return res.status(404).json({ error: "Workout routine not found" });
+      }
+      
+      // Create the new exercise entry
+      const newExercise = {
+        exerciseId,
+        sets: setsConfig.length, // Legacy field for backward compatibility
+        reps: setsConfig[0]?.reps || 10, // Legacy field - use first set's reps
+        days,
+        restPeriod: setsConfig[0]?.restPeriod || 90, // Legacy field - use first set's rest
+        setsConfig
+      };
+      
+      // Add the exercise to the routine
+      const updatedExercises = [...routine.exercises, newExercise];
+      
+      // Update the routine
+      const updatedRoutine = await storage.updateWorkoutRoutine(req.params.id, {
+        exercises: updatedExercises
+      });
+      
+      res.json(updatedRoutine);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to add exercise to routine" });
+    }
+  });
+
   // Workout Logs
   app.get("/api/workout-logs", async (req, res) => {
     try {
