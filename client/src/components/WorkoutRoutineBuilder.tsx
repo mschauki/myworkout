@@ -29,6 +29,7 @@ interface RoutineExercise {
   setsConfig?: Array<{
     reps: number;
     restPeriod: number;
+    weight?: number;
   }>;
 }
 
@@ -46,10 +47,10 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
   // Exercise configuration state
   const [selectedExerciseId, setSelectedExerciseId] = useState("");
   const [sets, setSets] = useState("3");
-  const [perSetConfig, setPerSetConfig] = useState<Array<{ reps: string; restPeriod: string }>>([
-    { reps: "10", restPeriod: "90" },
-    { reps: "10", restPeriod: "90" },
-    { reps: "10", restPeriod: "90" }
+  const [perSetConfig, setPerSetConfig] = useState<Array<{ reps: string; restPeriod: string; weight?: string }>>([
+    { reps: "10", restPeriod: "90", weight: "" },
+    { reps: "10", restPeriod: "90", weight: "" },
+    { reps: "10", restPeriod: "90", weight: "" }
   ]);
 
   // Custom exercise creation state
@@ -123,7 +124,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
     
     const currentConfig = [...perSetConfig];
     if (count > currentConfig.length) {
-      const lastSet = currentConfig[currentConfig.length - 1] || { reps: "10", restPeriod: "90" };
+      const lastSet = currentConfig[currentConfig.length - 1] || { reps: "10", restPeriod: "90", weight: "" };
       while (currentConfig.length < count) {
         currentConfig.push({ ...lastSet });
       }
@@ -133,7 +134,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
     setPerSetConfig(currentConfig);
   };
 
-  const updatePerSet = (index: number, field: 'reps' | 'restPeriod', value: string) => {
+  const updatePerSet = (index: number, field: 'reps' | 'restPeriod' | 'weight', value: string) => {
     const updated = [...perSetConfig];
     updated[index] = { ...updated[index], [field]: value };
     setPerSetConfig(updated);
@@ -142,10 +143,25 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
   const addExerciseToDay = () => {
     if (!selectedExerciseId) return;
     
-    const setsConfig = perSetConfig.map(set => ({
-      reps: parseInt(set.reps || "10") || 10,
-      restPeriod: Math.max(30, Math.min(300, parseInt(set.restPeriod || "90") || 90)),
-    }));
+    const selectedExercise = exercises.find(e => e.id === selectedExerciseId);
+    const isBodyweight = selectedExercise?.equipment?.toLowerCase() === "bodyweight";
+    
+    const setsConfig = perSetConfig.map(set => {
+      const config: { reps: number; restPeriod: number; weight?: number } = {
+        reps: parseInt(set.reps || "10") || 10,
+        restPeriod: Math.max(30, Math.min(300, parseInt(set.restPeriod || "90") || 90)),
+      };
+      
+      // Only include weight for non-bodyweight exercises
+      if (!isBodyweight && set.weight && set.weight.trim() !== "") {
+        const weightValue = parseFloat(set.weight);
+        if (!isNaN(weightValue) && weightValue > 0) {
+          config.weight = weightValue;
+        }
+      }
+      
+      return config;
+    });
     
     const exerciseData: RoutineExercise = {
       exerciseId: selectedExerciseId,
@@ -164,9 +180,9 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
     setSelectedExerciseId("");
     setSets("3");
     setPerSetConfig([
-      { reps: "10", restPeriod: "90" },
-      { reps: "10", restPeriod: "90" },
-      { reps: "10", restPeriod: "90" }
+      { reps: "10", restPeriod: "90", weight: "" },
+      { reps: "10", restPeriod: "90", weight: "" },
+      { reps: "10", restPeriod: "90", weight: "" }
     ]);
   };
 
@@ -366,7 +382,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                                 <div className="text-xs text-muted-foreground mt-1">
                                   {exercise.setsConfig.map((set, i) => (
                                     <span key={i} className="inline-block mr-2">
-                                      Set {i + 1}: {set.reps} reps, {set.restPeriod}s rest
+                                      Set {i + 1}: {set.weight ? `${set.weight} lbs × ` : ''}{set.reps} reps, {set.restPeriod}s rest
                                     </span>
                                   ))}
                                 </div>
@@ -574,41 +590,60 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                       </div>
                     </div>
                     <div className="space-y-2 max-h-64 overflow-y-auto">
-                      {perSetConfig.map((set, index) => (
-                        <Card key={index} className="glass-surface bg-muted/30">
-                          <CardContent className="p-3">
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-medium min-w-[40px]">Set {index + 1}</span>
-                              <div className="flex-1 grid grid-cols-2 gap-2">
-                                <div>
-                                  <Input
-                                    type="number"
-                                    min="1"
-                                    value={set.reps}
-                                    onChange={(e) => updatePerSet(index, 'reps', e.target.value)}
-                                    placeholder="Reps"
-                                    className="h-8 text-xs"
-                                    data-testid={`input-set-${day}-${index}-reps`}
-                                  />
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  <Timer className="w-3 h-3 text-muted-foreground" />
-                                  <Input
-                                    type="number"
-                                    min="30"
-                                    max="300"
-                                    value={set.restPeriod}
-                                    onChange={(e) => updatePerSet(index, 'restPeriod', e.target.value)}
-                                    placeholder="Rest (s)"
-                                    className="h-8 text-xs"
-                                    data-testid={`input-set-${day}-${index}-rest`}
-                                  />
+                      {perSetConfig.map((set, index) => {
+                        const selectedExercise = exercises.find(e => e.id === selectedExerciseId);
+                        const isBodyweight = selectedExercise?.equipment?.toLowerCase() === "bodyweight";
+                        
+                        return (
+                          <Card key={index} className="glass-surface bg-muted/30">
+                            <CardContent className="p-3">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-medium min-w-[40px]">Set {index + 1}</span>
+                                <div className={`flex-1 grid gap-2 ${isBodyweight ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                                  {!isBodyweight && (
+                                    <div>
+                                      <Input
+                                        type="number"
+                                        min="0"
+                                        step="0.5"
+                                        value={set.weight || ""}
+                                        onChange={(e) => updatePerSet(index, 'weight', e.target.value)}
+                                        placeholder="Weight"
+                                        className="h-8 text-xs"
+                                        data-testid={`input-set-${day}-${index}-weight`}
+                                      />
+                                    </div>
+                                  )}
+                                  <div>
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      value={set.reps}
+                                      onChange={(e) => updatePerSet(index, 'reps', e.target.value)}
+                                      placeholder="Reps"
+                                      className="h-8 text-xs"
+                                      data-testid={`input-set-${day}-${index}-reps`}
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <Timer className="w-3 h-3 text-muted-foreground" />
+                                    <Input
+                                      type="number"
+                                      min="30"
+                                      max="300"
+                                      value={set.restPeriod}
+                                      onChange={(e) => updatePerSet(index, 'restPeriod', e.target.value)}
+                                      placeholder="Rest (s)"
+                                      className="h-8 text-xs"
+                                      data-testid={`input-set-${day}-${index}-rest`}
+                                    />
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
                     </div>
                   </div>
 
