@@ -583,7 +583,13 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
           value={expandedExercises}
           onValueChange={setExpandedExercises}
         >
-          {exerciseLogs.map((log, exerciseIndex) => (
+          {exerciseLogs.map((log, exerciseIndex) => {
+            // Find exercise metadata to check if it's bodyweight
+            const routineExercise = routine.exercises[exerciseIndex];
+            const exercise = exercises.find((e) => e.id === routineExercise?.exerciseId);
+            const isBodyweight = exercise?.equipment?.toLowerCase() === "bodyweight";
+            
+            return (
             <AccordionItem key={exerciseIndex} value={`exercise-${exerciseIndex}`}>
               <AccordionTrigger className="text-lg font-medium" data-testid={`accordion-exercise-${exerciseIndex}`}>
                 <div className="flex items-center gap-3 flex-wrap">
@@ -601,9 +607,9 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
               <AccordionContent>
                 <div className="space-y-3 pt-2">
                   {/* Table Header */}
-                  <div className="grid grid-cols-12 gap-2 text-xs font-medium text-muted-foreground px-2">
+                  <div className={`grid ${isBodyweight ? 'grid-cols-8' : 'grid-cols-12'} gap-2 text-xs font-medium text-muted-foreground px-2`}>
                     <div className="col-span-2">Set</div>
-                    <div className="col-span-4">Weight (lbs)</div>
+                    {!isBodyweight && <div className="col-span-4">Weight (lbs)</div>}
                     <div className="col-span-3">Reps</div>
                     <div className="col-span-3 text-right">Done</div>
                   </div>
@@ -612,24 +618,26 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                   {log.sets.map((set, setIndex) => (
                     <div
                       key={setIndex}
-                      className={`grid grid-cols-12 gap-2 items-center p-2 rounded-md ${
+                      className={`grid ${isBodyweight ? 'grid-cols-8' : 'grid-cols-12'} gap-2 items-center p-2 rounded-md ${
                         set.completed ? "bg-muted" : ""
                       }`}
                       data-testid={`row-set-${exerciseIndex}-${setIndex}`}
                     >
                       <div className="col-span-2 font-medium">{setIndex + 1}</div>
-                      <div className="col-span-4">
-                        <Input
-                          type="number"
-                          min="0"
-                          step="5"
-                          value={set.weight || ""}
-                          onChange={(e) => updateSet(exerciseIndex, setIndex, "weight", e.target.value)}
-                          disabled={set.completed}
-                          className="h-9"
-                          data-testid={`input-weight-${exerciseIndex}-${setIndex}`}
-                        />
-                      </div>
+                      {!isBodyweight && (
+                        <div className="col-span-4">
+                          <Input
+                            type="number"
+                            min="0"
+                            step="5"
+                            value={set.weight || ""}
+                            onChange={(e) => updateSet(exerciseIndex, setIndex, "weight", e.target.value)}
+                            disabled={set.completed}
+                            className="h-9"
+                            data-testid={`input-weight-${exerciseIndex}-${setIndex}`}
+                          />
+                        </div>
+                      )}
                       <div className="col-span-3">
                         <Input
                           type="number"
@@ -680,7 +688,8 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                 </div>
               </AccordionContent>
             </AccordionItem>
-          ))}
+            )
+          })}
         </Accordion>
 
         {/* Finish Button */}

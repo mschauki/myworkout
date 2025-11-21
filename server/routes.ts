@@ -229,13 +229,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertWorkoutLogSchema.parse(req.body) as InsertWorkoutLog;
       
-      // Validate that completed sets have positive weight and reps
+      // Validate that completed sets have positive reps
+      // Note: weight can be 0 or undefined for bodyweight exercises
       const hasInvalidSets = validatedData.exercises.some((ex: any) =>
-        ex.sets.some((set: any) => set.completed && (set.weight <= 0 || set.reps <= 0))
+        ex.sets.some((set: any) => set.completed && set.reps <= 0)
       );
       
       if (hasInvalidSets) {
-        return res.status(400).json({ error: "Completed sets must have positive weight and reps" });
+        return res.status(400).json({ error: "Completed sets must have positive reps" });
       }
       
       // Recompute totalVolume from completed sets only
