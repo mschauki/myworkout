@@ -140,17 +140,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "exerciseId and days are required" });
       }
       
+      // Validate days array contains only valid day strings
+      const validDays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "any"];
+      const areValidDays = days.every((day: any) => typeof day === 'string' && validDays.includes(day.toLowerCase()));
+      
+      if (!areValidDays) {
+        return res.status(400).json({ error: "days must be an array of valid day names (monday-sunday or any)" });
+      }
+      
       if (!setsConfig || !Array.isArray(setsConfig) || setsConfig.length === 0) {
         return res.status(400).json({ error: "setsConfig is required and must have at least one set" });
       }
       
-      // Validate setsConfig structure
+      // Validate setsConfig structure and values
       const isValidSetsConfig = setsConfig.every(
-        (set: any) => typeof set.reps === 'number' && typeof set.restPeriod === 'number'
+        (set: any) => 
+          typeof set.reps === 'number' && 
+          typeof set.restPeriod === 'number' &&
+          set.reps > 0 &&
+          set.restPeriod >= 30 && set.restPeriod <= 300
       );
       
       if (!isValidSetsConfig) {
-        return res.status(400).json({ error: "Invalid setsConfig format" });
+        return res.status(400).json({ error: "Invalid setsConfig: reps must be positive and restPeriod must be between 30-300 seconds" });
+      }
+      
+      // Verify exercise exists
+      const exercise = await storage.getExercise(exerciseId);
+      if (!exercise) {
+        return res.status(404).json({ error: "Exercise not found" });
       }
       
       // Get the existing routine

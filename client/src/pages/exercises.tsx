@@ -209,7 +209,7 @@ export default function Exercises() {
 
   const filteredExercises = exercises.filter((exercise) => {
     const matchesSearch = exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      exercise.description.toLowerCase().includes(searchQuery.toLowerCase());
+      (exercise.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
     const matchesMuscleGroup = selectedMuscleGroup === "All" || 
       exercise.muscleGroup.toLowerCase() === selectedMuscleGroup.toLowerCase();
     return matchesSearch && matchesMuscleGroup;
@@ -553,7 +553,15 @@ export default function Exercises() {
       </div>
 
       {/* Add to Routine Dialog */}
-      <Dialog open={isAddToRoutineDialogOpen} onOpenChange={setIsAddToRoutineDialogOpen}>
+      <Dialog 
+        open={isAddToRoutineDialogOpen} 
+        onOpenChange={(open) => {
+          setIsAddToRoutineDialogOpen(open);
+          if (!open) {
+            resetAddToRoutineDialog();
+          }
+        }}
+      >
         <DialogContent className="glass-surface-elevated max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl">
