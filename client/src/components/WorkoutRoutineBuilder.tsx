@@ -206,6 +206,7 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
 
   const handleCreateCustomExercise = (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     // Explicit validation for required fields (Radix Select doesn't honor "required" attribute)
     if (!customExerciseName.trim()) {
