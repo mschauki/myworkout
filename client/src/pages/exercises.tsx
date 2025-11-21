@@ -4,8 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Dumbbell, Plus, Pencil } from "lucide-react";
-import { Exercise, insertExerciseSchema } from "@shared/schema";
+import { Search, Dumbbell, Plus, Pencil, ListPlus, Timer } from "lucide-react";
+import { Exercise, insertExerciseSchema, WorkoutRoutine } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -17,9 +17,11 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const MUSCLE_GROUPS = ["All", "Chest", "Back", "Legs", "Shoulders", "Arms", "Core"];
 const EQUIPMENT_OPTIONS = ["Barbell", "Dumbbell", "Machine", "Cable", "Bodyweight", "Resistance Band", "Other"];
+const DAYS_OF_WEEK = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "any"] as const;
 
 export default function Exercises() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,10 +29,24 @@ export default function Exercises() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
+  const [isAddToRoutineDialogOpen, setIsAddToRoutineDialogOpen] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [selectedRoutineId, setSelectedRoutineId] = useState<string>("");
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [numberOfSets, setNumberOfSets] = useState(3);
+  const [perSetConfig, setPerSetConfig] = useState<Array<{ reps: number; restPeriod: number }>>([
+    { reps: 10, restPeriod: 90 },
+    { reps: 10, restPeriod: 90 },
+    { reps: 10, restPeriod: 90 },
+  ]);
   const { toast } = useToast();
 
   const { data: exercises = [], isLoading } = useQuery<Exercise[]>({
     queryKey: ["/api/exercises"],
+  });
+
+  const { data: routines = [] } = useQuery<WorkoutRoutine[]>({
+    queryKey: ["/api/workout-routines"],
   });
 
   const form = useForm({
@@ -102,6 +118,92 @@ export default function Exercises() {
   const handleUpdateExercise = (data: any) => {
     if (editingExercise) {
       updateExerciseMutation.mutate({ id: editingExercise.id, data });
+    }
+  };
+
+  const addToRoutineMutation = useMutation({
+    mutationFn: async ({ routineId, exerciseId, days, setsConfig }: { 
+      routineId: string; 
+      exerciseId: string; 
+      days: string[]; 
+      setsConfig: Array<{ reps: number; restPeriod: number }> 
+    }) => {
+      return apiRequest("POST", `/api/workout-routines/${routineId}/add-exercise`, {
+        exerciseId,
+        days,
+        setsConfig,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/workout-routines"] });
+      toast({ title: "Exercise added to routine successfully" });
+      setIsAddToRoutineDialogOpen(false);
+      resetAddToRoutineDialog();
+    },
+    onError: () => {
+      toast({ title: "Failed to add exercise to routine", variant: "destructive" });
+    },
+  });
+
+  const handleOpenAddToRoutine = (exercise: Exercise) => {
+    setSelectedExercise(exercise);
+    setIsAddToRoutineDialogOpen(true);
+  };
+
+  const resetAddToRoutineDialog = () => {
+    setSelectedExercise(null);
+    setSelectedRoutineId("");
+    setSelectedDays([]);
+    setNumberOfSets(3);
+    setPerSetConfig([
+      { reps: 10, restPeriod: 90 },
+      { reps: 10, restPeriod: 90 },
+      { reps: 10, restPeriod: 90 },
+    ]);
+  };
+
+  const handleAddToRoutine = () => {
+    if (!selectedRoutineId || selectedDays.length === 0 || !selectedExercise) {
+      toast({ title: "Please select a routine and at least one day", variant: "destructive" });
+      return;
+    }
+
+    addToRoutineMutation.mutate({
+      routineId: selectedRoutineId,
+      exerciseId: selectedExercise.id,
+      days: selectedDays,
+      setsConfig: perSetConfig,
+    });
+  };
+
+  const updateSetCount = (newCount: number) => {
+    const count = Math.max(1, Math.min(10, newCount));
+    setNumberOfSets(count);
+    
+    const currentConfig = [...perSetConfig];
+    if (count > perSetConfig.length) {
+      const lastSet = perSetConfig[perSetConfig.length - 1] || { reps: 10, restPeriod: 90 };
+      for (let i = perSetConfig.length; i < count; i++) {
+        currentConfig.push({ ...lastSet });
+      }
+    } else if (count < perSetConfig.length) {
+      currentConfig.splice(count);
+    }
+    setPerSetConfig(currentConfig);
+  };
+
+  const updatePerSet = (index: number, field: 'reps' | 'restPeriod', value: string) => {
+    const newConfig = [...perSetConfig];
+    const numValue = parseInt(value) || (field === 'reps' ? 1 : 30);
+    newConfig[index] = { ...newConfig[index], [field]: numValue };
+    setPerSetConfig(newConfig);
+  };
+
+  const toggleDay = (day: string) => {
+    if (selectedDays.includes(day)) {
+      setSelectedDays(selectedDays.filter(d => d !== day));
+    } else {
+      setSelectedDays([...selectedDays, day]);
     }
   };
 
@@ -432,13 +534,178 @@ export default function Exercises() {
                     )}
                   </div>
                   <h3 className="text-lg font-semibold mb-2" data-testid="text-exercise-name">{exercise.name}</h3>
-                  <p className="text-sm text-foreground/60 line-clamp-2">{exercise.description}</p>
+                  <p className="text-sm text-foreground/60 line-clamp-2 mb-3">{exercise.description}</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full mt-2 glass-surface"
+                    onClick={() => handleOpenAddToRoutine(exercise)}
+                    data-testid={`button-add-to-routine-${exercise.id}`}
+                  >
+                    <ListPlus className="w-4 h-4 mr-2" />
+                    Add to Routine
+                  </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
       </div>
+
+      {/* Add to Routine Dialog */}
+      <Dialog open={isAddToRoutineDialogOpen} onOpenChange={setIsAddToRoutineDialogOpen}>
+        <DialogContent className="glass-surface-elevated max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">
+              Add {selectedExercise?.name} to Routine
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            {/* Select Routine */}
+            <div>
+              <Label className="text-base font-medium mb-2 block">Select Routine</Label>
+              {routines.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No routines found. Create a routine first in the Workouts tab.
+                </p>
+              ) : (
+                <Select value={selectedRoutineId} onValueChange={setSelectedRoutineId}>
+                  <SelectTrigger data-testid="select-routine">
+                    <SelectValue placeholder="Choose a routine..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {routines.map((routine) => (
+                      <SelectItem key={routine.id} value={routine.id}>
+                        {routine.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
+            {/* Select Days */}
+            <div>
+              <Label className="text-base font-medium mb-3 block">Select Days</Label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {DAYS_OF_WEEK.map((day) => (
+                  <div key={day} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`day-${day}`}
+                      checked={selectedDays.includes(day)}
+                      onCheckedChange={() => toggleDay(day)}
+                      data-testid={`checkbox-day-${day}`}
+                    />
+                    <Label
+                      htmlFor={`day-${day}`}
+                      className="text-sm font-normal cursor-pointer capitalize"
+                    >
+                      {day === "any" ? "Any Day" : day}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Configure Sets */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <Label className="text-base font-medium">Configure Sets</Label>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => updateSetCount(numberOfSets - 1)}
+                    disabled={numberOfSets <= 1}
+                    data-testid="button-decrease-sets"
+                  >
+                    -
+                  </Button>
+                  <span className="text-sm font-medium w-8 text-center">{numberOfSets}</span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => updateSetCount(numberOfSets + 1)}
+                    disabled={numberOfSets >= 10}
+                    data-testid="button-increase-sets"
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {perSetConfig.map((set, index) => (
+                  <Card key={index} className="glass-surface bg-muted/30">
+                    <CardContent className="p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium min-w-[40px]">Set {index + 1}</span>
+                        <div className="flex-1 grid grid-cols-2 gap-2">
+                          <div>
+                            <Label htmlFor={`reps-${index}`} className="text-xs text-muted-foreground mb-1 block">
+                              Reps
+                            </Label>
+                            <Input
+                              id={`reps-${index}`}
+                              type="number"
+                              min="1"
+                              value={set.reps}
+                              onChange={(e) => updatePerSet(index, 'reps', e.target.value)}
+                              placeholder="Reps"
+                              className="h-9 text-sm"
+                              data-testid={`input-set-${index}-reps`}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor={`rest-${index}`} className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                              <Timer className="w-3 h-3" />
+                              Rest (s)
+                            </Label>
+                            <Input
+                              id={`rest-${index}`}
+                              type="number"
+                              min="30"
+                              max="300"
+                              value={set.restPeriod}
+                              onChange={(e) => updatePerSet(index, 'restPeriod', e.target.value)}
+                              placeholder="Rest (s)"
+                              className="h-9 text-sm"
+                              data-testid={`input-set-${index}-rest`}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2 pt-4">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setIsAddToRoutineDialogOpen(false)}
+                data-testid="button-cancel-add-to-routine"
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={handleAddToRoutine}
+                disabled={addToRoutineMutation.isPending || !selectedRoutineId || selectedDays.length === 0}
+                data-testid="button-confirm-add-to-routine"
+              >
+                {addToRoutineMutation.isPending ? "Adding..." : "Add to Routine"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
