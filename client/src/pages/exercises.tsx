@@ -18,12 +18,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const MUSCLE_GROUPS = ["All", "Chest", "Back", "Legs", "Shoulders", "Arms", "Core", "Biceps", "Triceps", "Glutes", "Abs", "Calves", "Forearms", "Cardio", "Full Body"];
 const EQUIPMENT_OPTIONS = ["Barbell", "Dumbbell", "Machine", "Cable", "Bodyweight", "Resistance Band", "Other"];
 const DAYS_OF_WEEK = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "any"] as const;
 
 export default function Exercises() {
+  const [selectedTab, setSelectedTab] = useState<"all" | "custom">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState("All");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -225,13 +227,14 @@ export default function Exercises() {
       (exercise.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
     const matchesMuscleGroup = selectedMuscleGroup === "All" || 
       exercise.muscleGroup.toLowerCase() === selectedMuscleGroup.toLowerCase();
-    return matchesSearch && matchesMuscleGroup;
+    const matchesTab = selectedTab === "all" || (selectedTab === "custom" && exercise.isCustom);
+    return matchesSearch && matchesMuscleGroup && matchesTab;
   });
 
   return (
     <div className="pb-24 pt-8 max-w-6xl mx-auto">
-      <div className="px-4 mb-8">
-        <div className="flex items-center justify-between gap-4 mb-2">
+      <div className="px-4 mb-6">
+        <div className="flex items-center justify-between gap-4 mb-4">
           <h1 className="text-4xl font-bold gradient-text" data-testid="text-page-title">Exercise Library</h1>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
@@ -524,68 +527,82 @@ export default function Exercises() {
         </DialogContent>
       </Dialog>
 
-      {/* Search */}
-      <div className="px-4 mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/50" />
-          <Input
-            type="search"
-            placeholder="Search exercises..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-11 glass-input h-12 text-base"
-            data-testid="input-search-exercises"
-          />
+      {/* Tabs */}
+      <Tabs value={selectedTab} onValueChange={(value) => setSelectedTab(value as "all" | "custom")} className="w-full">
+        <div className="px-4 mb-6">
+          <TabsList className="grid w-full max-w-md grid-cols-2 glass-surface">
+            <TabsTrigger value="all" data-testid="tab-all-exercises">
+              All Exercises
+            </TabsTrigger>
+            <TabsTrigger value="custom" data-testid="tab-custom-exercises">
+              Custom Exercises
+            </TabsTrigger>
+          </TabsList>
         </div>
-      </div>
 
-      {/* Muscle Group Filter */}
-      <ScrollArea className="w-full mb-8">
-        <div className="flex gap-2 px-4 pb-3">
-          {MUSCLE_GROUPS.map((group) => (
-            <Badge
-              key={group}
-              variant={selectedMuscleGroup === group ? "default" : "secondary"}
-              className={`cursor-pointer whitespace-nowrap px-4 py-2 text-sm ${
-                selectedMuscleGroup === group 
-                  ? "glass-surface-elevated text-primary-foreground" 
-                  : "glass-surface"
-              }`}
-              onClick={() => setSelectedMuscleGroup(group)}
-              data-testid={`badge-filter-${group.toLowerCase()}`}
-            >
-              {group}
-            </Badge>
-          ))}
-        </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+        <TabsContent value={selectedTab} className="mt-0">
+          {/* Search */}
+          <div className="px-4 mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/50" />
+              <Input
+                type="search"
+                placeholder="Search exercises..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-11 glass-input h-12 text-base"
+                data-testid="input-search-exercises"
+              />
+            </div>
+          </div>
 
-      {/* Exercise Grid */}
-      <div className="px-4">
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="glass-surface">
-                <CardContent className="p-5">
-                  <Skeleton className="h-40 w-full mb-4 rounded-lg" />
-                  <Skeleton className="h-6 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-full" />
+          {/* Muscle Group Filter */}
+          <ScrollArea className="w-full mb-8">
+            <div className="flex gap-2 px-4 pb-3">
+              {MUSCLE_GROUPS.map((group) => (
+                <Badge
+                  key={group}
+                  variant={selectedMuscleGroup === group ? "default" : "secondary"}
+                  className={`cursor-pointer whitespace-nowrap px-4 py-2 text-sm ${
+                    selectedMuscleGroup === group 
+                      ? "glass-surface-elevated text-primary-foreground" 
+                      : "glass-surface"
+                  }`}
+                  onClick={() => setSelectedMuscleGroup(group)}
+                  data-testid={`badge-filter-${group.toLowerCase()}`}
+                >
+                  {group}
+                </Badge>
+              ))}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+
+          {/* Exercise Grid */}
+          <div className="px-4">
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <Card key={i} className="glass-surface">
+                    <CardContent className="p-5">
+                      <Skeleton className="h-40 w-full mb-4 rounded-lg" />
+                      <Skeleton className="h-6 w-3/4 mb-2" />
+                      <Skeleton className="h-4 w-full" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : filteredExercises.length === 0 ? (
+              <Card className="glass-surface">
+                <CardContent className="p-12 text-center">
+                  <Dumbbell className="w-16 h-16 mx-auto mb-4 text-primary/40" />
+                  <p className="text-foreground/70 text-lg font-medium">No exercises found</p>
+                  <p className="text-sm text-foreground/50 mt-2">Try a different search or filter</p>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        ) : filteredExercises.length === 0 ? (
-          <Card className="glass-surface">
-            <CardContent className="p-12 text-center">
-              <Dumbbell className="w-16 h-16 mx-auto mb-4 text-primary/40" />
-              <p className="text-foreground/70 text-lg font-medium">No exercises found</p>
-              <p className="text-sm text-foreground/50 mt-2">Try a different search or filter</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredExercises.map((exercise) => (
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredExercises.map((exercise) => (
               <Card key={exercise.id} className="glass-surface hover:scale-[1.02] transition-transform relative" data-testid={`card-exercise-${exercise.id}`}>
                 <CardContent className="p-5">
                   {exercise.isCustom && (
@@ -827,6 +844,8 @@ export default function Exercises() {
           </div>
         </DialogContent>
       </Dialog>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
