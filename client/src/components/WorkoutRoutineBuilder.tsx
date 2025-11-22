@@ -27,7 +27,8 @@ interface RoutineExercise {
   days: string[];
   restPeriod?: number;
   setsConfig?: Array<{
-    reps: number;
+    reps?: number;
+    duration?: number;
     restPeriod: number;
     weight?: number;
   }>;
@@ -49,7 +50,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
   // Exercise configuration state
   const [selectedExerciseId, setSelectedExerciseId] = useState("");
   const [sets, setSets] = useState("3");
-  const [perSetConfig, setPerSetConfig] = useState<Array<{ reps: string; restPeriod: string; weight?: string }>>([
+  const [perSetConfig, setPerSetConfig] = useState<Array<{ reps?: string; duration?: string; restPeriod: string; weight?: string }>>([
     { reps: "10", restPeriod: "90", weight: "" },
     { reps: "10", restPeriod: "90", weight: "" },
     { reps: "10", restPeriod: "90", weight: "" }
@@ -184,13 +185,13 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
     setPerSetConfig(currentConfig);
   };
 
-  const updatePerSet = (index: number, field: 'reps' | 'restPeriod' | 'weight', value: string) => {
+  const updatePerSet = (index: number, field: 'reps' | 'duration' | 'restPeriod' | 'weight', value: string) => {
     const updated = [...perSetConfig];
     updated[index] = { ...updated[index], [field]: value };
     setPerSetConfig(updated);
   };
 
-  const copyToAllSets = (index: number, field: 'reps' | 'restPeriod' | 'weight') => {
+  const copyToAllSets = (index: number, field: 'reps' | 'duration' | 'restPeriod' | 'weight') => {
     const sourceValue = perSetConfig[index]?.[field];
     if (sourceValue === undefined || sourceValue === "") {
       toast({ 
@@ -215,12 +216,19 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
     
     const selectedExercise = exercises.find(e => e.id === selectedExerciseId);
     const isBodyweight = selectedExercise?.equipment?.toLowerCase() === "bodyweight";
+    const isTimeBased = selectedExercise?.isTimeBased || false;
     
     const setsConfig = perSetConfig.map(set => {
-      const config: { reps: number; restPeriod: number; weight?: number } = {
-        reps: parseInt(set.reps || "10") || 10,
+      const config: { reps?: number; duration?: number; restPeriod: number; weight?: number } = {
         restPeriod: Math.max(0, parseInt(set.restPeriod || "90") || 90),
       };
+      
+      // For time-based exercises, use duration; otherwise use reps
+      if (isTimeBased) {
+        config.duration = parseInt(set.duration || "30") || 30;
+      } else {
+        config.reps = parseInt(set.reps || "10") || 10;
+      }
       
       // Only include weight for non-bodyweight exercises
       if (!isBodyweight && set.weight && set.weight.trim() !== "") {
@@ -897,26 +905,54 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                     </div>
                                   )}
                                   <div className="flex flex-col gap-1">
-                                    <Input
-                                      type="number"
-                                      min="1"
-                                      value={set.reps}
-                                      onChange={(e) => updatePerSet(index, 'reps', e.target.value)}
-                                      placeholder="Reps"
-                                      className="h-8 text-xs"
-                                      data-testid={`input-set-${day}-${index}-reps`}
-                                    />
-                                    {index === 0 && perSetConfig.length > 1 && (
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-6 text-xs"
-                                        onClick={() => copyToAllSets(index, 'reps')}
-                                        data-testid={`button-copy-reps-${day}-${index}`}
-                                      >
-                                        Copy to all
-                                      </Button>
+                                    {selectedExercise?.isTimeBased ? (
+                                      <>
+                                        <Input
+                                          type="number"
+                                          min="1"
+                                          value={set.duration || ""}
+                                          onChange={(e) => updatePerSet(index, 'duration', e.target.value)}
+                                          placeholder="Duration (s)"
+                                          className="h-8 text-xs"
+                                          data-testid={`input-set-${day}-${index}-duration`}
+                                        />
+                                        {index === 0 && perSetConfig.length > 1 && (
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-6 text-xs"
+                                            onClick={() => copyToAllSets(index, 'duration')}
+                                            data-testid={`button-copy-duration-${day}-${index}`}
+                                          >
+                                            Copy to all
+                                          </Button>
+                                        )}
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Input
+                                          type="number"
+                                          min="1"
+                                          value={set.reps || ""}
+                                          onChange={(e) => updatePerSet(index, 'reps', e.target.value)}
+                                          placeholder="Reps"
+                                          className="h-8 text-xs"
+                                          data-testid={`input-set-${day}-${index}-reps`}
+                                        />
+                                        {index === 0 && perSetConfig.length > 1 && (
+                                          <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-6 text-xs"
+                                            onClick={() => copyToAllSets(index, 'reps')}
+                                            data-testid={`button-copy-reps-${day}-${index}`}
+                                          >
+                                            Copy to all
+                                          </Button>
+                                        )}
+                                      </>
                                     )}
                                   </div>
                                   <div className="flex flex-col gap-1">

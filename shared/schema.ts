@@ -12,9 +12,10 @@ export const exercises = pgTable("exercises", {
   equipment: varchar("equipment", { length: 100 }).notNull(),
   imageUrl: varchar("image_url", { length: 500 }),
   isCustom: boolean("is_custom").notNull().default(false),
+  isTimeBased: boolean("is_time_based").notNull().default(false),
 });
 
-export const insertExerciseSchema = createInsertSchema(exercises).omit({ id: true, isCustom: true });
+export const insertExerciseSchema = createInsertSchema(exercises).omit({ id: true, isCustom: true }).extend({ isTimeBased: z.boolean().default(false) });
 export const selectExerciseSchema = createSelectSchema(exercises);
 export type Exercise = typeof exercises.$inferSelect;
 export type InsertExercise = z.infer<typeof insertExerciseSchema>;
@@ -31,7 +32,8 @@ export const workoutRoutines = pgTable("workout_routines", {
     days: string[]; // Array of day names: ["monday", "wednesday"] or ["any"] for any day
     restPeriod?: number; // Legacy: rest period in seconds (used if setsConfig not present, defaults to 90)
     setsConfig?: Array<{  // New: individual configuration per set (overrides sets/reps/restPeriod if present)
-      reps: number;
+      reps?: number; // Reps per set (for strength exercises)
+      duration?: number; // Duration in seconds (for time-based exercises)
       restPeriod: number; // Rest period in seconds for this specific set
       weight?: number; // Optional weight in lbs/kg for this set (not used for bodyweight exercises)
     }>;

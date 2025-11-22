@@ -29,7 +29,8 @@ interface ActiveWorkoutProps {
 
 interface WorkoutSet {
   weight: number;
-  reps: number;
+  reps?: number;
+  duration?: number;
   completed: boolean;
   restPeriod: number; // Rest period in seconds for this specific set
 }
@@ -87,7 +88,8 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
           supersetGroup: ex.supersetGroup,
           sets: ex.setsConfig.map((setConfig) => ({
             weight: setConfig.weight || 0, // Use weight from routine if available
-            reps: setConfig.reps,
+            reps: setConfig.reps || 0,
+            duration: setConfig.duration,
             completed: false,
             restPeriod: setConfig.restPeriod,
           })),
@@ -219,9 +221,19 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
 
   const completeSet = (exerciseIndex: number, setIndex: number) => {
     const set = exerciseLogs[exerciseIndex]?.sets[setIndex];
+    const exercise = exerciseLogs[exerciseIndex];
+    const exerciseInfo = exercises.find(e => e.id === exercise?.exerciseId);
     
-    // Only validate reps - weight can be 0 or missing (backend handles this gracefully)
-    if (!set || set.reps <= 0) {
+    // For time-based exercises, no validation needed; for strength exercises, validate reps
+    if (!set) {
+      toast({ 
+        title: "Invalid set data", 
+        variant: "destructive" 
+      });
+      return;
+    }
+    
+    if (!exerciseInfo?.isTimeBased && (set.reps ?? 0) <= 0) {
       toast({ 
         title: "Invalid set data", 
         description: "Please enter positive values for reps",
@@ -468,8 +480,8 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
   const finishWorkout = () => {
     const totalVolume = exerciseLogs.reduce((total, log) => {
       return total + log.sets
-        .filter(set => set.completed && set.weight > 0 && set.reps > 0)
-        .reduce((sum, set) => sum + (set.weight * set.reps), 0);
+        .filter(set => set.completed && set.weight > 0 && (set.reps || 0) > 0)
+        .reduce((sum, set) => sum + (set.weight * (set.reps || 0)), 0);
     }, 0);
 
     saveWorkoutMutation.mutate({
@@ -496,9 +508,9 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
 
   // Get the best estimated 1RM from completed sets for an exercise
   const getBest1RM = (sets: WorkoutSet[]): number => {
-    const completedSets = sets.filter(s => s.completed && s.weight > 0 && s.reps > 0);
+    const completedSets = sets.filter(s => s.completed && s.weight > 0 && (s.reps || 0) > 0);
     if (completedSets.length === 0) return 0;
-    return Math.max(...completedSets.map(s => calculate1RM(s.weight, s.reps)));
+    return Math.max(...completedSets.map(s => calculate1RM(s.weight, s.reps || 0)));
   };
 
   const completedSets = exerciseLogs.reduce((sum, log) => 

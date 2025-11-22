@@ -74,6 +74,7 @@ export default function Exercises() {
       muscleGroup: "",
       otherMuscleGroups: [],
       equipment: "",
+      isTimeBased: false,
     },
   });
 
@@ -85,6 +86,7 @@ export default function Exercises() {
       muscleGroup: "",
       otherMuscleGroups: [],
       equipment: "",
+      isTimeBased: false,
     },
   });
 
@@ -198,6 +200,7 @@ export default function Exercises() {
       muscleGroup: exercise.muscleGroup?.toLowerCase() || "",
       otherMuscleGroups: normalizedOtherMuscleGroups as any,
       equipment: exercise.equipment?.toLowerCase() || "",
+      isTimeBased: exercise.isTimeBased || false,
     });
     setIsEditDialogOpen(true);
   };
@@ -563,6 +566,26 @@ export default function Exercises() {
                   />
                   <FormField
                     control={form.control}
+                    name="isTimeBased"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center gap-3">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            id="is-time-based"
+                            data-testid="checkbox-is-time-based"
+                          />
+                        </FormControl>
+                        <FormLabel htmlFor="is-time-based" className="font-normal cursor-pointer">
+                          Time-based exercise (duration instead of reps)
+                        </FormLabel>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
                     name="description"
                     render={({ field }) => (
                       <FormItem>
@@ -739,6 +762,26 @@ export default function Exercises() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editForm.control}
+                name="isTimeBased"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center gap-3">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        id="edit-is-time-based"
+                        data-testid="checkbox-edit-is-time-based"
+                      />
+                    </FormControl>
+                    <FormLabel htmlFor="edit-is-time-based" className="font-normal cursor-pointer">
+                      Time-based exercise (duration instead of reps)
+                    </FormLabel>
                     <FormMessage />
                   </FormItem>
                 )}
