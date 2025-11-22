@@ -270,19 +270,21 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
       });
       return;
     }
-    updateSet(exerciseIndex, setIndex, "completed", true);
     
     // Check if this is the last set of the current exercise
     const currentExercise = exerciseLogs[exerciseIndex];
     const isLastSet = setIndex === currentExercise.sets.length - 1;
     
-    // Auto-advance to next exercise if all sets are complete
+    // Mark set as complete
+    updateSet(exerciseIndex, setIndex, "completed", true);
+    
+    // Auto-advance to next exercise if this is the last set
     if (isLastSet && exerciseIndex < exerciseLogs.length - 1) {
-      const allSetsComplete = currentExercise.sets.every(s => s.completed);
-      if (allSetsComplete) {
-        setTimeout(() => {
-          setCurrentExerciseIndex(exerciseIndex + 1);
-        }, 500); // Small delay for visual feedback
+      // Check if all other sets are already complete (which means when we mark this one done, all will be complete)
+      const allOthersComplete = currentExercise.sets.every((s, idx) => idx === setIndex || s.completed);
+      if (allOthersComplete) {
+        // Immediately advance to next exercise
+        setCurrentExerciseIndex(exerciseIndex + 1);
       }
     }
     
