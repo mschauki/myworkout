@@ -734,6 +734,18 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                   </div>
                 </div>
 
+                {/* Exercise Image */}
+                {exercise?.imageUrl && (
+                  <Card className="glass-surface mb-6 overflow-hidden">
+                    <img 
+                      src={exercise.imageUrl} 
+                      alt={log.exerciseName}
+                      className="w-full h-48 object-cover rounded-lg"
+                      data-testid={`img-exercise-${currentExerciseIndex}`}
+                    />
+                  </Card>
+                )}
+
                 {/* Sets Grid */}
                 <div className="flex-1 space-y-4">
                   {/* Table Header */}
