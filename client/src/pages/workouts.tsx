@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Play, Dumbbell, Clock, Calendar, ChevronLeft, Trash2, ArrowRight } from "lucide-react";
+import { Plus, Play, Dumbbell, Clock, Calendar, ChevronLeft, Trash2, ArrowRight, Pencil } from "lucide-react";
 import { WorkoutRoutine, Exercise } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -26,6 +26,7 @@ const WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "satur
 
 export default function Workouts() {
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+  const [editingRoutineId, setEditingRoutineId] = useState<string | null>(null);
   const [viewingRoutineId, setViewingRoutineId] = useState<string | null>(null);
   const [viewingDay, setViewingDay] = useState<string | null>(null);
   const [activeRoutineId, setActiveRoutineId] = useState<string | null>(null);
@@ -43,6 +44,7 @@ export default function Workouts() {
 
   const viewingRoutine = routines.find(r => r.id === viewingRoutineId);
   const activeRoutine = routines.find(r => r.id === activeRoutineId);
+  const editingRoutine = routines.find(r => r.id === editingRoutineId);
 
   // Get today's day name
   const todayDayName = WEEKDAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
@@ -225,17 +227,31 @@ export default function Workouts() {
                 <p className="text-base text-foreground/70">{viewingRoutine.description}</p>
               )}
             </div>
-            <Button
-              variant="destructive"
-              size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                setDeleteRoutineId(viewingRoutine.id);
-              }}
-              data-testid="button-delete-routine"
-            >
-              <Trash2 className="w-5 h-5" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingRoutineId(viewingRoutine.id);
+                  setIsBuilderOpen(true);
+                }}
+                data-testid="button-edit-routine"
+              >
+                <Pencil className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeleteRoutineId(viewingRoutine.id);
+                }}
+                data-testid="button-delete-routine"
+              >
+                <Trash2 className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -313,7 +329,12 @@ export default function Workouts() {
           <h1 className="text-4xl font-bold mb-2 gradient-text" data-testid="text-page-title">My Workouts</h1>
           <p className="text-base text-foreground/70">Create and track your routines</p>
         </div>
-        <Dialog open={isBuilderOpen} onOpenChange={setIsBuilderOpen}>
+        <Dialog open={isBuilderOpen} onOpenChange={(open) => {
+          setIsBuilderOpen(open);
+          if (!open) {
+            setEditingRoutineId(null);
+          }
+        }}>
           <DialogTrigger asChild>
             <Button size="icon" className="glass-button" data-testid="button-create-routine">
               <Plus className="w-5 h-5" />
@@ -321,9 +342,18 @@ export default function Workouts() {
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto glass-surface-elevated">
             <DialogHeader>
-              <DialogTitle className="text-2xl">Create Workout Routine</DialogTitle>
+              <DialogTitle className="text-2xl">
+                {editingRoutine ? "Edit Workout Routine" : "Create Workout Routine"}
+              </DialogTitle>
             </DialogHeader>
-            <WorkoutRoutineBuilder onComplete={() => setIsBuilderOpen(false)} />
+            <WorkoutRoutineBuilder 
+              editingRoutine={editingRoutine} 
+              onComplete={() => {
+                setIsBuilderOpen(false);
+                setEditingRoutineId(null);
+                setViewingRoutineId(null); // Close detail view after edit
+              }} 
+            />
           </DialogContent>
         </Dialog>
       </div>

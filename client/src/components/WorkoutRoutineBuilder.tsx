@@ -36,9 +36,10 @@ interface RoutineExercise {
 
 interface WorkoutRoutineBuilderProps {
   onComplete: () => void;
+  editingRoutine?: any; // Optional routine to edit
 }
 
-export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps) {
+export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRoutineBuilderProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [currentDay, setCurrentDay] = useState<string>("monday");
@@ -84,6 +85,48 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
       toast({ title: "Failed to create routine", variant: "destructive" });
     },
   });
+
+  const updateRoutineMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return apiRequest("PUT", `/api/workout-routines/${editingRoutine.id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/workout-routines"] });
+      toast({ title: "Workout routine updated successfully" });
+      onComplete();
+    },
+    onError: () => {
+      toast({ title: "Failed to update routine", variant: "destructive" });
+    },
+  });
+
+  // Populate form when editing an existing routine
+  useEffect(() => {
+    if (editingRoutine) {
+      setName(editingRoutine.name);
+      setDescription(editingRoutine.description || "");
+      setDayTitles(editingRoutine.dayTitles || {});
+      
+      // Convert flat exercises array back to exercisesByDay structure
+      const byDay: Record<string, RoutineExercise[]> = {};
+      (editingRoutine.exercises || []).forEach((ex: any) => {
+        const days = ex.days || [];
+        days.forEach((day: string) => {
+          if (!byDay[day]) byDay[day] = [];
+          byDay[day].push({
+            exerciseId: ex.exerciseId,
+            sets: ex.sets,
+            reps: ex.reps,
+            days: ex.days,
+            restPeriod: ex.restPeriod,
+            setsConfig: ex.setsConfig,
+            supersetGroup: ex.supersetGroup,
+          });
+        });
+      });
+      setExercisesByDay(byDay);
+    }
+  }, [editingRoutine]);
 
   const createCustomExerciseMutation = useMutation<Exercise, Error, any>({
     mutationFn: async (data: any) => {
@@ -253,8 +296,8 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
           exercise.supersetGroup = dayExercises[index - 1].supersetGroup;
         } else {
           // Create a new superset group with the previous exercise
-          // Generate a stable ID using a timestamp-based approach that's consistent
-          const groupId = `${day}-ss-${dayExercises.length}-${index}`;
+          // Use a stable UUID that persists across edits and reordering
+          const groupId = crypto.randomUUID();
           
           dayExercises[index - 1].supersetGroup = groupId;
           exercise.supersetGroup = groupId;
@@ -389,12 +432,18 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
       }
     });
 
-    createRoutineMutation.mutate({
+    const routineData = {
       name,
       description,
       exercises: allExercises,
       dayTitles: Object.keys(sanitizedDayTitles).length > 0 ? sanitizedDayTitles : undefined,
-    });
+    };
+
+    if (editingRoutine) {
+      updateRoutineMutation.mutate(routineData);
+    } else {
+      createRoutineMutation.mutate(routineData);
+    }
   };
 
   const getExerciseName = (id: string) => {
@@ -872,10 +921,10 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
         </p>
         <Button 
           type="submit" 
-          disabled={createRoutineMutation.isPending}
+          disabled={createRoutineMutation.isPending || updateRoutineMutation.isPending}
           data-testid="button-create-routine"
         >
-          Create Routine
+          {editingRoutine ? "Update Routine" : "Create Routine"}
         </Button>
       </div>
     </form>
