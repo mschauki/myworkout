@@ -171,13 +171,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/exercises/:id", async (req, res) => {
     try {
-      // First, check if the exercise exists and is custom
+      // First, check if the exercise exists
       const existingExercise = await storage.getExercise(req.params.id);
       if (!existingExercise) {
         return res.status(404).json({ error: "Exercise not found" });
-      }
-      if (!existingExercise.isCustom) {
-        return res.status(403).json({ error: "Cannot edit seeded exercises" });
       }
       
       // Handle imageUrl specially to allow explicit null (image removal)

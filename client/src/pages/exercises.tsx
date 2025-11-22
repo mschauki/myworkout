@@ -852,17 +852,15 @@ export default function Exercises() {
               <Card key={exercise.id} className="glass-surface hover:scale-[1.02] transition-transform relative" data-testid={`card-exercise-${exercise.id}`}>
                 <CardContent className="p-5">
                   <div className="absolute top-2 right-2 flex gap-1">
-                    {exercise.isCustom && (
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 glass-surface"
-                        onClick={() => handleEditExercise(exercise)}
-                        data-testid={`button-edit-exercise-${exercise.id}`}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                    )}
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 glass-surface"
+                      onClick={() => handleEditExercise(exercise)}
+                      data-testid={`button-edit-exercise-${exercise.id}`}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
                     <Button
                       size="icon"
                       variant="ghost"
@@ -873,18 +871,16 @@ export default function Exercises() {
                       <Trash2 className="w-4 h-4 text-destructive" />
                     </Button>
                   </div>
-                  <div className="aspect-video glass-surface rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-primary/10 to-purple-500/10 overflow-hidden">
-                    {exercise.imageUrl ? (
+                  {exercise.imageUrl && (
+                    <div className="aspect-video glass-surface rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-primary/10 to-purple-500/10 overflow-hidden">
                       <img 
                         src={exercise.imageUrl} 
                         alt={exercise.name}
                         className="w-full h-full object-cover"
                         data-testid="img-exercise"
                       />
-                    ) : (
-                      <Dumbbell className="w-14 h-14 text-primary/50" />
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <div className="flex flex-wrap gap-2 mb-3">
                     <Badge variant="secondary" className="text-xs capitalize glass-surface" data-testid="badge-muscle-group">
                       {exercise.muscleGroup}
