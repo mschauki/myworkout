@@ -258,13 +258,25 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
     
     let restPeriod = configuredRest;
     
+    // Debug logging
+    console.log('Superset check:', {
+      currentSuperset,
+      isLastSet,
+      exerciseIndex,
+      totalExercises: exerciseLogs.length,
+      currentExerciseName: currentExercise.exerciseId,
+      nextExercise: exerciseIndex < exerciseLogs.length - 1 ? exerciseLogs[exerciseIndex + 1] : null
+    });
+    
     if (currentSuperset && isLastSet && exerciseIndex < exerciseLogs.length - 1) {
       // Last set of this exercise - check if next exercise is in same superset
       const nextExercise = exerciseLogs[exerciseIndex + 1];
+      console.log('Checking superset:', { currentSuperset, nextSuperset: nextExercise?.supersetGroup });
       if (nextExercise && nextExercise.supersetGroup === currentSuperset) {
         // Next exercise is in same superset - use minimum of configured and max transition rest
         // This allows users to configure shorter rests (even 0) while capping longer rests at 15s
         restPeriod = Math.min(configuredRest, SUPERSET_MAX_TRANSITION_REST);
+        console.log('Superset rest capping applied:', { configuredRest, cappedRest: restPeriod });
       }
     }
     
