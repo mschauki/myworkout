@@ -708,126 +708,152 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                   <div className={`grid ${isBodyweight ? 'grid-cols-8' : 'grid-cols-12'} gap-2 text-xs font-medium text-muted-foreground px-2`}>
                     <div className="col-span-2">Set</div>
                     {!isBodyweight && <div className="col-span-4">Weight (lbs)</div>}
-                    <div className="col-span-3">{isTimeBased ? 'Duration (s)' : 'Reps'}</div>
-                    <div className="col-span-3 text-right">Done</div>
+                    <div className={isBodyweight ? 'col-span-6' : 'col-span-6'}>{isTimeBased ? 'Duration (s)' : 'Reps'}</div>
                   </div>
 
                   {/* Sets */}
                   <div className="space-y-2">
-                    {log.sets.map((set, setIndex) => (
-                      <div
-                        key={setIndex}
-                        className={`grid ${isBodyweight ? 'grid-cols-8' : 'grid-cols-12'} gap-2 items-center p-3 rounded-md ${
-                          set.completed ? "bg-primary/20" : "bg-card"
-                        }`}
-                        data-testid={`row-set-${currentExerciseIndex}-${setIndex}`}
-                      >
-                        <div className="col-span-2 font-bold text-lg">{setIndex + 1}</div>
-                        {!isBodyweight && (
-                          <div className="col-span-4">
+                    {log.sets.map((set, setIndex) => {
+                      const isNextIncomplete = setIndex === log.sets.findIndex(s => !s.completed);
+                      return (
+                        <div
+                          key={setIndex}
+                          className={`grid ${isBodyweight ? 'grid-cols-8' : 'grid-cols-12'} gap-2 items-center p-3 rounded-md border-2 ${
+                            set.completed 
+                              ? "bg-primary/20 border-primary/50" 
+                              : isNextIncomplete
+                              ? "bg-card border-primary"
+                              : "bg-card border-card-border"
+                          }`}
+                          data-testid={`row-set-${currentExerciseIndex}-${setIndex}`}
+                        >
+                          <div className="col-span-2 font-bold text-lg">{setIndex + 1}</div>
+                          {!isBodyweight && (
+                            <div className="col-span-4">
+                              <Input
+                                type="number"
+                                min="0"
+                                step="5"
+                                value={set.weight || ""}
+                                onChange={(e) => updateSet(currentExerciseIndex, setIndex, "weight", e.target.value)}
+                                disabled={set.completed}
+                                className="h-12 text-lg"
+                                data-testid={`input-weight-${currentExerciseIndex}-${setIndex}`}
+                              />
+                            </div>
+                          )}
+                          <div className={isBodyweight ? 'col-span-6' : 'col-span-6'}>
                             <Input
                               type="number"
                               min="0"
-                              step="5"
-                              value={set.weight || ""}
-                              onChange={(e) => updateSet(currentExerciseIndex, setIndex, "weight", e.target.value)}
+                              value={isTimeBased ? (set.duration || "") : (set.reps || "")}
+                              onChange={(e) => updateSet(currentExerciseIndex, setIndex, isTimeBased ? "duration" : "reps", e.target.value)}
                               disabled={set.completed}
                               className="h-12 text-lg"
-                              data-testid={`input-weight-${currentExerciseIndex}-${setIndex}`}
+                              placeholder={isTimeBased ? "Seconds" : "Reps"}
+                              data-testid={`input-${isTimeBased ? 'duration' : 'reps'}-${currentExerciseIndex}-${setIndex}`}
                             />
                           </div>
-                        )}
-                        <div className="col-span-3">
-                          <Input
-                            type="number"
-                            min="0"
-                            value={isTimeBased ? (set.duration || "") : (set.reps || "")}
-                            onChange={(e) => updateSet(currentExerciseIndex, setIndex, isTimeBased ? "duration" : "reps", e.target.value)}
-                            disabled={set.completed}
-                            className="h-12 text-lg"
-                            placeholder={isTimeBased ? "Seconds" : "Reps"}
-                            data-testid={`input-${isTimeBased ? 'duration' : 'reps'}-${currentExerciseIndex}-${setIndex}`}
-                          />
-                        </div>
-                        <div className="col-span-3 flex justify-end">
-                          {set.completed ? (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => updateSet(currentExerciseIndex, setIndex, "completed", false)}
-                              className="h-12 w-12"
-                              data-testid={`button-undo-${currentExerciseIndex}-${setIndex}`}
-                            >
-                              <Check className="w-6 h-6 text-primary" />
-                            </Button>
-                          ) : (
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => completeSet(currentExerciseIndex, setIndex)}
-                              disabled={isTimeBased ? (set.duration ?? 0) <= 0 : (set.reps ?? 0) <= 0}
-                              className="h-12 w-12"
-                              data-testid={`button-complete-${currentExerciseIndex}-${setIndex}`}
-                            >
-                              <Check className="w-6 h-6" />
-                            </Button>
+                          {set.completed && (
+                            <Check className="w-6 h-6 text-primary ml-auto" />
                           )}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   {/* Add Set Button */}
                   <Button
                     variant="outline"
-                    size="lg"
+                    size="sm"
                     onClick={() => addSet(currentExerciseIndex)}
-                    className="w-full mt-6"
+                    className="mt-4"
                     data-testid={`button-add-set-${currentExerciseIndex}`}
                   >
-                    <Plus className="w-5 h-5 mr-2" />
+                    <Plus className="w-4 h-4 mr-2" />
                     Add Set
                   </Button>
                 </div>
 
-                {/* Bottom Actions */}
-                <div className="mt-8 space-y-3 flex flex-col">
-                  {/* Next Exercise Button */}
-                  {currentExerciseIndex < exerciseLogs.length - 1 && allComplete && (
-                    <Button
-                      onClick={() => setCurrentExerciseIndex(currentExerciseIndex + 1)}
-                      size="lg"
-                      className="w-full"
-                      data-testid={`button-next-exercise-${currentExerciseIndex}`}
-                    >
-                      Next Exercise
-                    </Button>
-                  )}
-                  
-                  {/* Previous Exercise Button */}
-                  {currentExerciseIndex > 0 && (
-                    <Button
-                      variant="secondary"
-                      onClick={() => setCurrentExerciseIndex(currentExerciseIndex - 1)}
-                      size="lg"
-                      className="w-full"
-                      data-testid={`button-prev-exercise-${currentExerciseIndex}`}
-                    >
-                      Previous Exercise
-                    </Button>
-                  )}
-
-                  {/* Finish Button */}
-                  {currentExerciseIndex === exerciseLogs.length - 1 && allComplete && (
-                    <Button
-                      onClick={finishWorkout}
-                      size="lg"
-                      className="w-full"
-                      disabled={saveWorkoutMutation.isPending || completedSets === 0}
-                      data-testid="button-finish-workout"
-                    >
-                      {saveWorkoutMutation.isPending ? "Saving..." : "Finish Workout"}
-                    </Button>
+                {/* Bottom Actions - Single Main Button */}
+                <div className="mt-auto pt-8 space-y-2 flex flex-col">
+                  {!allComplete ? (
+                    <>
+                      {/* Mark Set Done Button */}
+                      <Button
+                        onClick={() => {
+                          const nextIncompleteIndex = log.sets.findIndex(s => !s.completed);
+                          if (nextIncompleteIndex !== -1) {
+                            completeSet(currentExerciseIndex, nextIncompleteIndex);
+                          }
+                        }}
+                        size="lg"
+                        className="w-full h-16 text-lg font-bold"
+                        disabled={log.sets.findIndex(s => !s.completed) === -1 || (isTimeBased ? (log.sets[log.sets.findIndex(s => !s.completed)]?.duration ?? 0) <= 0 : (log.sets[log.sets.findIndex(s => !s.completed)]?.reps ?? 0) <= 0)}
+                        data-testid={`button-done-set-${currentExerciseIndex}`}
+                      >
+                        <Check className="w-6 h-6 mr-2" />
+                        Done
+                      </Button>
+                      
+                      {/* Previous Exercise Button */}
+                      {currentExerciseIndex > 0 && (
+                        <Button
+                          variant="secondary"
+                          onClick={() => setCurrentExerciseIndex(currentExerciseIndex - 1)}
+                          size="sm"
+                          data-testid={`button-prev-exercise-${currentExerciseIndex}`}
+                        >
+                          Previous Exercise
+                        </Button>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {/* Next Exercise or Finish Button */}
+                      {currentExerciseIndex < exerciseLogs.length - 1 ? (
+                        <>
+                          <Button
+                            onClick={() => setCurrentExerciseIndex(currentExerciseIndex + 1)}
+                            size="lg"
+                            className="w-full h-16 text-lg font-bold"
+                            data-testid={`button-next-exercise-${currentExerciseIndex}`}
+                          >
+                            Next Exercise
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            onClick={() => setCurrentExerciseIndex(currentExerciseIndex - 1)}
+                            size="sm"
+                            data-testid={`button-prev-exercise-${currentExerciseIndex}`}
+                          >
+                            Previous Exercise
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            onClick={finishWorkout}
+                            size="lg"
+                            className="w-full h-16 text-lg font-bold"
+                            disabled={saveWorkoutMutation.isPending || completedSets === 0}
+                            data-testid="button-finish-workout"
+                          >
+                            {saveWorkoutMutation.isPending ? "Saving..." : "Finish Workout"}
+                          </Button>
+                          {currentExerciseIndex > 0 && (
+                            <Button
+                              variant="secondary"
+                              onClick={() => setCurrentExerciseIndex(currentExerciseIndex - 1)}
+                              size="sm"
+                              data-testid={`button-prev-exercise-${currentExerciseIndex}`}
+                            >
+                              Previous Exercise
+                            </Button>
+                          )}
+                        </>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
