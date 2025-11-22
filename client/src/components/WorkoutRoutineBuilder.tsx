@@ -199,7 +199,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
     const setsConfig = perSetConfig.map(set => {
       const config: { reps: number; restPeriod: number; weight?: number } = {
         reps: parseInt(set.reps || "10") || 10,
-        restPeriod: Math.max(30, Math.min(300, parseInt(set.restPeriod || "90") || 90)),
+        restPeriod: Math.max(1, parseInt(set.restPeriod || "90") || 90),
       };
       
       // Only include weight for non-bodyweight exercises

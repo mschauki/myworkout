@@ -427,7 +427,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
   });
 
   const handleRestPeriodChange = (newRestPeriod: number) => {
-    const clamped = Math.max(30, Math.min(300, newRestPeriod));
+    const clamped = Math.max(1, Math.min(3600, newRestPeriod));
     setCurrentRestPeriod(clamped);
     setRestTimer(clamped);
     
@@ -550,13 +550,12 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                     <div className="flex items-center gap-2 mt-1">
                       <Input
                         type="number"
-                        min="30"
-                        max="300"
-                        step="15"
+                        min="1"
+                        step="5"
                         value={currentRestPeriod}
                         onChange={(e) => {
                           const parsed = parseInt(e.target.value) || 90;
-                          const clamped = Math.max(30, Math.min(300, parsed));
+                          const clamped = Math.max(1, parsed);
                           setCurrentRestPeriod(clamped);
                         }}
                         onBlur={(e) => {

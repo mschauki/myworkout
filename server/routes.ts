@@ -363,13 +363,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           typeof set.reps === 'number' && 
           typeof set.restPeriod === 'number' &&
           set.reps > 0 &&
-          set.restPeriod >= 30 && set.restPeriod <= 300 &&
+          set.restPeriod > 0 &&
           // weight is optional but if present must be a positive number
           (set.weight === undefined || (typeof set.weight === 'number' && set.weight > 0))
       );
       
       if (!isValidSetsConfig) {
-        return res.status(400).json({ error: "Invalid setsConfig: reps must be positive, restPeriod must be between 30-300 seconds, and weight (if provided) must be positive" });
+        return res.status(400).json({ error: "Invalid setsConfig: reps and restPeriod must be positive, and weight (if provided) must be positive" });
       }
       
       // Verify exercise exists
