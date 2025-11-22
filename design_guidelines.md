@@ -1,123 +1,130 @@
-# Jefit Glassmorphism - Design Guidelines
+# Jefit Glassmorphism - Design Guidelines v2
 
 ## Design Approach
-**System Selected**: Material Design foundations adapted for Glassmorphism aesthetic
-**Justification**: Workout tracking demands data clarity—glassmorphism's layered depth and frosted surfaces create visual hierarchy while vibrant gradients energize the fitness context. Translucent cards over gradient backgrounds provide modern appeal without sacrificing workout session readability.
+**System**: Material Design foundations with Glassmorphism aesthetic
+**Justification**: Fitness tracking demands data clarity. Glassmorphism's frosted surfaces create visual hierarchy while blue-to-orange gradients energize the experience. Translucent cards over vibrant backgrounds deliver premium appeal without sacrificing workout readability.
 
-**Key Design Principles**:
-- Layered glass surfaces with strategic opacity levels
-- High-contrast text on translucent backgrounds for workout legibility
-- Vibrant gradient backdrops to energize fitness tracking
-- Precise backdrop blur values for depth without distraction
+**Key Principles**:
+- Elevated glass surfaces with precise opacity stratification
+- Premium micro-interactions that feel responsive and polished
+- Strategic gradient applications for visual energy
+- Mobile-first responsive architecture with desktop enhancements
 
 ## Color System
 
-**Dark Mode Primary** (default experience):
-- Background Gradients: Deep blue-to-orange diagonal (from #0f172a via #1e3a5f and #1e2a4a to #1a1410)
-- Glass Surface Base: rgba(255, 255, 255, 0.08) with backdrop-blur-xl
-- Glass Surface Elevated: rgba(255, 255, 255, 0.12) for active cards
-- Text Primary: rgba(255, 255, 255, 0.95) for high readability
+**Dark Mode** (primary):
+- Background: Diagonal gradient from #0f172a → #1e3a5f → #1e2a4a → #1a1410
+- Glass Base: rgba(255, 255, 255, 0.08) + backdrop-blur-xl
+- Glass Elevated: rgba(255, 255, 255, 0.12) for active states
+- Glass Premium: rgba(255, 255, 255, 0.15) for modals/overlays
+- Text Primary: rgba(255, 255, 255, 0.95)
 - Text Secondary: rgba(255, 255, 255, 0.65)
-- Accent Gradients: Blue-to-orange (hsl(210, 85%, 52%) to hsl(25, 85%, 55%)) for CTAs, gradient text, stats highlights
-- Success/Complete: Emerald glow (#10b981)
-- Rest Timer: Amber (#f59e0b)
+- Accent Gradient: hsl(210, 85%, 52%) → hsl(25, 85%, 55%)
+- Success: #10b981 with emerald glow
+- Warning: #f59e0b amber
+- Border: rgba(255, 255, 255, 0.18) 1px
 
-**Light Mode Adaptation**:
-- Background Gradients: Soft blue-to-orange (hsl(210, 80%, 94%) to hsl(200, 70%, 96%) to hsl(25, 75%, 96%))
-- Glass Surface: rgba(255, 255, 255, 0.7) with backdrop-blur-xl
+**Light Mode**:
+- Background: hsl(210, 80%, 94%) → hsl(200, 70%, 96%) → hsl(25, 75%, 96%)
+- Glass: rgba(255, 255, 255, 0.7) + backdrop-blur-xl
 - Text Primary: rgba(0, 0, 0, 0.9)
-- Borders: rgba(255, 255, 255, 0.3) with 1px stroke
+- Border: rgba(255, 255, 255, 0.35)
 
-**Glass Card Specifications**:
+**Glass Card Specification**:
 - Border: 1px solid rgba(255, 255, 255, 0.18)
 - Shadow: 0 8px 32px rgba(0, 0, 0, 0.37)
-- Backdrop filter: blur(12px) saturate(180%)
+- Backdrop-filter: blur(12px) saturate(180%)
 
 ## Typography
-**Font Family**: Inter (primary, excellent glass UI readability), JetBrains Mono (stats/numbers)
+**Fonts**: Inter (UI), JetBrains Mono (numeric stats) via Google Fonts CDN
 
 **Hierarchy**:
-- Page Titles: text-3xl font-bold tracking-tight
+- Page Titles: text-3xl font-bold tracking-tight with gradient text
 - Section Headers: text-xl font-semibold
 - Exercise Names: text-lg font-medium
-- Set Details: text-base font-normal
-- Stats/Numbers: text-3xl font-bold font-mono with gradient text treatment
+- Stats/Numbers: text-4xl font-bold font-mono with gradient treatment
+- Body: text-base
 - Labels: text-sm font-medium uppercase tracking-wide
-- Microcopy: text-xs opacity-75
+- Micro: text-xs opacity-75
 
 ## Layout System
-**Spacing**: Tailwind units of 2, 4, 6, 8
-- Glass card padding: p-6 (more generous for premium feel)
+**Spacing**: Tailwind units 2, 4, 6, 8
+- Card padding: p-6
 - Section gaps: gap-6
-- Bottom nav: h-20 (slightly taller with glass effect)
+- Bottom nav height: h-20
 - Touch targets: min-h-14
 
-**Container Strategy**:
-- Mobile: Full width with px-4
-- Desktop: max-w-7xl mx-auto
-- Layered backgrounds: Fixed gradient base, scrollable glass content above
+**Breakpoints**:
+- Mobile: base (< 768px) - single column, full-width glass cards
+- Tablet: md (768px+) - 2-column grids, expanded nav
+- Desktop: lg (1024px+) - 3-column grids, max-w-7xl container
 
 ## Component Library
 
-### Navigation
-**Bottom Navigation Bar**: Frosted glass strip with backdrop-blur-xl, rgba(255, 255, 255, 0.08) background, 5 tabs with icon-only design. Active tab gets gradient underline indicator (2px, cyan-to-purple). Fixed bottom with safe-area-inset padding.
+### Bottom Navigation
+Frosted glass bar (backdrop-blur-xl, rgba(255, 255, 255, 0.08)) fixed at bottom. 5 icon-only tabs with gradient underline indicator (2px height) on active state. Micro-interaction: Icon scales to 1.1 on tap with 150ms spring animation.
 
 ### Exercise Library
-**Exercise Cards**: Glass morphism cards in masonry grid (grid-cols-1 md:grid-cols-2 lg:grid-cols-3, gap-4). Each card: backdrop-blur-xl, semi-transparent white background, muscle group gradient chip (top-left), exercise image with 16:9 ratio, exercise name overlay with text-shadow for readability, quick-add floating button (bottom-right) with gradient background and backdrop-blur.
-
-**Filtering**: Horizontal scrollable chip group with glass pill buttons, search bar as prominent glass input with magnifying glass icon.
+Masonry grid (grid-cols-1 md:grid-cols-2 lg:grid-cols-3, gap-4). Glass cards with:
+- 16:9 exercise image with bottom gradient overlay
+- Muscle group chip (top-left, glass pill with gradient text)
+- Exercise name overlay with text-shadow
+- Floating quick-add button (bottom-right, gradient background with blur)
+Micro-interaction: Card lifts on hover (translateY(-4px), shadow deepens, blur intensifies to blur-2xl)
 
 ### Workout Logger
-**Active Workout Interface**: Full-screen glass panel over gradient. Sticky header bar (backdrop-blur-2xl, higher opacity 0.15) with workout name and real-time elapsed timer in gradient text. Exercise list as stacked glass cards with accordion expansion. 
+Full-screen glass interface. Sticky header (blur-2xl, opacity 0.15) with workout name gradient text and live timer. Exercise cards stack with accordion expansion. 
 
-**Set Tracking Table**: Frosted table rows, columns for Set#/Previous/Weight/Reps/Check. Input fields with glass styling (border, subtle inner shadow). Completed rows get emerald gradient left border and check icon animation. Previous performance in muted gradient text.
+**Set Table**: Frosted rows for Set#/Previous/Weight/Reps/Checkbox. Completed sets get emerald gradient left border (4px) and animated checkmark burst. Input fields use glass styling with gradient focus border.
 
-**Rest Timer**: Modal glass overlay (centered, backdrop-blur-3xl) with large countdown numbers in gradient, circular progress ring, pause/skip glass buttons below.
+**Rest Timer Modal**: Centered overlay (blur-3xl, opacity 0.2), large gradient countdown, circular progress ring, glass pause/skip buttons. Micro-interaction: Numbers fade-scale transition on decrement.
 
 ### Progress Dashboard
-**Statistics Grid**: 2x2 on desktop, stacked mobile. Each stat card: Large gradient number (text-4xl), label, trend arrow, subtle animated gradient border pulse for records. Cards have deeper glass effect (0.12 opacity).
+2x2 stat cards (stacked on mobile). Large gradient numbers (text-4xl), animated gradient border pulse for PRs. Exercise performance charts in glass containers with gradient stroke lines. Glass dropdown for exercise selector, segmented glass control for time ranges.
 
-**Charts**: Glass containers with gradient-stroked chart lines. Chart.js integration with custom glassmorphic tooltips. Exercise selector as glass dropdown, time range as segmented glass control.
-
-**Body Stats**: Weight tracking line chart with gradient fill below line, measurement inputs in glass cards, progress photo gallery in glass masonry grid with lightbox expansion.
-
-### Workout Routines
-**Routine Cards**: Large glass cards with routine name in gradient text, exercise count badge (glass chip), estimated duration, last performed date. Action buttons (Edit/Delete/Start) as glass icon buttons. Drag handles with gradient when reordering in edit mode.
+### Routine Management
+Large glass cards with routine name (gradient text), exercise count badge, duration estimate, last performed timestamp. Glass icon buttons for Edit/Delete/Start. Drag handles appear with gradient on reorder mode. Micro-interaction: Card shadow expands during drag.
 
 ### Forms & Inputs
-**Text Inputs**: Glass aesthetic with rgba(255, 255, 255, 0.1) background, 1px glass border, backdrop-blur-sm, focus state adds gradient border glow.
-
-**Number Inputs**: Large +/- glass buttons flanking input, haptic-style press animations, unit toggle (lbs/kg) as segmented glass control.
+Glass text inputs: rgba(255, 255, 255, 0.1) background, 1px glass border, blur-sm. Focus adds gradient border glow with 200ms transition. Number inputs use large +/- glass buttons with press scale animation (0.95). Unit toggles (lbs/kg) as segmented glass control.
 
 ## Images
 
-**Exercise Demonstrations**: Required for all 150+ exercises. Aspect ratio 16:9, displayed with subtle gradient overlay at bottom for text readability. Placement: Full-width in exercise detail view, rounded corners on library card thumbnails.
+**Exercise Demonstrations**: Required for all exercises. 16:9 aspect ratio with subtle gradient overlay (bottom 30%) for text readability. Used in:
+- Exercise detail view: Full-width with rounded-xl corners
+- Library cards: Thumbnail with rounded-lg corners and glass border
+- Workout logger: Compact 4:3 ratio in collapsed accordion state
 
-**Progress Photos**: Optional body tracking feature. Photos displayed in glass-bordered frames with date stamps, before/after comparison uses split-view glass panels with gradient divider line.
+**Progress Photos**: Body tracking feature. Glass-bordered frames with date stamps, before/after split-view uses glass panels with gradient divider line.
 
-**No Hero Image**: Launch directly into bottom nav interface—this is productivity-first.
+**No Hero Image**: Productivity app launches directly into bottom nav interface.
 
 ## Glassmorphism Effects
 
-**Layering System**:
-- Background Layer: Animated gradient (subtle slow shift)
-- Mid Layer: Main glass cards (blur-xl, opacity 0.08-0.12)
-- Front Layer: Elevated elements (blur-2xl, opacity 0.15)
-- Overlay Layer: Modals and sheets (blur-3xl, opacity 0.2)
+**4-Layer System**:
+- Background: Animated gradient (subtle 20s loop)
+- Base: Cards at blur-xl, opacity 0.08
+- Elevated: Active elements at blur-2xl, opacity 0.12
+- Overlay: Modals at blur-3xl, opacity 0.15-0.2
 
-**Borders**: All glass surfaces use 1px borders with rgba(255, 255, 255, 0.18) for definition. Active/selected states add gradient border glow.
+**Borders**: 1px rgba(255, 255, 255, 0.18) on all glass. Active states add gradient border with glow effect.
 
-**Shadows**: Combine box-shadow with backdrop-filter for authentic depth: `0 8px 32px rgba(0, 0, 0, 0.37)` standard, `0 12px 48px rgba(0, 0, 0, 0.5)` for elevated modals.
+## Micro-Interactions
 
-## Animations
-- Rest timer: Smooth gradient pulse and number transitions
-- Set completion: Check icon with emerald gradient burst
-- Card interactions: Subtle scale (1.02) with shadow/blur increase
-- Background gradients: Slow 20s infinite animation loop
-- NO animations during active workout data entry
+**Core Animations**:
+- Set completion: Checkmark with emerald gradient burst (300ms)
+- Card hover: Scale 1.02, shadow deepens, blur increases (200ms ease-out)
+- Button press: Scale 0.95 (100ms), return 0.97 → 1.0 spring
+- Rest timer: Gradient pulse, smooth number transitions
+- Background gradient: Continuous 20s animation
+- Focus rings: Gradient ring fade-in (150ms)
+- Toast notifications: Slide-up from bottom with glass backdrop
+
+**Performance**: No animations during active set logging—prioritize input responsiveness.
 
 ## Accessibility
-- Text contrast ratios: Minimum 7:1 on glass surfaces using white text with high opacity (0.9+) and text-shadow for legibility
-- Touch targets: 56x56px minimum with glass button styling
-- Focus indicators: Gradient ring around interactive glass elements
-- High-contrast mode override: Reduce translucency to 0.9 opacity for glass surfaces when enabled
+- Contrast: 7:1 minimum via white text (opacity 0.9+) with text-shadow on glass
+- Touch targets: 56x56px minimum
+- Focus indicators: Gradient ring (2px, 4px offset)
+- High-contrast mode: Glass opacity increases to 0.9, gradients become solid colors
+- Screen reader labels on all icon-only navigation
