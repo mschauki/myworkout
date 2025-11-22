@@ -62,6 +62,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
   const [customMuscleGroup, setCustomMuscleGroup] = useState("");
   const [customOtherMuscleGroups, setCustomOtherMuscleGroups] = useState<string[]>([]);
   const [customEquipment, setCustomEquipment] = useState("");
+  const [customIsTimeBased, setCustomIsTimeBased] = useState(false);
   const [customDescription, setCustomDescription] = useState("");
   const [customImageFile, setCustomImageFile] = useState<File | null>(null);
   const [customImagePreview, setCustomImagePreview] = useState<string | null>(null);
@@ -159,6 +160,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
       setCustomMuscleGroup("");
       setCustomOtherMuscleGroups([]);
       setCustomEquipment("");
+      setCustomIsTimeBased(false);
       setCustomDescription("");
       setCustomImageFile(null);
       setCustomImagePreview(null);
@@ -426,6 +428,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
       muscleGroup: customMuscleGroup,
       otherMuscleGroups: customOtherMuscleGroups.length > 0 ? customOtherMuscleGroups : undefined,
       equipment: customEquipment,
+      isTimeBased: customIsTimeBased,
       description: customDescription.trim() || undefined,
       imageUrl: imageUrl || undefined,
     });
@@ -745,6 +748,17 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                 <SelectItem value="other">Other</SelectItem>
                               </SelectContent>
                             </Select>
+                          </div>
+                          <div>
+                            <Label htmlFor="custom-is-time-based" className="flex flex-row items-center gap-3 cursor-pointer">
+                              <Checkbox
+                                id="custom-is-time-based"
+                                checked={customIsTimeBased}
+                                onCheckedChange={(checked) => setCustomIsTimeBased(checked === true)}
+                                data-testid="checkbox-custom-is-time-based"
+                              />
+                              <span className="font-normal">Time-based exercise (duration instead of reps)</span>
+                            </Label>
                           </div>
                           <div>
                             <Label htmlFor="custom-description">Description (optional)</Label>
