@@ -97,36 +97,75 @@ export default function Workouts() {
     },
   });
 
+  // Render builder dialog (always available)
+  const builderDialog = (
+    <Dialog open={isBuilderOpen} onOpenChange={(open) => {
+      setIsBuilderOpen(open);
+      if (!open) {
+        setEditingRoutineId(null);
+      }
+    }}>
+      <DialogTrigger asChild>
+        <Button size="icon" className="glass-button" data-testid="button-create-routine">
+          <Plus className="w-5 h-5" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto glass-surface-elevated">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">
+            {editingRoutine ? "Edit Workout Routine" : "Create Workout Routine"}
+          </DialogTitle>
+        </DialogHeader>
+        <WorkoutRoutineBuilder 
+          editingRoutine={editingRoutine} 
+          onComplete={() => {
+            setIsBuilderOpen(false);
+            setEditingRoutineId(null);
+            setViewingRoutineId(null);
+          }} 
+        />
+      </DialogContent>
+    </Dialog>
+  );
+
   // Active workout view
   if (activeRoutine && selectedDay) {
     const filteredRoutine = getFilteredRoutine(activeRoutine, selectedDay);
     
     if (filteredRoutine.exercises.length === 0) {
       return (
-        <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-          <Card className="glass-surface">
-            <CardContent className="p-12 text-center">
-              <Calendar className="w-16 h-16 mx-auto mb-4 text-primary/40" />
-              <h3 className="text-xl font-semibold mb-2">No exercises for this day</h3>
-              <p className="text-foreground/60 mb-6">
-                This routine doesn't have any exercises scheduled for {selectedDay}.
-              </p>
-              <Button onClick={() => {
-                setActiveRoutineId(null);
-                setSelectedDay(null);
-              }}>
-                Back to Workouts
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+        <>
+          {builderDialog}
+          <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
+            <Card className="glass-surface">
+              <CardContent className="p-12 text-center">
+                <Calendar className="w-16 h-16 mx-auto mb-4 text-primary/40" />
+                <h3 className="text-xl font-semibold mb-2">No exercises for this day</h3>
+                <p className="text-foreground/60 mb-6">
+                  This routine doesn't have any exercises scheduled for {selectedDay}.
+                </p>
+                <Button onClick={() => {
+                  setActiveRoutineId(null);
+                  setSelectedDay(null);
+                }}>
+                  Back to Workouts
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </>
       );
     }
     
-    return <ActiveWorkout routine={filteredRoutine} selectedDay={selectedDay} onComplete={() => {
-      setActiveRoutineId(null);
-      setSelectedDay(null);
-    }} />;
+    return (
+      <>
+        {builderDialog}
+        <ActiveWorkout routine={filteredRoutine} selectedDay={selectedDay} onComplete={() => {
+          setActiveRoutineId(null);
+          setSelectedDay(null);
+        }} />
+      </>
+    );
   }
 
   // Exercise list view for selected day
@@ -135,7 +174,9 @@ export default function Workouts() {
     const dayTitle = getDayTitle(viewingRoutine, viewingDay);
     
     return (
-      <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
+      <>
+        {builderDialog}
+        <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
         <div className="mb-6">
           <Button
             variant="ghost"
@@ -198,6 +239,7 @@ export default function Workouts() {
           </>
         )}
       </div>
+      </>
     );
   }
 
@@ -207,7 +249,9 @@ export default function Workouts() {
     const daysWithExercises = allDays.filter(day => getExercisesForDay(viewingRoutine, day).length > 0);
     
     return (
-      <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
+      <>
+        {builderDialog}
+        <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
         <div className="mb-6">
           <Button
             variant="ghost"
@@ -319,6 +363,7 @@ export default function Workouts() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
+      </>
     );
   }
 
@@ -329,33 +374,7 @@ export default function Workouts() {
           <h1 className="text-4xl font-bold mb-2 gradient-text" data-testid="text-page-title">My Workouts</h1>
           <p className="text-base text-foreground/70">Create and track your routines</p>
         </div>
-        <Dialog open={isBuilderOpen} onOpenChange={(open) => {
-          setIsBuilderOpen(open);
-          if (!open) {
-            setEditingRoutineId(null);
-          }
-        }}>
-          <DialogTrigger asChild>
-            <Button size="icon" className="glass-button" data-testid="button-create-routine">
-              <Plus className="w-5 h-5" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto glass-surface-elevated">
-            <DialogHeader>
-              <DialogTitle className="text-2xl">
-                {editingRoutine ? "Edit Workout Routine" : "Create Workout Routine"}
-              </DialogTitle>
-            </DialogHeader>
-            <WorkoutRoutineBuilder 
-              editingRoutine={editingRoutine} 
-              onComplete={() => {
-                setIsBuilderOpen(false);
-                setEditingRoutineId(null);
-                setViewingRoutineId(null); // Close detail view after edit
-              }} 
-            />
-          </DialogContent>
-        </Dialog>
+        {builderDialog}
       </div>
 
       {isLoading ? (
