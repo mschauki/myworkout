@@ -54,12 +54,60 @@ export default function Workouts() {
     return exercises.find(e => e.id === id)?.name || "Unknown";
   };
 
+  // Helper to get exercise metadata
+  const getExerciseInfo = (id: string) => {
+    return exercises.find(e => e.id === id);
+  };
+
   // Get day title (custom or default)
   const getDayTitle = (routine: WorkoutRoutine, day: string) => {
     if (day === "any") return "Any Day";
     const dayName = day.charAt(0).toUpperCase() + day.slice(1);
     const customTitle = routine.dayTitles?.[day];
     return customTitle ? `${dayName} - ${customTitle}` : dayName;
+  };
+
+  // Format set configuration display
+  const getSetConfigDisplay = (exercise: any) => {
+    const exerciseInfo = getExerciseInfo(exercise.exerciseId);
+    const isTimeBased = exerciseInfo?.isTimeBased || false;
+    
+    if (exercise.setsConfig && exercise.setsConfig.length > 0) {
+      const setCount = exercise.setsConfig.length;
+      const firstSet = exercise.setsConfig[0];
+      
+      // Check if all sets have the same config
+      const allSame = exercise.setsConfig.every((set: any) => {
+        if (isTimeBased) {
+          return set.duration === firstSet.duration && set.restPeriod === firstSet.restPeriod;
+        } else {
+          return set.reps === firstSet.reps && set.restPeriod === firstSet.restPeriod;
+        }
+      });
+      
+      if (allSame) {
+        // All sets are the same, show simple format
+        const value = isTimeBased ? firstSet.duration : firstSet.reps;
+        const unit = isTimeBased ? 's' : 'reps';
+        return {
+          sets: `${setCount} sets × ${value} ${unit}`,
+          rest: `Rest: ${firstSet.restPeriod}s`
+        };
+      } else {
+        // Sets vary, show summary
+        return {
+          sets: `${setCount} sets (varying)`,
+          rest: 'Rest: (varying)'
+        };
+      }
+    } else {
+      // Fallback to legacy format
+      const unit = isTimeBased ? 's' : 'reps';
+      return {
+        sets: `${exercise.sets} sets × ${exercise.reps} ${unit}`,
+        rest: `Rest: ${exercise.restPeriod || 90}s`
+      };
+    }
   };
 
   // Filter exercises for selected day
@@ -201,7 +249,9 @@ export default function Workouts() {
         ) : (
           <>
             <div className="space-y-3 mb-6">
-              {dayExercises.map((exercise, idx) => (
+              {dayExercises.map((exercise, idx) => {
+                const config = getSetConfigDisplay(exercise);
+                return (
                 <Card key={idx} className="glass-surface" data-testid={`card-exercise-${idx}`}>
                   <CardContent className="p-5">
                     <div className="flex items-start justify-between gap-4">
@@ -211,17 +261,18 @@ export default function Workouts() {
                         </h3>
                         <div className="flex flex-wrap gap-2">
                           <Badge variant="secondary" className="glass-surface">
-                            {exercise.sets} sets × {exercise.reps} reps
+                            {config.sets}
                           </Badge>
                           <Badge variant="outline">
-                            Rest: {exercise.restPeriod || 90}s
+                            {config.rest}
                           </Badge>
                         </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              );
+              })}
             </div>
             
             <Button
