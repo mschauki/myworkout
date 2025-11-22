@@ -219,19 +219,12 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
 
   const completeSet = (exerciseIndex: number, setIndex: number) => {
     const set = exerciseLogs[exerciseIndex]?.sets[setIndex];
-    const exerciseLog = exerciseLogs[exerciseIndex];
-    const exercise = exercises.find(e => e.id === exerciseLog?.exerciseId);
-    const isBodyweight = exercise?.equipment?.toLowerCase() === "bodyweight";
     
-    // For bodyweight exercises, weight can be 0; for others, weight must be > 0
-    const weightValid = isBodyweight || (set && set.weight > 0);
-    
-    if (!set || !weightValid || set.reps <= 0) {
+    // Only validate reps - weight can be 0 or missing (backend handles this gracefully)
+    if (!set || set.reps <= 0) {
       toast({ 
         title: "Invalid set data", 
-        description: isBodyweight 
-          ? "Please enter positive values for reps"
-          : "Please enter positive values for weight and reps",
+        description: "Please enter positive values for reps",
         variant: "destructive" 
       });
       return;
