@@ -67,6 +67,9 @@ const seedExercises = async () => {
     { name: "Pistol Squat", description: "Single-leg squat to full depth", muscleGroup: "upper legs", equipment: "bodyweight", imageUrl: null },
     { name: "Wall Sit", description: "Hold squat position against wall", muscleGroup: "upper legs", equipment: "bodyweight", imageUrl: null },
     { name: "Glute Bridge", description: "Thrust hips up while lying on back", muscleGroup: "upper legs", equipment: "bodyweight", imageUrl: null },
+    { name: "Dumbbell Squat", description: "Squat while holding dumbbells at sides or shoulders", muscleGroup: "upper legs", equipment: "dumbbell", imageUrl: null },
+    { name: "Cable Hip Abduction", description: "Abduct leg against cable resistance to target hip and glute", muscleGroup: "upper legs", equipment: "cable", imageUrl: null },
+    { name: "Bridge", description: "Hold bridge position while lying on back", muscleGroup: "upper legs", equipment: "bodyweight", imageUrl: null, isTimeBased: true },
     
     // Lower Legs (2 exercises)
     { name: "Calf Raise", description: "Raise heels to stand on toes", muscleGroup: "lower legs", equipment: "machine", imageUrl: null },
@@ -113,6 +116,9 @@ const seedExercises = async () => {
     { name: "Kickback", description: "Extend arm back while bent over", muscleGroup: "arms", equipment: "dumbbell", imageUrl: null },
     { name: "JM Press", description: "Hybrid between close-grip bench and skull crusher", muscleGroup: "arms", equipment: "barbell", imageUrl: null },
     { name: "Tate Press", description: "Press dumbbells together and down toward chest", muscleGroup: "arms", equipment: "dumbbell", imageUrl: null },
+    { name: "Dumbbell Isometric Bicep Curl", description: "Hold isometric bicep position against dumbbell resistance", muscleGroup: "arms", equipment: "dumbbell", imageUrl: null },
+    { name: "Cable Rope Overhead Tricep Extension", description: "Extend arms overhead with rope attachment using cable", muscleGroup: "arms", equipment: "cable", imageUrl: null },
+    { name: "Cable Rope Tricep Pushdown", description: "Push rope attachment down with cable resistance", muscleGroup: "arms", equipment: "cable", imageUrl: null },
     
     // Core (15 exercises)
     { name: "Plank", description: "Hold body in straight line supported on forearms and toes", muscleGroup: "core", equipment: "bodyweight", imageUrl: null },
@@ -130,6 +136,9 @@ const seedExercises = async () => {
     { name: "Flutter Kicks", description: "Alternate kicking legs while lying on back", muscleGroup: "core", equipment: "bodyweight", imageUrl: null },
     { name: "Woodchoppers", description: "Rotate cable from high to low or low to high", muscleGroup: "core", equipment: "cable", imageUrl: null },
     { name: "Dragon Flag", description: "Advanced exercise holding body straight while anchored", muscleGroup: "core", equipment: "bodyweight", imageUrl: null },
+    { name: "Cable Standing Crunch", description: "Crunch downward using cable resistance while standing", muscleGroup: "core", equipment: "cable", imageUrl: null },
+    { name: "High Side Plank", description: "Hold high side plank position on hands", muscleGroup: "core", equipment: "bodyweight", imageUrl: null, isTimeBased: true },
+    { name: "Cobra Stretch", description: "Hold cobra stretch position for core and flexibility", muscleGroup: "core", equipment: "bodyweight", imageUrl: null, isTimeBased: true },
   ];
 
   // Mark all seeded exercises as not custom
