@@ -24,6 +24,7 @@ import {
 interface ActiveWorkoutProps {
   routine: WorkoutRoutine;
   selectedDay?: string;
+  startingExerciseIndex?: number;
   onComplete: () => void;
 }
 
@@ -43,7 +44,7 @@ interface ExerciseLog {
   supersetGroup?: string;
 }
 
-export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkoutProps) {
+export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0, onComplete }: ActiveWorkoutProps) {
   const [startTime] = useState(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
   const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>([]);
@@ -52,8 +53,9 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
   const [currentRestPeriod, setCurrentRestPeriod] = useState(90);
   const [currentRestingExerciseIndex, setCurrentRestingExerciseIndex] = useState<number | null>(null);
   const [currentRestingSetIndex, setCurrentRestingSetIndex] = useState<number | null>(null);
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [expandedExercises, setExpandedExercises] = useState<string[]>(["exercise-0"]);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(startingExerciseIndex);
+  const [expandedExercises, setExpandedExercises] = useState<string[]>([`exercise-${startingExerciseIndex}`]);
+  const [startingPointIndex] = useState(startingExerciseIndex);
   const [showRestPeriodDialog, setShowRestPeriodDialog] = useState(false);
   const [pendingRestPeriodChange, setPendingRestPeriodChange] = useState<{
     exerciseIndex: number;
@@ -279,20 +281,50 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
     updateSet(exerciseIndex, setIndex, "completed", true);
     
     // Auto-advance to next exercise if this is the last set
-    if (isLastSet && exerciseIndex < exerciseLogs.length - 1) {
+    if (isLastSet) {
       // Check if all other sets are already complete (which means when we mark this one done, all will be complete)
       const allOthersComplete = currentExercise.sets.every((s, idx) => idx === setIndex || s.completed);
       if (allOthersComplete) {
-        // Immediately advance to next exercise
-        setCurrentExerciseIndex(exerciseIndex + 1);
+        // Calculate next exercise index with wrap-around logic
+        let nextIndex = exerciseIndex + 1;
+        
+        // If we've reached the end and started from a different index, wrap around
+        if (nextIndex >= exerciseLogs.length) {
+          if (startingPointIndex > 0) {
+            // Wrap to beginning
+            nextIndex = 0;
+          } else {
+            // Started from beginning, workout is complete - no more auto-advance
+            nextIndex = exerciseIndex;
+          }
+        }
+        
+        // Check if we've cycled back to one before the starting point
+        const previousExerciseBeforeStart = startingPointIndex === 0 ? exerciseLogs.length - 1 : startingPointIndex - 1;
+        if (nextIndex === previousExerciseBeforeStart && startingPointIndex > 0 && exerciseIndex >= startingPointIndex) {
+          // We've completed the cycle, stay on current
+          nextIndex = exerciseIndex;
+        }
+        
+        // Immediately advance to next exercise if different
+        if (nextIndex !== exerciseIndex) {
+          setCurrentExerciseIndex(nextIndex);
+        }
       }
     }
     
-    // If this is the last set and there's a next exercise, auto-expand it
-    if (isLastSet && exerciseIndex < exerciseLogs.length - 1) {
-      const nextExerciseKey = `exercise-${exerciseIndex + 1}`;
-      if (!expandedExercises.includes(nextExerciseKey)) {
-        setExpandedExercises(prev => [...prev, nextExerciseKey]);
+    // If this is the last set and there's a next exercise to auto-expand, expand it
+    if (isLastSet) {
+      let nextIndex = exerciseIndex + 1;
+      if (nextIndex >= exerciseLogs.length && startingPointIndex > 0) {
+        nextIndex = 0;
+      }
+      
+      if (nextIndex < exerciseLogs.length && nextIndex !== exerciseIndex) {
+        const nextExerciseKey = `exercise-${nextIndex}`;
+        if (!expandedExercises.includes(nextExerciseKey)) {
+          setExpandedExercises(prev => [...prev, nextExerciseKey]);
+        }
       }
     }
     

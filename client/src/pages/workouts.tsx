@@ -32,6 +32,8 @@ export default function Workouts() {
   const [activeRoutineId, setActiveRoutineId] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [deleteRoutineId, setDeleteRoutineId] = useState<string | null>(null);
+  const [viewingExerciseIndex, setViewingExerciseIndex] = useState<number | null>(null);
+  const [startingExerciseIndex, setStartingExerciseIndex] = useState<number | null>(null);
   const { toast } = useToast();
 
   const { data: routines = [], isLoading } = useQuery<WorkoutRoutine[]>({
@@ -208,9 +210,10 @@ export default function Workouts() {
     return (
       <>
         {builderDialog}
-        <ActiveWorkout routine={filteredRoutine} selectedDay={selectedDay} onComplete={() => {
+        <ActiveWorkout routine={filteredRoutine} selectedDay={selectedDay} startingExerciseIndex={startingExerciseIndex ?? undefined} onComplete={() => {
           setActiveRoutineId(null);
           setSelectedDay(null);
+          setStartingExerciseIndex(null);
         }} />
       </>
     );
@@ -251,8 +254,14 @@ export default function Workouts() {
             <div className="space-y-3 mb-6">
               {dayExercises.map((exercise, idx) => {
                 const config = getSetConfigDisplay(exercise);
+                const exerciseInfo = getExerciseInfo(exercise.exerciseId);
                 return (
-                <Card key={idx} className="glass-surface" data-testid={`card-exercise-${idx}`}>
+                <Card 
+                  key={idx} 
+                  className="glass-surface cursor-pointer hover-elevate" 
+                  data-testid={`card-exercise-${idx}`}
+                  onClick={() => setViewingExerciseIndex(idx)}
+                >
                   <CardContent className="p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
@@ -266,6 +275,9 @@ export default function Workouts() {
                           <Badge variant="outline">
                             {config.rest}
                           </Badge>
+                          {exerciseInfo?.isTimeBased && (
+                            <Badge variant="outline" className="text-xs">Time-based</Badge>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -279,6 +291,7 @@ export default function Workouts() {
               onClick={() => {
                 setActiveRoutineId(viewingRoutineId);
                 setSelectedDay(viewingDay);
+                setStartingExerciseIndex(null);
               }}
               className="w-full glass-button"
               size="lg"
@@ -288,6 +301,82 @@ export default function Workouts() {
               Start Workout
             </Button>
           </>
+        )}
+
+        {/* Exercise Detail Dialog */}
+        {viewingExerciseIndex !== null && (
+          <Dialog open={viewingExerciseIndex !== null} onOpenChange={(open) => !open && setViewingExerciseIndex(null)}>
+            <DialogContent className="glass-surface-elevated max-w-md">
+              <DialogHeader>
+                <DialogTitle>{getExerciseName(dayExercises[viewingExerciseIndex].exerciseId)}</DialogTitle>
+              </DialogHeader>
+              {(() => {
+                const exercise = dayExercises[viewingExerciseIndex];
+                const exerciseInfo = getExerciseInfo(exercise.exerciseId);
+                const config = getSetConfigDisplay(exercise);
+                
+                return (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">Sets Configuration</p>
+                      <div className="flex gap-2">
+                        <Badge variant="secondary" className="glass-surface">
+                          {config.sets}
+                        </Badge>
+                        <Badge variant="outline">
+                          {config.rest}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    {exerciseInfo?.description && (
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Description</p>
+                        <p className="text-sm">{exerciseInfo.description}</p>
+                      </div>
+                    )}
+                    
+                    {exerciseInfo?.equipment && (
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Equipment</p>
+                        <Badge variant="outline" className="capitalize">
+                          {exerciseInfo.equipment}
+                        </Badge>
+                      </div>
+                    )}
+                    
+                    {(exerciseInfo?.otherMuscleGroups && exerciseInfo.otherMuscleGroups.length > 0) && (
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">Secondary Muscles</p>
+                        <div className="flex flex-wrap gap-1">
+                          {exerciseInfo.otherMuscleGroups.map((muscle: string) => (
+                            <Badge key={muscle} variant="secondary" className="text-xs">
+                              {muscle}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <Button
+                      onClick={() => {
+                        setActiveRoutineId(viewingRoutineId);
+                        setSelectedDay(viewingDay);
+                        setStartingExerciseIndex(viewingExerciseIndex);
+                        setViewingExerciseIndex(null);
+                      }}
+                      className="w-full"
+                      size="lg"
+                      data-testid="button-start-from-exercise"
+                    >
+                      <Play className="w-5 h-5 mr-2" />
+                      Start Workout From Here
+                    </Button>
+                  </div>
+                );
+              })()}
+            </DialogContent>
+          </Dialog>
         )}
       </div>
       </>
