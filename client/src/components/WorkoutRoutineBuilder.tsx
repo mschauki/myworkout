@@ -31,6 +31,7 @@ interface RoutineExercise {
     restPeriod: number;
     weight?: number;
   }>;
+  supersetGroup?: string;
 }
 
 interface WorkoutRoutineBuilderProps {
@@ -197,6 +198,74 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
       ...prev,
       [day]: (prev[day] || []).filter((_, i) => i !== index)
     }));
+  };
+
+  const toggleSuperset = (day: string, index: number) => {
+    setExercisesByDay(prev => {
+      const dayExercises = [...(prev[day] || [])];
+      const exercise = dayExercises[index];
+      
+      if (exercise.supersetGroup) {
+        // Remove from superset - clear this exercise's group
+        const oldGroup = exercise.supersetGroup;
+        exercise.supersetGroup = undefined;
+        
+        // Re-evaluate the remaining exercises in this group
+        const remainingInGroup = dayExercises
+          .map((ex, idx) => ({ ex, idx }))
+          .filter(({ ex }) => ex.supersetGroup === oldGroup);
+        
+        if (remainingInGroup.length === 1) {
+          // Only one exercise left in the group - clear its group tag
+          remainingInGroup[0].ex.supersetGroup = undefined;
+        } else if (remainingInGroup.length > 1) {
+          // Check if remaining exercises are still contiguous (adjacent)
+          const indices = remainingInGroup.map(({ idx }) => idx).sort((a, b) => a - b);
+          let isContiguous = true;
+          for (let i = 1; i < indices.length; i++) {
+            if (indices[i] !== indices[i - 1] + 1) {
+              isContiguous = false;
+              break;
+            }
+          }
+          
+          // If not contiguous, clear all their group tags
+          if (!isContiguous) {
+            remainingInGroup.forEach(({ ex }) => {
+              ex.supersetGroup = undefined;
+            });
+          }
+        }
+      } else {
+        // Can only add to superset if there's a previous exercise
+        if (index < 1) {
+          toast({ 
+            title: "Cannot create superset", 
+            description: "Add at least one exercise first",
+            variant: "destructive" 
+          });
+          return prev;
+        }
+        
+        // Add to superset
+        if (dayExercises[index - 1].supersetGroup) {
+          // Join the previous exercise's existing superset
+          exercise.supersetGroup = dayExercises[index - 1].supersetGroup;
+        } else {
+          // Create a new superset group with the previous exercise
+          // Generate a stable ID using a timestamp-based approach that's consistent
+          const groupId = `${day}-ss-${dayExercises.length}-${index}`;
+          
+          dayExercises[index - 1].supersetGroup = groupId;
+          exercise.supersetGroup = groupId;
+        }
+      }
+      
+      return {
+        ...prev,
+        [day]: dayExercises
+      };
+    });
   };
 
   const updateDayTitle = (day: string, title: string) => {
@@ -429,39 +498,75 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                     Exercises for {day === "any" ? "Any Day" : day.charAt(0).toUpperCase() + day.slice(1)} ({exercisesByDay[day].length})
                   </Label>
                   <div className="space-y-2">
-                    {exercisesByDay[day].map((exercise, index) => (
-                      <Card key={index} className="glass-surface" data-testid={`card-exercise-${day}-${index}`}>
-                        <CardContent className="p-3 flex items-center justify-between gap-4">
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <Dumbbell className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium truncate">{getExerciseName(exercise.exerciseId)}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {exercise.sets} sets
-                              </p>
-                              {exercise.setsConfig && (
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  {exercise.setsConfig.map((set, i) => (
-                                    <span key={i} className="inline-block mr-2">
-                                      Set {i + 1}: {set.weight ? `${set.weight} lbs × ` : ''}{set.reps} reps, {set.restPeriod}s rest
-                                    </span>
-                                  ))}
+                    {exercisesByDay[day].map((exercise, index) => {
+                      const prevExercise = index > 0 ? exercisesByDay[day][index - 1] : null;
+                      const isInSuperset = !!exercise.supersetGroup;
+                      const isSupersetStart = isInSuperset && (!prevExercise || prevExercise.supersetGroup !== exercise.supersetGroup);
+                      const isSupersetContinuation = isInSuperset && prevExercise && prevExercise.supersetGroup === exercise.supersetGroup;
+                      
+                      return (
+                        <div key={index} className="relative">
+                          {isSupersetContinuation && (
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-orange-500 rounded-full" />
+                          )}
+                          <Card 
+                            className={`glass-surface ${isSupersetContinuation ? 'ml-3' : ''} ${isInSuperset ? 'border-primary/30' : ''}`} 
+                            data-testid={`card-exercise-${day}-${index}`}
+                          >
+                            <CardContent className="p-3">
+                              {isSupersetStart && (
+                                <div className="mb-2 flex items-center gap-2">
+                                  <Badge variant="default" className="text-xs glass-surface-elevated">
+                                    Superset
+                                  </Badge>
                                 </div>
                               )}
-                            </div>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeExerciseFromDay(day, index)}
-                            data-testid={`button-remove-exercise-${day}-${index}`}
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    ))}
+                              <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                  <Dumbbell className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium truncate">{getExerciseName(exercise.exerciseId)}</p>
+                                    <p className="text-sm text-muted-foreground">
+                                      {exercise.sets} sets
+                                    </p>
+                                    {exercise.setsConfig && (
+                                      <div className="text-xs text-muted-foreground mt-1">
+                                        {exercise.setsConfig.map((set, i) => (
+                                          <span key={i} className="inline-block mr-2">
+                                            Set {i + 1}: {set.weight ? `${set.weight} lbs × ` : ''}{set.reps} reps, {set.restPeriod}s rest
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex gap-1">
+                                  <Button
+                                    type="button"
+                                    variant={isInSuperset ? "default" : "outline"}
+                                    size="sm"
+                                    className="h-8 px-2 text-xs"
+                                    onClick={() => toggleSuperset(day, index)}
+                                    data-testid={`button-toggle-superset-${day}-${index}`}
+                                  >
+                                    {isInSuperset ? "Remove SS" : "Superset"}
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => removeExerciseFromDay(day, index)}
+                                    data-testid={`button-remove-exercise-${day}-${index}`}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}

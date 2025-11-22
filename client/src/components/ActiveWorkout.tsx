@@ -39,6 +39,7 @@ interface ExerciseLog {
   exerciseName: string;
   defaultRestPeriod?: number;
   sets: WorkoutSet[];
+  supersetGroup?: string;
 }
 
 export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkoutProps) {
@@ -83,6 +84,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
           exerciseId: ex.exerciseId,
           exerciseName: exercise?.name || "Unknown Exercise",
           defaultRestPeriod,
+          supersetGroup: ex.supersetGroup,
           sets: ex.setsConfig.map((setConfig) => ({
             weight: setConfig.weight || 0, // Use weight from routine if available
             reps: setConfig.reps,
@@ -96,6 +98,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
           exerciseId: ex.exerciseId,
           exerciseName: exercise?.name || "Unknown Exercise",
           defaultRestPeriod,
+          supersetGroup: ex.supersetGroup,
           sets: Array.from({ length: ex.sets }, () => ({
             weight: 0,
             reps: ex.reps,
@@ -247,8 +250,24 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
       }
     }
     
-    // Use the per-set rest period
-    const restPeriod = set.restPeriod || 90;
+    // Superset handling: When transitioning between exercises in the same superset,
+    // use the minimum of configured rest and superset transition rest
+    const currentSuperset = currentExercise.supersetGroup;
+    const SUPERSET_MAX_TRANSITION_REST = 15; // Maximum rest for superset transitions
+    const configuredRest = set.restPeriod ?? 90; // Use nullish coalescing to preserve 0
+    
+    let restPeriod = configuredRest;
+    
+    if (currentSuperset && isLastSet && exerciseIndex < exerciseLogs.length - 1) {
+      // Last set of this exercise - check if next exercise is in same superset
+      const nextExercise = exerciseLogs[exerciseIndex + 1];
+      if (nextExercise && nextExercise.supersetGroup === currentSuperset) {
+        // Next exercise is in same superset - use minimum of configured and max transition rest
+        // This allows users to configure shorter rests (even 0) while capping longer rests at 15s
+        restPeriod = Math.min(configuredRest, SUPERSET_MAX_TRANSITION_REST);
+      }
+    }
+    
     setCurrentRestPeriod(restPeriod);
     setRestTimer(restPeriod);
     setRestPaused(false);
@@ -589,6 +608,11 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
             const exercise = exercises.find((e) => e.id === routineExercise?.exerciseId);
             const isBodyweight = exercise?.equipment?.toLowerCase() === "bodyweight";
             
+            // Check if this exercise is part of a superset
+            const isInSuperset = !!log.supersetGroup;
+            const prevLog = exerciseIndex > 0 ? exerciseLogs[exerciseIndex - 1] : null;
+            const isSupersetStart = isInSuperset && (!prevLog || prevLog.supersetGroup !== log.supersetGroup);
+            
             return (
             <AccordionItem key={exerciseIndex} value={`exercise-${exerciseIndex}`}>
               <AccordionTrigger className="text-lg font-medium" data-testid={`accordion-exercise-${exerciseIndex}`}>
@@ -597,6 +621,11 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                   <Badge variant="outline" className="text-xs">
                     {log.sets.filter(s => s.completed).length}/{log.sets.length}
                   </Badge>
+                  {isSupersetStart && (
+                    <Badge variant="default" className="text-xs glass-surface-elevated">
+                      Superset
+                    </Badge>
+                  )}
                   {getBest1RM(log.sets) > 0 && (
                     <Badge variant="default" className="text-xs bg-primary/90" data-testid={`badge-1rm-${exerciseIndex}`}>
                       Est. 1RM: {Math.round(getBest1RM(log.sets))} lbs
