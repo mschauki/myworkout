@@ -52,6 +52,8 @@ export default function Exercises() {
     { reps: 10, restPeriod: 90, weight: undefined },
   ]);
   const [deletingExercise, setDeletingExercise] = useState<Exercise | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string>("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const { toast } = useToast();
 
   const { data: exercises = [], isLoading } = useQuery<Exercise[]>({
@@ -93,14 +95,72 @@ export default function Exercises() {
       toast({ title: "Exercise created successfully" });
       setIsCreateDialogOpen(false);
       form.reset();
+      setUploadedImageUrl("");
     },
     onError: () => {
       toast({ title: "Failed to create exercise", variant: "destructive" });
     },
   });
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ 
+        title: "File too large", 
+        description: "Please select an image smaller than 5MB",
+        variant: "destructive" 
+      });
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({ 
+        title: "Invalid file type", 
+        description: "Please select an image file",
+        variant: "destructive" 
+      });
+      return;
+    }
+
+    setIsUploadingImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/upload-exercise-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const result = await response.json();
+      setUploadedImageUrl(result.imageUrl);
+      toast({ title: "Image uploaded successfully" });
+    } catch (error) {
+      toast({ 
+        title: "Upload failed", 
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive" 
+      });
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const handleCreateExercise = (data: any) => {
-    createExerciseMutation.mutate(data);
+    const exerciseData = {
+      ...data,
+      imageUrl: uploadedImageUrl || undefined,
+    };
+    createExerciseMutation.mutate(exerciseData);
   };
 
   const updateExerciseMutation = useMutation({
@@ -369,6 +429,43 @@ export default function Exercises() {
                       </FormItem>
                     )}
                   />
+                  <div className="space-y-2">
+                    <Label htmlFor="exercise-image">Exercise Image (Optional)</Label>
+                    <div className="flex flex-col gap-2">
+                      <Input
+                        id="exercise-image"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={isUploadingImage}
+                        data-testid="input-exercise-image"
+                        className="cursor-pointer"
+                      />
+                      {isUploadingImage && (
+                        <p className="text-sm text-muted-foreground">Uploading image...</p>
+                      )}
+                      {uploadedImageUrl && (
+                        <div className="relative w-full h-32 glass-surface rounded-lg overflow-hidden">
+                          <img
+                            src={uploadedImageUrl}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute top-2 right-2 h-6 w-6"
+                            onClick={() => setUploadedImageUrl("")}
+                            data-testid="button-remove-uploaded-image"
+                          >
+                            ×
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Maximum file size: 5MB</p>
+                  </div>
                   <FormField
                     control={form.control}
                     name="equipment"

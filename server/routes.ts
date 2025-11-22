@@ -1,6 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import multer from "multer";
+import path from "path";
+import fs from "fs/promises";
 import { 
   insertExerciseSchema,
   insertWorkoutRoutineSchema,
@@ -11,7 +14,52 @@ import {
   type InsertWorkoutLog
 } from "@shared/schema";
 
+// Configure multer for file uploads
+const uploadDir = path.join(process.cwd(), "attached_assets", "exercise_images");
+
+// Ensure upload directory exists
+fs.mkdir(uploadDir, { recursive: true }).catch(console.error);
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => {
+      cb(null, uploadDir);
+    },
+    filename: (_req, file, cb) => {
+      // Generate unique filename: timestamp + original extension
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, 'exercise-' + uniqueSuffix + path.extname(file.originalname));
+    }
+  }),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB max file size
+  },
+  fileFilter: (_req, file, cb) => {
+    // Allow only image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Image upload endpoint
+  app.post("/api/upload-exercise-image", upload.single('image'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+      
+      // Return the relative URL path
+      const imageUrl = `/attached_assets/exercise_images/${req.file.filename}`;
+      res.json({ imageUrl });
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Failed to upload image" });
+    }
+  });
+
   // Exercises
   app.get("/api/exercises", async (req, res) => {
     try {
