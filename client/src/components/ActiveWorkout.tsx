@@ -52,6 +52,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
   const [currentRestPeriod, setCurrentRestPeriod] = useState(90);
   const [currentRestingExerciseIndex, setCurrentRestingExerciseIndex] = useState<number | null>(null);
   const [currentRestingSetIndex, setCurrentRestingSetIndex] = useState<number | null>(null);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [expandedExercises, setExpandedExercises] = useState<string[]>(["exercise-0"]);
   const [showRestPeriodDialog, setShowRestPeriodDialog] = useState(false);
   const [pendingRestPeriodChange, setPendingRestPeriodChange] = useState<{
@@ -274,6 +275,16 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
     // Check if this is the last set of the current exercise
     const currentExercise = exerciseLogs[exerciseIndex];
     const isLastSet = setIndex === currentExercise.sets.length - 1;
+    
+    // Auto-advance to next exercise if all sets are complete
+    if (isLastSet && exerciseIndex < exerciseLogs.length - 1) {
+      const allSetsComplete = currentExercise.sets.every(s => s.completed);
+      if (allSetsComplete) {
+        setTimeout(() => {
+          setCurrentExerciseIndex(exerciseIndex + 1);
+        }, 500); // Small delay for visual feedback
+      }
+    }
     
     // If this is the last set and there's a next exercise, auto-expand it
     if (isLastSet && exerciseIndex < exerciseLogs.length - 1) {
@@ -639,47 +650,58 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
         </div>
       )}
 
-      {/* Exercise List */}
-      <div className="px-4 pt-6 max-w-6xl mx-auto">
-        <Accordion 
-          type="multiple" 
-          value={expandedExercises}
-          onValueChange={setExpandedExercises}
-        >
-          {exerciseLogs.map((log, exerciseIndex) => {
-            // Find exercise metadata to check if it's bodyweight or time-based
-            const routineExercise = routine.exercises[exerciseIndex];
+      {/* Current Exercise - Fullscreen */}
+      {exerciseLogs.length > 0 && (
+        <div className="min-h-screen flex flex-col px-4 pt-6 pb-20">
+          {(() => {
+            const log = exerciseLogs[currentExerciseIndex];
+            if (!log) return null;
+            
+            const routineExercise = routine.exercises[currentExerciseIndex];
             const exercise = exercises.find((e) => e.id === routineExercise?.exerciseId);
             const isBodyweight = exercise?.equipment?.toLowerCase() === "bodyweight";
             const isTimeBased = exercise?.isTimeBased || false;
-            
-            // Check if this exercise is part of a superset
             const isInSuperset = !!log.supersetGroup;
-            const prevLog = exerciseIndex > 0 ? exerciseLogs[exerciseIndex - 1] : null;
+            const prevLog = currentExerciseIndex > 0 ? exerciseLogs[currentExerciseIndex - 1] : null;
             const isSupersetStart = isInSuperset && (!prevLog || prevLog.supersetGroup !== log.supersetGroup);
             
+            const completedInExercise = log.sets.filter(s => s.completed).length;
+            const totalInExercise = log.sets.length;
+            const allComplete = completedInExercise === totalInExercise && totalInExercise > 0;
+            
             return (
-            <AccordionItem key={exerciseIndex} value={`exercise-${exerciseIndex}`}>
-              <AccordionTrigger className="text-lg font-medium" data-testid={`accordion-exercise-${exerciseIndex}`}>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span>{log.exerciseName}</span>
-                  <Badge variant="outline" className="text-xs">
-                    {log.sets.filter(s => s.completed).length}/{log.sets.length}
-                  </Badge>
-                  {isSupersetStart && (
-                    <Badge variant="default" className="text-xs glass-surface-elevated">
-                      Superset
-                    </Badge>
-                  )}
-                  {!isTimeBased && getBest1RM(log.sets) > 0 && (
-                    <Badge variant="default" className="text-xs bg-primary/90" data-testid={`badge-1rm-${exerciseIndex}`}>
-                      Est. 1RM: {Math.round(getBest1RM(log.sets))} lbs
-                    </Badge>
-                  )}
+              <div className="flex flex-col flex-1">
+                {/* Exercise Header */}
+                <div className="mb-8 space-y-4">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <h2 className="text-4xl font-bold">{log.exerciseName}</h2>
+                      {isSupersetStart && (
+                        <Badge variant="default" className="text-xs glass-surface-elevated">
+                          Superset
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Badge variant="secondary" className="text-base px-3 py-2">
+                        {completedInExercise}/{totalInExercise} sets
+                      </Badge>
+                      {!isTimeBased && getBest1RM(log.sets) > 0 && (
+                        <Badge variant="default" className="text-sm bg-primary/90" data-testid={`badge-1rm-${currentExerciseIndex}`}>
+                          Est. 1RM: {Math.round(getBest1RM(log.sets))} lbs
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Progress indicator for other exercises */}
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span>Exercise {currentExerciseIndex + 1} of {exerciseLogs.length}</span>
+                  </div>
                 </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-3 pt-2">
+
+                {/* Sets Grid */}
+                <div className="flex-1 space-y-4">
                   {/* Table Header */}
                   <div className={`grid ${isBodyweight ? 'grid-cols-8' : 'grid-cols-12'} gap-2 text-xs font-medium text-muted-foreground px-2`}>
                     <div className="col-span-2">Set</div>
@@ -689,97 +711,128 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                   </div>
 
                   {/* Sets */}
-                  {log.sets.map((set, setIndex) => (
-                    <div
-                      key={setIndex}
-                      className={`grid ${isBodyweight ? 'grid-cols-8' : 'grid-cols-12'} gap-2 items-center p-2 rounded-md ${
-                        set.completed ? "bg-muted" : ""
-                      }`}
-                      data-testid={`row-set-${exerciseIndex}-${setIndex}`}
-                    >
-                      <div className="col-span-2 font-medium">{setIndex + 1}</div>
-                      {!isBodyweight && (
-                        <div className="col-span-4">
+                  <div className="space-y-2">
+                    {log.sets.map((set, setIndex) => (
+                      <div
+                        key={setIndex}
+                        className={`grid ${isBodyweight ? 'grid-cols-8' : 'grid-cols-12'} gap-2 items-center p-3 rounded-md ${
+                          set.completed ? "bg-primary/20" : "bg-card"
+                        }`}
+                        data-testid={`row-set-${currentExerciseIndex}-${setIndex}`}
+                      >
+                        <div className="col-span-2 font-bold text-lg">{setIndex + 1}</div>
+                        {!isBodyweight && (
+                          <div className="col-span-4">
+                            <Input
+                              type="number"
+                              min="0"
+                              step="5"
+                              value={set.weight || ""}
+                              onChange={(e) => updateSet(currentExerciseIndex, setIndex, "weight", e.target.value)}
+                              disabled={set.completed}
+                              className="h-12 text-lg"
+                              data-testid={`input-weight-${currentExerciseIndex}-${setIndex}`}
+                            />
+                          </div>
+                        )}
+                        <div className="col-span-3">
                           <Input
                             type="number"
                             min="0"
-                            step="5"
-                            value={set.weight || ""}
-                            onChange={(e) => updateSet(exerciseIndex, setIndex, "weight", e.target.value)}
+                            value={isTimeBased ? (set.duration || "") : (set.reps || "")}
+                            onChange={(e) => updateSet(currentExerciseIndex, setIndex, isTimeBased ? "duration" : "reps", e.target.value)}
                             disabled={set.completed}
-                            className="h-9"
-                            data-testid={`input-weight-${exerciseIndex}-${setIndex}`}
+                            className="h-12 text-lg"
+                            placeholder={isTimeBased ? "Seconds" : "Reps"}
+                            data-testid={`input-${isTimeBased ? 'duration' : 'reps'}-${currentExerciseIndex}-${setIndex}`}
                           />
                         </div>
-                      )}
-                      <div className="col-span-3">
-                        <Input
-                          type="number"
-                          min="0"
-                          value={isTimeBased ? (set.duration || "") : (set.reps || "")}
-                          onChange={(e) => updateSet(exerciseIndex, setIndex, isTimeBased ? "duration" : "reps", e.target.value)}
-                          disabled={set.completed}
-                          className="h-9"
-                          placeholder={isTimeBased ? "Seconds" : "Reps"}
-                          data-testid={`input-${isTimeBased ? 'duration' : 'reps'}-${exerciseIndex}-${setIndex}`}
-                        />
+                        <div className="col-span-3 flex justify-end">
+                          {set.completed ? (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => updateSet(currentExerciseIndex, setIndex, "completed", false)}
+                              className="h-12 w-12"
+                              data-testid={`button-undo-${currentExerciseIndex}-${setIndex}`}
+                            >
+                              <Check className="w-6 h-6 text-primary" />
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => completeSet(currentExerciseIndex, setIndex)}
+                              disabled={isTimeBased ? (set.duration ?? 0) <= 0 : (set.reps ?? 0) <= 0}
+                              className="h-12 w-12"
+                              data-testid={`button-complete-${currentExerciseIndex}-${setIndex}`}
+                            >
+                              <Check className="w-6 h-6" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      <div className="col-span-3 flex justify-end">
-                        {set.completed ? (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => updateSet(exerciseIndex, setIndex, "completed", false)}
-                            data-testid={`button-undo-${exerciseIndex}-${setIndex}`}
-                          >
-                            <Check className="w-5 h-5 text-primary" />
-                          </Button>
-                        ) : (
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => completeSet(exerciseIndex, setIndex)}
-                            disabled={isTimeBased ? (set.duration ?? 0) <= 0 : (set.reps ?? 0) <= 0}
-                            data-testid={`button-complete-${exerciseIndex}-${setIndex}`}
-                          >
-                            <Check className="w-5 h-5" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  
+                    ))}
+                  </div>
+
                   {/* Add Set Button */}
                   <Button
                     variant="outline"
-                    size="sm"
-                    onClick={() => addSet(exerciseIndex)}
-                    className="mt-2 w-full"
-                    data-testid={`button-add-set-${exerciseIndex}`}
+                    size="lg"
+                    onClick={() => addSet(currentExerciseIndex)}
+                    className="w-full mt-6"
+                    data-testid={`button-add-set-${currentExerciseIndex}`}
                   >
-                    <Plus className="w-4 h-4 mr-2" />
+                    <Plus className="w-5 h-5 mr-2" />
                     Add Set
                   </Button>
                 </div>
-              </AccordionContent>
-            </AccordionItem>
-            )
-          })}
-        </Accordion>
 
-        {/* Finish Button */}
-        <div className="mt-8 pb-4">
-          <Button
-            onClick={finishWorkout}
-            className="w-full"
-            size="lg"
-            disabled={saveWorkoutMutation.isPending || completedSets === 0}
-            data-testid="button-finish-workout"
-          >
-            {saveWorkoutMutation.isPending ? "Saving..." : "Finish Workout"}
-          </Button>
+                {/* Bottom Actions */}
+                <div className="mt-8 space-y-3 flex flex-col">
+                  {/* Next Exercise Button */}
+                  {currentExerciseIndex < exerciseLogs.length - 1 && allComplete && (
+                    <Button
+                      onClick={() => setCurrentExerciseIndex(currentExerciseIndex + 1)}
+                      size="lg"
+                      className="w-full"
+                      data-testid={`button-next-exercise-${currentExerciseIndex}`}
+                    >
+                      Next Exercise
+                    </Button>
+                  )}
+                  
+                  {/* Previous Exercise Button */}
+                  {currentExerciseIndex > 0 && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => setCurrentExerciseIndex(currentExerciseIndex - 1)}
+                      size="lg"
+                      className="w-full"
+                      data-testid={`button-prev-exercise-${currentExerciseIndex}`}
+                    >
+                      Previous Exercise
+                    </Button>
+                  )}
+
+                  {/* Finish Button */}
+                  {currentExerciseIndex === exerciseLogs.length - 1 && allComplete && (
+                    <Button
+                      onClick={finishWorkout}
+                      size="lg"
+                      className="w-full"
+                      disabled={saveWorkoutMutation.isPending || completedSets === 0}
+                      data-testid="button-finish-workout"
+                    >
+                      {saveWorkoutMutation.isPending ? "Saving..." : "Finish Workout"}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
         </div>
-      </div>
+      )}
 
       {/* Rest Period Change Confirmation Dialog */}
       <AlertDialog open={showRestPeriodDialog} onOpenChange={setShowRestPeriodDialog}>
