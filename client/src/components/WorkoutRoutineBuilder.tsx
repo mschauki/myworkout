@@ -882,7 +882,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                         className="h-8 text-xs"
                                         data-testid={`input-set-${day}-${index}-weight`}
                                       />
-                                      {perSetConfig.length > 1 && (
+                                      {index === 0 && perSetConfig.length > 1 && (
                                         <Button
                                           type="button"
                                           variant="ghost"
@@ -906,7 +906,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                       className="h-8 text-xs"
                                       data-testid={`input-set-${day}-${index}-reps`}
                                     />
-                                    {perSetConfig.length > 1 && (
+                                    {index === 0 && perSetConfig.length > 1 && (
                                       <Button
                                         type="button"
                                         variant="ghost"
@@ -932,7 +932,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                         data-testid={`input-set-${day}-${index}-rest`}
                                       />
                                     </div>
-                                    {perSetConfig.length > 1 && (
+                                    {index === 0 && perSetConfig.length > 1 && (
                                       <Button
                                         type="button"
                                         variant="ghost"
