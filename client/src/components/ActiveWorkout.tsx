@@ -143,7 +143,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
       const newLogs = [...logs];
       let parsedValue = value;
       
-      if (field === 'weight' || field === 'reps') {
+      if (field === 'weight' || field === 'reps' || field === 'duration') {
         // Don't update if value is empty string - keep previous value
         if (value === '' || value === null || value === undefined) {
           return logs;
@@ -619,10 +619,11 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
           onValueChange={setExpandedExercises}
         >
           {exerciseLogs.map((log, exerciseIndex) => {
-            // Find exercise metadata to check if it's bodyweight
+            // Find exercise metadata to check if it's bodyweight or time-based
             const routineExercise = routine.exercises[exerciseIndex];
             const exercise = exercises.find((e) => e.id === routineExercise?.exerciseId);
             const isBodyweight = exercise?.equipment?.toLowerCase() === "bodyweight";
+            const isTimeBased = exercise?.isTimeBased || false;
             
             // Check if this exercise is part of a superset
             const isInSuperset = !!log.supersetGroup;
@@ -642,7 +643,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                       Superset
                     </Badge>
                   )}
-                  {getBest1RM(log.sets) > 0 && (
+                  {!isTimeBased && getBest1RM(log.sets) > 0 && (
                     <Badge variant="default" className="text-xs bg-primary/90" data-testid={`badge-1rm-${exerciseIndex}`}>
                       Est. 1RM: {Math.round(getBest1RM(log.sets))} lbs
                     </Badge>
@@ -655,7 +656,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                   <div className={`grid ${isBodyweight ? 'grid-cols-8' : 'grid-cols-12'} gap-2 text-xs font-medium text-muted-foreground px-2`}>
                     <div className="col-span-2">Set</div>
                     {!isBodyweight && <div className="col-span-4">Weight (lbs)</div>}
-                    <div className="col-span-3">Reps</div>
+                    <div className="col-span-3">{isTimeBased ? 'Duration (s)' : 'Reps'}</div>
                     <div className="col-span-3 text-right">Done</div>
                   </div>
 
@@ -687,11 +688,12 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                         <Input
                           type="number"
                           min="0"
-                          value={set.reps || ""}
-                          onChange={(e) => updateSet(exerciseIndex, setIndex, "reps", e.target.value)}
+                          value={isTimeBased ? (set.duration || "") : (set.reps || "")}
+                          onChange={(e) => updateSet(exerciseIndex, setIndex, isTimeBased ? "duration" : "reps", e.target.value)}
                           disabled={set.completed}
                           className="h-9"
-                          data-testid={`input-reps-${exerciseIndex}-${setIndex}`}
+                          placeholder={isTimeBased ? "Seconds" : "Reps"}
+                          data-testid={`input-${isTimeBased ? 'duration' : 'reps'}-${exerciseIndex}-${setIndex}`}
                         />
                       </div>
                       <div className="col-span-3 flex justify-end">
@@ -709,7 +711,7 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
                             variant="outline"
                             size="icon"
                             onClick={() => completeSet(exerciseIndex, setIndex)}
-                            disabled={!set.reps || set.reps <= 0}
+                            disabled={isTimeBased ? (set.duration ?? 0) <= 0 : (set.reps ?? 0) <= 0}
                             data-testid={`button-complete-${exerciseIndex}-${setIndex}`}
                           >
                             <Check className="w-5 h-5" />
