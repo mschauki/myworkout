@@ -18,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 const ALL_DAYS = [...WEEKDAYS, "any"];
-const MUSCLE_GROUPS = ["Chest", "Back", "Legs", "Shoulders", "Arms", "Core", "Biceps", "Triceps", "Glutes", "Abs", "Calves", "Forearms", "Cardio", "Full Body"];
+const MUSCLE_GROUPS = ["Chest", "Back", "Upper Legs", "Lower Legs", "Shoulders", "Arms", "Core", "Biceps", "Triceps", "Glutes", "Abs", "Calves", "Forearms", "Cardio", "Full Body"];
 
 interface RoutineExercise {
   exerciseId: string;

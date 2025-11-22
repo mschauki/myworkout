@@ -30,7 +30,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const MUSCLE_GROUPS = ["All", "Chest", "Back", "Legs", "Shoulders", "Arms", "Core", "Biceps", "Triceps", "Glutes", "Abs", "Calves", "Forearms", "Cardio", "Full Body"];
+const MUSCLE_GROUPS = ["All", "Chest", "Back", "Upper Legs", "Lower Legs", "Shoulders", "Arms", "Core", "Biceps", "Triceps", "Glutes", "Abs", "Calves", "Forearms", "Cardio", "Full Body"];
 const EQUIPMENT_OPTIONS = ["Barbell", "Dumbbell", "Machine", "Cable", "Bodyweight", "Resistance Band", "Other"];
 const DAYS_OF_WEEK = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "any"] as const;
 
