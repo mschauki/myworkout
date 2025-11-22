@@ -60,6 +60,9 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
   const [customOtherMuscleGroups, setCustomOtherMuscleGroups] = useState<string[]>([]);
   const [customEquipment, setCustomEquipment] = useState("");
   const [customDescription, setCustomDescription] = useState("");
+  const [customImageFile, setCustomImageFile] = useState<File | null>(null);
+  const [customImagePreview, setCustomImagePreview] = useState<string | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
 
   const { toast } = useToast();
 
@@ -112,6 +115,9 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
       setCustomOtherMuscleGroups([]);
       setCustomEquipment("");
       setCustomDescription("");
+      setCustomImageFile(null);
+      setCustomImagePreview(null);
+      setUploadedImageUrl(null);
     },
     onError: () => {
       toast({ title: "Failed to create exercise", variant: "destructive" });
@@ -204,7 +210,25 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
     });
   };
 
-  const handleCreateCustomExercise = (e: React.FormEvent) => {
+  const handleCustomImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCustomImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCustomImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveCustomImage = () => {
+    setCustomImageFile(null);
+    setCustomImagePreview(null);
+    setUploadedImageUrl(null);
+  };
+
+  const handleCreateCustomExercise = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -222,12 +246,48 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
       return;
     }
     
+    // Upload image if one was selected
+    let imageUrl: string | undefined = undefined;
+    if (customImageFile) {
+      try {
+        const formData = new FormData();
+        formData.append("image", customImageFile);
+        
+        const uploadResponse = await fetch("/api/exercises/upload", {
+          method: "POST",
+          body: formData,
+        });
+        
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          toast({ 
+            title: "Image upload failed", 
+            description: errorData.error || "Could not upload image",
+            variant: "destructive" 
+          });
+          return;
+        }
+        
+        const uploadData = await uploadResponse.json();
+        imageUrl = uploadData.imageUrl;
+        setUploadedImageUrl(imageUrl || null);
+      } catch (error) {
+        toast({ 
+          title: "Image upload failed", 
+          description: "Could not upload image",
+          variant: "destructive" 
+        });
+        return;
+      }
+    }
+    
     createCustomExerciseMutation.mutate({
       name: customExerciseName.trim(),
       muscleGroup: customMuscleGroup,
       otherMuscleGroups: customOtherMuscleGroups.length > 0 ? customOtherMuscleGroups : undefined,
       equipment: customEquipment,
       description: customDescription.trim() || undefined,
+      imageUrl: imageUrl || undefined,
     });
   };
 
@@ -513,6 +573,41 @@ export function WorkoutRoutineBuilder({ onComplete }: WorkoutRoutineBuilderProps
                               placeholder="Exercise instructions or notes..."
                               data-testid="input-custom-description"
                             />
+                          </div>
+                          <div>
+                            <Label htmlFor="custom-image">Exercise Image (optional)</Label>
+                            <div className="space-y-2">
+                              {customImagePreview ? (
+                                <div className="relative">
+                                  <img
+                                    src={customImagePreview}
+                                    alt="Exercise preview"
+                                    className="w-full h-48 object-cover rounded-lg"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="icon"
+                                    className="absolute top-2 right-2"
+                                    onClick={handleRemoveCustomImage}
+                                    data-testid="button-remove-custom-image"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <Input
+                                  id="custom-image"
+                                  type="file"
+                                  accept="image/jpeg,image/png,image/gif,image/webp"
+                                  onChange={handleCustomImageChange}
+                                  data-testid="input-custom-image"
+                                />
+                              )}
+                              <p className="text-xs text-muted-foreground">
+                                Supported: JPEG, PNG, GIF, WebP (max 5MB)
+                              </p>
+                            </div>
                           </div>
                           <div className="flex gap-2">
                             <Button
