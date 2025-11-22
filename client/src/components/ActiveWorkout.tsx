@@ -121,17 +121,45 @@ export function ActiveWorkout({ routine, selectedDay, onComplete }: ActiveWorkou
     return () => clearInterval(interval);
   }, [startTime]);
 
+  // Function to play audio tones
+  const playTone = (frequency: number, duration: number = 100) => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    
+    oscillator.frequency.value = frequency;
+    oscillator.type = 'sine';
+    
+    gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + duration / 1000);
+  };
+
   // Rest timer
   useEffect(() => {
     if (restTimer > 0 && !restPaused) {
       const interval = setInterval(() => {
         setRestTimer((prev) => {
-          if (prev <= 1) {
+          const newTimer = Math.max(0, prev - 1);
+          
+          // Play tones at 3, 2, 1, 0 seconds
+          if (newTimer === 3 || newTimer === 2 || newTimer === 1) {
+            playTone(800, 100); // Medium pitch for 3, 2, 1
+          } else if (newTimer === 0) {
+            playTone(1200, 150); // Higher pitch for 0
+          }
+          
+          if (newTimer === 0) {
             // Rest timer finished, clear the current resting indices
             setCurrentRestingExerciseIndex(null);
             setCurrentRestingSetIndex(null);
           }
-          return Math.max(0, prev - 1);
+          return newTimer;
         });
       }, 1000);
       return () => clearInterval(interval);
