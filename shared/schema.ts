@@ -35,6 +35,7 @@ export const workoutRoutines = pgTable("workout_routines", {
       restPeriod: number; // Rest period in seconds for this specific set
       weight?: number; // Optional weight in lbs/kg for this set (not used for bodyweight exercises)
     }>;
+    supersetGroup?: string; // Optional: Exercises with the same supersetGroup are performed back-to-back with minimal rest
   }>>(),
   dayTitles: jsonb("day_titles").$type<Record<string, string>>(), // Custom titles for each day, e.g., { monday: "Arms and Abs", tuesday: "Legs and Glutes" }
   createdAt: timestamp("created_at").notNull().defaultNow(),
