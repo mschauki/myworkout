@@ -190,6 +190,26 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
     setPerSetConfig(updated);
   };
 
+  const copyToAllSets = (index: number, field: 'reps' | 'restPeriod' | 'weight') => {
+    const sourceValue = perSetConfig[index]?.[field];
+    if (sourceValue === undefined || sourceValue === "") {
+      toast({ 
+        title: `Cannot copy empty ${field}`, 
+        variant: "destructive" 
+      });
+      return;
+    }
+    
+    const updated = perSetConfig.map((set, idx) => ({
+      ...set,
+      [field]: idx === index ? set[field] : sourceValue
+    }));
+    setPerSetConfig(updated);
+    toast({ 
+      title: `${field.charAt(0).toUpperCase() + field.slice(1)} copied to all sets` 
+    });
+  };
+
   const addExerciseToDay = () => {
     if (!selectedExerciseId) return;
     
@@ -199,7 +219,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
     const setsConfig = perSetConfig.map(set => {
       const config: { reps: number; restPeriod: number; weight?: number } = {
         reps: parseInt(set.reps || "10") || 10,
-        restPeriod: Math.max(1, parseInt(set.restPeriod || "90") || 90),
+        restPeriod: Math.max(0, parseInt(set.restPeriod || "90") || 90),
       };
       
       // Only include weight for non-bodyweight exercises
@@ -847,11 +867,11 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                         return (
                           <Card key={index} className="glass-surface bg-muted/30">
                             <CardContent className="p-3">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-medium min-w-[40px]">Set {index + 1}</span>
+                              <div className="flex items-start gap-2">
+                                <span className="text-xs font-medium min-w-[40px] pt-0.5">Set {index + 1}</span>
                                 <div className={`flex-1 grid gap-2 ${isBodyweight ? 'grid-cols-2' : 'grid-cols-3'}`}>
                                   {!isBodyweight && (
-                                    <div>
+                                    <div className="flex flex-col gap-1">
                                       <Input
                                         type="number"
                                         min="0"
@@ -862,9 +882,21 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                         className="h-8 text-xs"
                                         data-testid={`input-set-${day}-${index}-weight`}
                                       />
+                                      {perSetConfig.length > 1 && (
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="sm"
+                                          className="h-6 text-xs"
+                                          onClick={() => copyToAllSets(index, 'weight')}
+                                          data-testid={`button-copy-weight-${day}-${index}`}
+                                        >
+                                          Copy to all
+                                        </Button>
+                                      )}
                                     </div>
                                   )}
-                                  <div>
+                                  <div className="flex flex-col gap-1">
                                     <Input
                                       type="number"
                                       min="1"
@@ -874,19 +906,44 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                       className="h-8 text-xs"
                                       data-testid={`input-set-${day}-${index}-reps`}
                                     />
+                                    {perSetConfig.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 text-xs"
+                                        onClick={() => copyToAllSets(index, 'reps')}
+                                        data-testid={`button-copy-reps-${day}-${index}`}
+                                      >
+                                        Copy to all
+                                      </Button>
+                                    )}
                                   </div>
-                                  <div className="flex items-center gap-1">
-                                    <Timer className="w-3 h-3 text-muted-foreground" />
-                                    <Input
-                                      type="number"
-                                      min="30"
-                                      max="300"
-                                      value={set.restPeriod}
-                                      onChange={(e) => updatePerSet(index, 'restPeriod', e.target.value)}
-                                      placeholder="Rest (s)"
-                                      className="h-8 text-xs"
-                                      data-testid={`input-set-${day}-${index}-rest`}
-                                    />
+                                  <div className="flex flex-col gap-1">
+                                    <div className="flex items-center gap-1">
+                                      <Timer className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                                      <Input
+                                        type="number"
+                                        min="0"
+                                        value={set.restPeriod}
+                                        onChange={(e) => updatePerSet(index, 'restPeriod', e.target.value)}
+                                        placeholder="Rest (s)"
+                                        className="h-8 text-xs"
+                                        data-testid={`input-set-${day}-${index}-rest`}
+                                      />
+                                    </div>
+                                    {perSetConfig.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 text-xs"
+                                        onClick={() => copyToAllSets(index, 'restPeriod')}
+                                        data-testid={`button-copy-rest-${day}-${index}`}
+                                      >
+                                        Copy to all
+                                      </Button>
+                                    )}
                                   </div>
                                 </div>
                               </div>
