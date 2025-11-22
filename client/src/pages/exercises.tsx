@@ -53,7 +53,9 @@ export default function Exercises() {
   ]);
   const [deletingExercise, setDeletingExercise] = useState<Exercise | null>(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string>("");
+  const [editUploadedImageUrl, setEditUploadedImageUrl] = useState<string>("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isUploadingEditImage, setIsUploadingEditImage] = useState(false);
   const { toast } = useToast();
 
   const { data: exercises = [], isLoading } = useQuery<Exercise[]>({
@@ -172,6 +174,7 @@ export default function Exercises() {
       toast({ title: "Exercise updated successfully" });
       setIsEditDialogOpen(false);
       setEditingExercise(null);
+      setEditUploadedImageUrl("");
       editForm.reset();
     },
     onError: () => {
@@ -179,8 +182,14 @@ export default function Exercises() {
     },
   });
 
+  const [originalImageUrl, setOriginalImageUrl] = useState<string>("");
+
   const handleEditExercise = (exercise: Exercise) => {
     setEditingExercise(exercise);
+    // Set the current image URL and track original
+    const currentImageUrl = exercise.imageUrl || "";
+    setEditUploadedImageUrl(currentImageUrl);
+    setOriginalImageUrl(currentImageUrl);
     // Normalize muscle groups to lowercase for consistent comparison with form options
     const normalizedOtherMuscleGroups = (exercise.otherMuscleGroups || []).map((g) => g.toLowerCase());
     editForm.reset({
@@ -193,9 +202,71 @@ export default function Exercises() {
     setIsEditDialogOpen(true);
   };
 
+  const handleEditImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ 
+        title: "File too large", 
+        description: "Please select an image smaller than 5MB",
+        variant: "destructive" 
+      });
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({ 
+        title: "Invalid file type", 
+        description: "Please select an image file",
+        variant: "destructive" 
+      });
+      return;
+    }
+
+    setIsUploadingEditImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/upload-exercise-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
+
+      const result = await response.json();
+      setEditUploadedImageUrl(result.imageUrl);
+      toast({ title: "Image uploaded successfully" });
+    } catch (error: any) {
+      toast({ 
+        title: "Upload failed", 
+        description: error.message || "Failed to upload image. Please try again.",
+        variant: "destructive" 
+      });
+    } finally {
+      setIsUploadingEditImage(false);
+    }
+  };
+
   const handleUpdateExercise = (data: any) => {
     if (editingExercise) {
-      updateExerciseMutation.mutate({ id: editingExercise.id, data });
+      // Only include imageUrl if it has changed from original
+      const imageChanged = editUploadedImageUrl !== originalImageUrl;
+      const exerciseData = {
+        ...data,
+        // If image changed, use new value (empty string to clear, or new URL)
+        // If not changed, don't include it (undefined means no change)
+        ...(imageChanged && { imageUrl: editUploadedImageUrl || null }),
+      };
+      updateExerciseMutation.mutate({ id: editingExercise.id, data: exerciseData });
     }
   };
 
@@ -611,6 +682,43 @@ export default function Exercises() {
                   </FormItem>
                 )}
               />
+              <div className="space-y-2">
+                <Label htmlFor="edit-exercise-image">Exercise Image (Optional)</Label>
+                <div className="flex flex-col gap-2">
+                  <Input
+                    id="edit-exercise-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleEditImageUpload}
+                    disabled={isUploadingEditImage}
+                    data-testid="input-edit-exercise-image"
+                    className="cursor-pointer"
+                  />
+                  {isUploadingEditImage && (
+                    <p className="text-sm text-muted-foreground">Uploading image...</p>
+                  )}
+                  {editUploadedImageUrl && (
+                    <div className="relative w-full h-32 glass-surface rounded-lg overflow-hidden">
+                      <img
+                        src={editUploadedImageUrl}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2 h-6 w-6"
+                        onClick={() => setEditUploadedImageUrl("")}
+                        data-testid="button-remove-edit-uploaded-image"
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">Maximum file size: 5MB</p>
+              </div>
               <FormField
                 control={editForm.control}
                 name="equipment"

@@ -1,9 +1,10 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import multer from "multer";
 import path from "path";
 import fs from "fs/promises";
+import { fileTypeFromFile } from "file-type";
 import { 
   insertExerciseSchema,
   insertWorkoutRoutineSchema,
@@ -20,45 +21,121 @@ const uploadDir = path.join(process.cwd(), "attached_assets", "exercise_images")
 // Ensure upload directory exists
 fs.mkdir(uploadDir, { recursive: true }).catch(console.error);
 
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+
 const upload = multer({
   storage: multer.diskStorage({
     destination: (_req, _file, cb) => {
       cb(null, uploadDir);
     },
     filename: (_req, file, cb) => {
-      // Generate unique filename: timestamp + original extension
+      // Generate unique filename with safe extension
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, 'exercise-' + uniqueSuffix + path.extname(file.originalname));
+      const ext = path.extname(file.originalname).toLowerCase();
+      const safeExt = ALLOWED_EXTENSIONS.includes(ext) ? ext : '.jpg';
+      cb(null, 'exercise-' + uniqueSuffix + safeExt);
     }
   }),
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB max file size
   },
   fileFilter: (_req, file, cb) => {
-    // Allow only image files
-    if (file.mimetype.startsWith('image/')) {
+    // Preliminary check on mimetype and extension
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ALLOWED_IMAGE_TYPES.includes(file.mimetype) && ALLOWED_EXTENSIONS.includes(ext)) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed'));
+      cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed'));
     }
   }
 });
 
+// Validate file signature after upload
+async function validateImageFile(filePath: string): Promise<boolean> {
+  try {
+    const fileType = await fileTypeFromFile(filePath);
+    if (!fileType) {
+      return false;
+    }
+    return ALLOWED_IMAGE_TYPES.includes(fileType.mime);
+  } catch {
+    return false;
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Image upload endpoint
-  app.post("/api/upload-exercise-image", upload.single('image'), async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
+  // Image upload endpoint with file signature validation
+  app.post("/api/upload-exercise-image", 
+    upload.single('image'), 
+    async (req: Request, res: Response, next: NextFunction) => {
+      // Helper to delete file and return error
+      const cleanupAndError = async (status: number, message: string) => {
+        if (req.file?.path) {
+          await fs.unlink(req.file.path).catch(console.error);
+        }
+        return res.status(status).json({ error: message });
+      };
+
+      try {
+        if (!req.file) {
+          return res.status(400).json({ error: "No file uploaded" });
+        }
+        
+        const filePath = req.file.path;
+        
+        // Validate actual file signature
+        try {
+          const isValidImage = await validateImageFile(filePath);
+          
+          if (!isValidImage) {
+            return await cleanupAndError(415, 
+              "Invalid image file. File signature does not match an allowed image type.");
+          }
+        } catch (validationError) {
+          return await cleanupAndError(415, 
+            "Failed to validate image file. The file may be corrupted or not a valid image.");
+        }
+        
+        // Success - return the relative URL path
+        const imageUrl = `/attached_assets/exercise_images/${req.file.filename}`;
+        return res.json({ imageUrl });
+      } catch (error: any) {
+        return await cleanupAndError(500, error.message || "Failed to upload image");
+      }
+    },
+    // Multer error handler as middleware in the same route
+    (error: any, req: Request, res: Response, next: NextFunction) => {
+      // Clean up any uploaded file on error
+      if (req.file?.path) {
+        fs.unlink(req.file.path).catch(console.error);
       }
       
-      // Return the relative URL path
-      const imageUrl = `/attached_assets/exercise_images/${req.file.filename}`;
-      res.json({ imageUrl });
-    } catch (error: any) {
-      res.status(400).json({ error: error.message || "Failed to upload image" });
+      if (error instanceof multer.MulterError) {
+        if (error.code === 'LIMIT_FILE_SIZE') {
+          return res.status(413).json({ 
+            error: "File too large. Maximum file size is 5MB." 
+          });
+        }
+        if (error.code === 'LIMIT_UNEXPECTED_FILE') {
+          return res.status(400).json({ 
+            error: "Unexpected file field. Please use 'image' field name." 
+          });
+        }
+        return res.status(400).json({ 
+          error: error.message || "File upload error" 
+        });
+      }
+      
+      // Handle custom file validation errors from fileFilter
+      if (error.message && error.message.includes('Only image files')) {
+        return res.status(415).json({ error: error.message });
+      }
+      
+      // Generic error
+      return res.status(500).json({ error: "An error occurred during file upload" });
     }
-  });
+  );
 
   // Exercises
   app.get("/api/exercises", async (req, res) => {
@@ -103,13 +180,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ error: "Cannot edit seeded exercises" });
       }
       
-      const validatedData = insertExerciseSchema.partial().parse(req.body);
+      // Handle imageUrl specially to allow explicit null (image removal)
+      const { imageUrl, ...restData } = req.body;
+      
+      // Validate imageUrl if provided - must be string or null
+      if (imageUrl !== undefined) {
+        if (imageUrl !== null && typeof imageUrl !== 'string') {
+          return res.status(400).json({ error: "imageUrl must be a string or null" });
+        }
+        // Validate string length if it's a string
+        if (typeof imageUrl === 'string' && imageUrl.length > 500) {
+          return res.status(400).json({ error: "imageUrl must be less than 500 characters" });
+        }
+      }
+      
+      // Validate the rest of the data
+      const validatedData = insertExerciseSchema.partial().parse(restData);
+      
       // Strip isCustom from the update to prevent clients from toggling the flag
       const { isCustom, ...updateData } = validatedData as any;
+      
+      // Add imageUrl if it was provided (including null for removal)
+      if (imageUrl !== undefined) {
+        updateData.imageUrl = imageUrl;
+      }
+      
+      // Update the exercise in database first
       const exercise = await storage.updateExercise(req.params.id, updateData);
       if (!exercise) {
         return res.status(404).json({ error: "Exercise not found" });
       }
+      
+      // Only delete old file AFTER successful database update
+      if (imageUrl !== undefined) {
+        const oldImageUrl = existingExercise.imageUrl;
+        if (oldImageUrl && oldImageUrl !== imageUrl && oldImageUrl.startsWith('/attached_assets/exercise_images/')) {
+          const oldFilePath = path.join(process.cwd(), oldImageUrl.replace(/^\//, ''));
+          // Await the deletion to ensure it completes, but don't fail the request if it errors
+          await fs.unlink(oldFilePath).catch(err => {
+            console.error('Failed to delete old image file:', err);
+            // Don't fail the update if file deletion fails - file cleanup is not critical
+          });
+        }
+      }
+      
       res.json(exercise);
     } catch (error) {
       res.status(400).json({ error: "Invalid exercise data" });

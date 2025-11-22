@@ -70,9 +70,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateExercise(id: string, updateData: Partial<InsertExercise>): Promise<Exercise | undefined> {
+    // Drizzle omits undefined values but should keep null values
+    // Explicitly set null for imageUrl if it's present in updateData
+    const dataToSet: any = {};
+    for (const [key, value] of Object.entries(updateData)) {
+      if (value !== undefined) {
+        dataToSet[key] = value;
+      }
+    }
+    
     const [exercise] = await db
       .update(exercises)
-      .set(updateData)
+      .set(dataToSet)
       .where(eq(exercises.id, id))
       .returning();
     return exercise || undefined;
