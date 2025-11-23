@@ -13,13 +13,10 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { useTheme } from "@/components/ThemeProvider";
 
 export default function Profile() {
   const [showAddStats, setShowAddStats] = useState(false);
   const { toast } = useToast();
-  const { theme, setTheme } = useTheme();
 
   const { data: bodyStats = [], isLoading } = useQuery<BodyStats[]>({
     queryKey: ["/api/body-stats"],
@@ -241,23 +238,6 @@ export default function Profile() {
         </CardContent>
       </Card>
 
-      {/* Settings */}
-      <Card className="mb-6 bg-card border border-card-border">
-        <CardHeader>
-          <CardTitle>Settings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-base">Appearance</Label>
-              <p className="text-sm text-muted-foreground">
-                {theme === "dark" ? "Dark" : "Light"} mode
-              </p>
-            </div>
-            <ThemeToggle />
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
