@@ -64,82 +64,78 @@ export default function Home() {
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 gradient-text" data-testid="text-page-title">Dashboard</h1>
-        <p className="text-base text-foreground/70">Track your fitness journey</p>
+        <h1 className="text-4xl font-bold mb-2 text-foreground" data-testid="text-page-title">Dashboard</h1>
+        <p className="text-base text-muted-foreground">Track your fitness journey</p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <Card data-testid="card-stat-workouts" className="glass-surface-elevated hover:scale-[1.02] hover-elevate transition-all relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
-            <CardTitle className="text-sm font-medium text-foreground/70 uppercase tracking-wide">This Month</CardTitle>
-            <Calendar className="w-5 h-5 text-primary/60" />
+        <Card data-testid="card-stat-workouts" className="hover-elevate">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">This Month</CardTitle>
+            <Calendar className="w-5 h-5 text-primary" />
           </CardHeader>
-          <CardContent className="relative">
+          <CardContent>
             {isLoading ? (
-              <Skeleton className="h-12 w-20 glass-surface" />
+              <Skeleton className="h-12 w-20" />
             ) : (
               <>
-                <div className="text-5xl font-bold font-mono gradient-text" data-testid="text-stat-workouts">{thisMonthWorkouts}</div>
-                <p className="text-xs text-foreground/50 mt-3 uppercase tracking-widest font-semibold">Workouts</p>
+                <div className="text-4xl font-bold text-primary" data-testid="text-stat-workouts">{thisMonthWorkouts}</div>
+                <p className="text-xs text-muted-foreground mt-2">Workouts</p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card data-testid="card-stat-volume" className="glass-surface-elevated hover:scale-[1.02] hover-elevate transition-all relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
-            <CardTitle className="text-sm font-medium text-foreground/70 uppercase tracking-wide">Total Volume</CardTitle>
-            <TrendingUp className="w-5 h-5 text-primary/60" />
+        <Card data-testid="card-stat-volume" className="hover-elevate">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Volume</CardTitle>
+            <TrendingUp className="w-5 h-5 text-primary" />
           </CardHeader>
-          <CardContent className="relative">
+          <CardContent>
             {isLoading ? (
-              <Skeleton className="h-12 w-24 glass-surface" />
+              <Skeleton className="h-12 w-24" />
             ) : (
               <>
-                <div className="text-5xl font-bold font-mono gradient-text" data-testid="text-stat-volume">{totalVolume}</div>
-                <p className="text-xs text-foreground/50 mt-3 uppercase tracking-widest font-semibold">lbs lifted</p>
+                <div className="text-4xl font-bold text-primary" data-testid="text-stat-volume">{totalVolume}</div>
+                <p className="text-xs text-muted-foreground mt-2">lbs lifted</p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card data-testid="card-stat-streak" className="glass-surface-elevated hover:scale-[1.02] hover-elevate transition-all relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
-            <CardTitle className="text-sm font-medium text-foreground/70 uppercase tracking-wide">Streak</CardTitle>
-            <Flame className="w-5 h-5 text-amber-400/60" />
+        <Card data-testid="card-stat-streak" className="hover-elevate">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Streak</CardTitle>
+            <Flame className="w-5 h-5 text-primary" />
           </CardHeader>
-          <CardContent className="relative">
+          <CardContent>
             {isLoading ? (
-              <Skeleton className="h-12 w-16 glass-surface" />
+              <Skeleton className="h-12 w-16" />
             ) : (
               <>
-                <div className="text-5xl font-bold font-mono text-amber-500" data-testid="text-stat-streak">0</div>
-                <p className="text-xs text-foreground/50 mt-3 uppercase tracking-widest font-semibold">Days</p>
+                <div className="text-4xl font-bold text-primary" data-testid="text-stat-streak">0</div>
+                <p className="text-xs text-muted-foreground mt-2">Days</p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card data-testid="card-stat-weight" className="glass-surface-elevated hover:scale-[1.02] hover-elevate transition-all relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
-            <CardTitle className="text-sm font-medium text-foreground/70 uppercase tracking-wide">Body Weight</CardTitle>
-            <Trophy className="w-5 h-5 text-emerald-400/60" />
+        <Card data-testid="card-stat-weight" className="hover-elevate">
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Body Weight</CardTitle>
+            <Trophy className="w-5 h-5 text-primary" />
           </CardHeader>
-          <CardContent className="relative">
+          <CardContent>
             {isLoading ? (
-              <Skeleton className="h-12 w-20 glass-surface" />
+              <Skeleton className="h-12 w-20" />
             ) : currentWeight ? (
               <>
-                <div className="text-5xl font-bold font-mono text-emerald-500" data-testid="text-stat-weight">{currentWeight}</div>
-                <p className="text-xs text-foreground/50 mt-3 uppercase tracking-widest font-semibold">lbs</p>
+                <div className="text-4xl font-bold text-primary" data-testid="text-stat-weight">{currentWeight}</div>
+                <p className="text-xs text-muted-foreground mt-2">lbs</p>
               </>
             ) : (
-              <p className="text-sm text-foreground/50">No data</p>
+              <p className="text-sm text-muted-foreground">No data</p>
             )}
           </CardContent>
         </Card>
@@ -147,11 +143,11 @@ export default function Home() {
 
       {/* Recent Workouts */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4 gradient-text tracking-tight">Recent Workouts</h2>
+        <h2 className="text-2xl font-bold mb-4 text-foreground">Recent Workouts</h2>
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="glass-surface">
+              <Card key={i}>
                 <CardContent className="p-5">
                   <Skeleton className="h-6 w-40 mb-2" />
                   <Skeleton className="h-4 w-56" />
@@ -160,30 +156,29 @@ export default function Home() {
             ))}
           </div>
         ) : recentWorkouts.length === 0 ? (
-          <Card className="glass-surface">
+          <Card>
             <CardContent className="p-12 text-center">
-              <Dumbbell className="w-16 h-16 mx-auto mb-4 text-primary/40" />
-              <p className="text-foreground/70 text-lg font-medium">No workouts yet</p>
-              <p className="text-sm text-foreground/50 mt-2">Start your first workout to see it here</p>
+              <Dumbbell className="w-16 h-16 mx-auto mb-4 text-muted-foreground/40" />
+              <p className="text-foreground text-lg font-medium">No workouts yet</p>
+              <p className="text-sm text-muted-foreground mt-2">Start your first workout to see it here</p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-3">
             {recentWorkouts.map((log) => (
-              <Card key={log.id} className="glass-surface hover:scale-[1.01] hover-elevate transition-all group relative overflow-hidden" data-testid={`card-workout-log-${log.id}`}>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <CardContent className="p-5 relative">
+              <Card key={log.id} className="hover-elevate" data-testid={`card-workout-log-${log.id}`}>
+                <CardContent className="p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold gradient-text truncate mb-2" data-testid="text-workout-name">{log.routineName}</h3>
-                      <p className="text-sm text-foreground/60 font-medium">
+                      <h3 className="text-lg font-semibold truncate mb-2 text-foreground" data-testid="text-workout-name">{log.routineName}</h3>
+                      <p className="text-sm text-muted-foreground font-medium">
                         {new Date(log.date).toLocaleDateString()} • {Math.floor(log.duration / 60)} min • {log.totalVolume.toFixed(0)} lbs
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="text-right glass-surface-elevated px-3 py-2 rounded-lg">
-                        <p className="text-lg font-bold font-mono gradient-text">{log.exercises.length}</p>
-                        <p className="text-xs text-foreground/60 uppercase tracking-widest font-semibold">exercises</p>
+                      <div className="text-right px-3 py-2 rounded-lg bg-muted">
+                        <p className="text-lg font-semibold text-foreground">{log.exercises.length}</p>
+                        <p className="text-xs text-muted-foreground">exercises</p>
                       </div>
                       <Button
                         variant="ghost"
@@ -204,7 +199,7 @@ export default function Home() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteLogId !== null} onOpenChange={(open) => !open && setDeleteLogId(null)}>
-        <AlertDialogContent className="glass-surface-elevated">
+        <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Workout</AlertDialogTitle>
             <AlertDialogDescription>
