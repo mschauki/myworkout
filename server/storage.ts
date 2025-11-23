@@ -241,6 +241,10 @@ export class DatabaseStorage implements IStorage {
       .values({
         unitSystem: "lbs",
         firstDayOfWeek: 0,
+        autoStartTimer: true,
+        restTimerSound: true,
+        defaultRestDuration: 90,
+        workoutHistoryRetentionDays: -1,
       })
       .returning();
     return newSetting;
@@ -250,6 +254,10 @@ export class DatabaseStorage implements IStorage {
     const updateValues: any = {};
     if (data.unitSystem !== undefined) updateValues.unitSystem = data.unitSystem;
     if (data.firstDayOfWeek !== undefined) updateValues.firstDayOfWeek = data.firstDayOfWeek;
+    if (data.autoStartTimer !== undefined) updateValues.autoStartTimer = data.autoStartTimer;
+    if (data.restTimerSound !== undefined) updateValues.restTimerSound = data.restTimerSound;
+    if (data.defaultRestDuration !== undefined) updateValues.defaultRestDuration = data.defaultRestDuration;
+    if (data.workoutHistoryRetentionDays !== undefined) updateValues.workoutHistoryRetentionDays = data.workoutHistoryRetentionDays;
     updateValues.updatedAt = new Date();
     
     const [setting] = await db
