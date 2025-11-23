@@ -160,7 +160,7 @@ export default function Workouts() {
           <Plus className="w-5 h-5" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto border bg-card shadow-sm">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto glass-surface-elevated">
         <DialogHeader>
           <DialogTitle className="text-2xl">
             {editingRoutine ? "Edit Workout Routine" : "Create Workout Routine"}
@@ -187,7 +187,7 @@ export default function Workouts() {
         <>
           {builderDialog}
           <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-            <Card>
+            <Card className="glass-surface">
               <CardContent className="p-12 text-center">
                 <Calendar className="w-16 h-16 mx-auto mb-4 text-primary/40" />
                 <h3 className="text-xl font-semibold mb-2">No exercises for this day</h3>
@@ -238,12 +238,12 @@ export default function Workouts() {
             <ChevronLeft className="w-4 h-4 mr-2" />
             Back to Days
           </Button>
-          <h1 className="text-4xl font-bold mb-2 text-foreground">{viewingRoutine.name}</h1>
+          <h1 className="text-4xl font-bold mb-2 gradient-text">{viewingRoutine.name}</h1>
           <p className="text-base text-foreground/70">{dayTitle}</p>
         </div>
 
         {dayExercises.length === 0 ? (
-          <Card 
+          <Card className="glass-surface">
             <CardContent className="p-12 text-center">
               <Dumbbell className="w-16 h-16 mx-auto mb-4 text-primary/40" />
               <p className="text-foreground/70">No exercises for this day</p>
@@ -258,7 +258,7 @@ export default function Workouts() {
                 return (
                 <Card 
                   key={idx} 
-                  className="cursor-pointer hover-elevate" 
+                  className="glass-surface cursor-pointer hover-elevate" 
                   data-testid={`card-exercise-${idx}`}
                   onClick={() => setViewingExerciseIndex(idx)}
                 >
@@ -269,7 +269,7 @@ export default function Workouts() {
                           {getExerciseName(exercise.exerciseId)}
                         </h3>
                         <div className="flex flex-wrap gap-2">
-                          <Badge variant="secondary" 
+                          <Badge variant="secondary" className="glass-surface">
                             {config.sets}
                           </Badge>
                           <Badge variant="outline">
@@ -306,7 +306,7 @@ export default function Workouts() {
         {/* Exercise Detail Dialog */}
         {viewingExerciseIndex !== null && (
           <Dialog open={viewingExerciseIndex !== null} onOpenChange={(open) => !open && setViewingExerciseIndex(null)}>
-            <DialogContent className=" max-w-md">
+            <DialogContent className="glass-surface-elevated max-w-md">
               <DialogHeader>
                 <DialogTitle>{getExerciseName(dayExercises[viewingExerciseIndex].exerciseId)}</DialogTitle>
               </DialogHeader>
@@ -320,7 +320,7 @@ export default function Workouts() {
                     <div className="space-y-2">
                       <p className="text-sm text-muted-foreground">Sets Configuration</p>
                       <div className="flex gap-2">
-                        <Badge variant="secondary" 
+                        <Badge variant="secondary" className="glass-surface">
                           {config.sets}
                         </Badge>
                         <Badge variant="outline">
@@ -404,7 +404,7 @@ export default function Workouts() {
           </Button>
           <div className="flex items-start justify-between gap-4 mb-2">
             <div className="flex-1">
-              <h1 className="text-4xl font-bold mb-2 text-foreground" data-testid="text-routine-name">
+              <h1 className="text-4xl font-bold mb-2 gradient-text" data-testid="text-routine-name">
                 {viewingRoutine.name}
               </h1>
               {viewingRoutine.description && (
@@ -451,7 +451,7 @@ export default function Workouts() {
             return (
               <Card
                 key={day}
-                className="hover:scale-[1.01] transition-all cursor-pointer"
+                className="glass-surface hover:scale-[1.01] transition-all cursor-pointer"
                 onClick={() => setViewingDay(day)}
                 data-testid={`card-day-${day}`}
               >
@@ -469,7 +469,7 @@ export default function Workouts() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Badge variant="secondary" 
+                      <Badge variant="secondary" className="glass-surface">
                         {exerciseCount} exercise{exerciseCount !== 1 ? "s" : ""}
                       </Badge>
                       <ArrowRight className="w-5 h-5 text-foreground/40" />
@@ -483,7 +483,7 @@ export default function Workouts() {
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={!!deleteRoutineId} onOpenChange={(open) => !open && setDeleteRoutineId(null)}>
-          <AlertDialogContent >
+          <AlertDialogContent className="glass-surface-elevated">
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Routine?</AlertDialogTitle>
               <AlertDialogDescription>
@@ -511,7 +511,7 @@ export default function Workouts() {
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-4xl font-bold mb-2 text-foreground" data-testid="text-page-title">My Workouts</h1>
+          <h1 className="text-4xl font-bold mb-2 gradient-text" data-testid="text-page-title">My Workouts</h1>
           <p className="text-base text-foreground/70">Create and track your routines</p>
         </div>
         {builderDialog}
@@ -520,7 +520,7 @@ export default function Workouts() {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <Card key={i} 
+            <Card key={i} className="glass-surface">
               <CardContent className="p-4">
                 <Skeleton className="h-6 w-48 mb-3" />
                 <Skeleton className="h-4 w-full mb-2" />
@@ -530,7 +530,7 @@ export default function Workouts() {
           ))}
         </div>
       ) : routines.length === 0 ? (
-        <Card 
+        <Card className="glass-surface">
           <CardContent className="p-12 text-center">
             <Dumbbell className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-xl font-semibold mb-2">No workout routines yet</h3>
@@ -546,7 +546,7 @@ export default function Workouts() {
           {routines.map((routine) => (
             <Card
               key={routine.id}
-              className="hover:scale-[1.01] transition-all cursor-pointer"
+              className="glass-surface hover:scale-[1.01] transition-all cursor-pointer"
               onClick={() => setViewingRoutineId(routine.id)}
               data-testid={`card-routine-${routine.id}`}
             >

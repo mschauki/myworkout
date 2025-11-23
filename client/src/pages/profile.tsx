@@ -64,57 +64,57 @@ export default function Profile() {
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 text-foreground" data-testid="text-page-title">Profile</h1>
-        <p className="text-base text-muted-foreground">Track your body stats and measurements</p>
+        <h1 className="text-4xl font-bold mb-2 gradient-text" data-testid="text-page-title">Profile</h1>
+        <p className="text-base text-foreground/70">Track your body stats and measurements</p>
       </div>
 
       {/* Current Stats */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <Card data-testid="card-current-weight">
+        <Card data-testid="card-current-weight" className="glass-surface-elevated">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Current Weight</CardTitle>
-            <Weight className="w-5 h-5 text-primary" />
+            <CardTitle className="text-sm font-medium">Current Weight</CardTitle>
+            <Weight className="w-5 h-5 text-primary/60" />
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-12 w-24" />
+              <Skeleton className="h-12 w-24 glass-surface" />
             ) : currentStats?.weight ? (
               <>
-                <div className="text-4xl font-bold text-primary" data-testid="text-current-weight">
+                <div className="text-4xl font-bold font-mono gradient-text" data-testid="text-current-weight">
                   {currentStats.weight.toFixed(1)}
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">lbs</p>
+                <p className="text-xs text-foreground/60 mt-2 uppercase tracking-wide">lbs</p>
               </>
             ) : (
-              <p className="text-sm text-muted-foreground">No data</p>
+              <p className="text-sm text-foreground/50">No data</p>
             )}
           </CardContent>
         </Card>
 
-        <Card data-testid="card-current-bodyfat">
+        <Card data-testid="card-current-bodyfat" className="glass-surface-elevated">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Body Fat</CardTitle>
-            <TrendingDown className="w-5 h-5 text-primary" />
+            <CardTitle className="text-sm font-medium">Body Fat</CardTitle>
+            <TrendingDown className="w-5 h-5 text-emerald-400/80" />
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-12 w-20" />
+              <Skeleton className="h-12 w-20 glass-surface" />
             ) : currentStats?.bodyFat ? (
               <>
-                <div className="text-4xl font-bold text-primary" data-testid="text-current-bodyfat">
+                <div className="text-4xl font-bold font-mono gradient-text" data-testid="text-current-bodyfat">
                   {currentStats.bodyFat.toFixed(1)}
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">%</p>
+                <p className="text-xs text-foreground/60 mt-2 uppercase tracking-wide">%</p>
               </>
             ) : (
-              <p className="text-sm text-muted-foreground">No data</p>
+              <p className="text-sm text-foreground/50">No data</p>
             )}
           </CardContent>
         </Card>
       </div>
 
       {/* Add Stats Form */}
-      <Card className="mb-6">
+      <Card className="mb-6 glass-surface">
         <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0">
           <CardTitle className="text-base">Body Measurements</CardTitle>
           <Button
@@ -191,7 +191,7 @@ export default function Profile() {
       </Card>
 
       {/* Weight Chart */}
-      <Card className="mb-6">
+      <Card className="glass-surface">
         <CardHeader>
           <CardTitle className="text-base">Weight Progress</CardTitle>
         </CardHeader>
@@ -242,7 +242,7 @@ export default function Profile() {
       </Card>
 
       {/* Settings */}
-      <Card className="mb-6">
+      <Card className="mb-6 glass-surface">
         <CardHeader>
           <CardTitle>Settings</CardTitle>
         </CardHeader>

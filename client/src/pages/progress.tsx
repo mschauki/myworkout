@@ -36,12 +36,12 @@ export default function Progress() {
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 text-foreground" data-testid="text-page-title">Progress</h1>
-        <p className="text-base text-muted-foreground">Track your fitness journey</p>
+        <h1 className="text-4xl font-bold mb-2 gradient-text" data-testid="text-page-title">Progress</h1>
+        <p className="text-base text-foreground/70">Track your fitness journey</p>
       </div>
 
       <Tabs defaultValue="overview" className="mb-8">
-        <TabsList className="w-full">
+        <TabsList className="w-full glass-surface">
           <TabsTrigger value="overview" className="flex-1" data-testid="tab-overview">Overview</TabsTrigger>
           <TabsTrigger value="exercises" className="flex-1" data-testid="tab-exercises">Exercises</TabsTrigger>
         </TabsList>
@@ -49,30 +49,30 @@ export default function Progress() {
         <TabsContent value="overview" className="space-y-6 mt-6">
           {/* Stats Summary */}
           <div className="grid grid-cols-2 gap-4">
-            <Card data-testid="card-total-workouts">
+            <Card data-testid="card-total-workouts" className="glass-surface-elevated">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Total Workouts</CardTitle>
+                <CardTitle className="text-sm font-medium text-foreground/70">Total Workouts</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
-                  <Skeleton className="h-12 w-20" />
+                  <Skeleton className="h-12 w-20 glass-surface" />
                 ) : (
-                  <div className="text-4xl font-bold text-primary" data-testid="text-total-workouts">{totalWorkouts}</div>
+                  <div className="text-4xl font-bold font-mono gradient-text" data-testid="text-total-workouts">{totalWorkouts}</div>
                 )}
               </CardContent>
             </Card>
 
-            <Card data-testid="card-total-volume">
+            <Card data-testid="card-total-volume" className="glass-surface-elevated">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Total Volume</CardTitle>
+                <CardTitle className="text-sm font-medium text-foreground/70">Total Volume</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
-                  <Skeleton className="h-12 w-24" />
+                  <Skeleton className="h-12 w-24 glass-surface" />
                 ) : (
                   <>
-                    <div className="text-4xl font-bold text-primary" data-testid="text-total-volume">{totalVolume}</div>
-                    <p className="text-xs text-muted-foreground mt-2">lbs</p>
+                    <div className="text-4xl font-bold font-mono gradient-text" data-testid="text-total-volume">{totalVolume}</div>
+                    <p className="text-xs text-foreground/60 mt-2 uppercase tracking-wide">lbs</p>
                   </>
                 )}
               </CardContent>
@@ -80,7 +80,7 @@ export default function Progress() {
           </div>
 
           {/* Volume Chart */}
-          <Card>
+          <Card className="glass-surface">
             <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
               <CardTitle className="text-base">Volume Progression</CardTitle>
               <div className="flex items-center gap-2">
@@ -142,7 +142,7 @@ export default function Progress() {
           </Card>
 
           {/* Calendar Heatmap Placeholder */}
-          <Card>
+          <Card className="glass-surface">
             <CardHeader>
               <CardTitle className="text-base">Workout Calendar</CardTitle>
             </CardHeader>
@@ -158,7 +158,7 @@ export default function Progress() {
         </TabsContent>
 
         <TabsContent value="exercises" className="space-y-6 mt-6">
-          <Card>
+          <Card className="glass-surface">
             <CardHeader>
               <CardTitle className="text-base">Exercise Progress</CardTitle>
             </CardHeader>

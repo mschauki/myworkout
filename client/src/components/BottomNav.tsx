@@ -13,7 +13,10 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 safe-area-padding-bottom bg-card border-t border-border">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 safe-area-padding-bottom">
+      {/* Blur backdrop */}
+      <div className="absolute inset-0 h-20 glass-surface-elevated border-t border-glass-border" />
+      
       {/* Content */}
       <div className="relative flex items-center justify-around h-20 max-w-6xl mx-auto px-2">
         {navItems.map((item) => {
