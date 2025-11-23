@@ -14,6 +14,7 @@ import "react-day-picker/dist/style.css";
 export default function Progress() {
   const [selectedExercise, setSelectedExercise] = useState<string>("");
   const [timeRange, setTimeRange] = useState("3M");
+  const [selectedCalendarDay, setSelectedCalendarDay] = useState<Date | undefined>(undefined);
 
   const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
     queryKey: ["/api/exercises"],
@@ -157,11 +158,12 @@ export default function Progress() {
                 <div className="flex flex-col items-center gap-6">
                   <div className="flex justify-center w-full overflow-x-auto">
                     <DayPicker
-                      mode="multiple"
-                      selected={workoutLogs.map(log => new Date(log.date))}
-                      disabled={{
-                        before: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-                        after: new Date()
+                      mode="single"
+                      selected={selectedCalendarDay}
+                      onSelect={setSelectedCalendarDay}
+                      disabled={(date) => {
+                        const workoutDates = workoutLogs.map(log => new Date(log.date).toDateString());
+                        return !workoutDates.includes(date.toDateString());
                       }}
                     />
                   </div>
@@ -172,33 +174,53 @@ export default function Progress() {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="h-3 w-3 border border-input rounded-sm"></div>
-                      <span className="text-muted-foreground">No workout</span>
+                      <span className="text-muted-foreground">No workout available</span>
                     </div>
                   </div>
-                  {workoutLogs.length > 0 && (
-                    <div className="w-full pt-4 border-t border-border">
-                      <p className="text-sm font-medium text-foreground mb-3">Recent Workouts</p>
-                      <div className="space-y-2 max-h-48 overflow-y-auto">
-                        {workoutLogs.slice().reverse().map((log) => (
-                          <div key={log.id} className="flex items-center justify-between p-2 bg-background rounded-md border border-input">
-                            <div>
-                              <p className="text-sm font-medium text-foreground">{log.routineName}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {new Date(log.date).toLocaleDateString('en-US', { 
-                                  month: 'short', 
-                                  day: 'numeric', 
-                                  year: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </p>
+                  {selectedCalendarDay && (() => {
+                    const dayString = selectedCalendarDay.toDateString();
+                    const dayWorkouts = workoutLogs
+                      .filter(log => new Date(log.date).toDateString() === dayString)
+                      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                    
+                    if (dayWorkouts.length === 0) {
+                      return (
+                        <div className="w-full pt-4 border-t border-border">
+                          <p className="text-sm font-medium text-foreground mb-3">
+                            {selectedCalendarDay.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                          </p>
+                          <p className="text-sm text-muted-foreground">No workouts on this day</p>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className="w-full pt-4 border-t border-border">
+                        <p className="text-sm font-medium text-foreground mb-3">
+                          {selectedCalendarDay.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        </p>
+                        <div className="space-y-2">
+                          {dayWorkouts.map((log) => (
+                            <div key={log.id} className="flex items-center justify-between p-3 bg-background rounded-md border border-input">
+                              <div>
+                                <p className="text-sm font-medium text-foreground">{log.routineName}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(log.date).toLocaleTimeString('en-US', { 
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <Badge variant="secondary">{log.duration} min</Badge>
+                                <p className="text-xs text-muted-foreground mt-1">{log.totalVolume.toFixed(0)} lbs</p>
+                              </div>
                             </div>
-                            <Badge variant="secondary">{log.duration} min</Badge>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </div>
               )}
             </CardContent>
