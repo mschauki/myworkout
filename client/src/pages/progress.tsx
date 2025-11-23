@@ -156,15 +156,11 @@ export default function Progress() {
                 <Skeleton className="h-80 w-full" />
               ) : (
                 <div className="flex flex-col items-center gap-6">
-                  <div className="flex justify-center w-full overflow-x-auto">
+                  <div className="flex justify-center w-full">
                     <DayPicker
                       mode="single"
                       selected={selectedCalendarDay}
                       onSelect={setSelectedCalendarDay}
-                      disabled={(date) => {
-                        const workoutDates = workoutLogs.map(log => new Date(log.date).toDateString());
-                        return !workoutDates.includes(date.toDateString());
-                      }}
                     />
                   </div>
                   <div className="flex flex-col gap-2 text-sm w-full">
