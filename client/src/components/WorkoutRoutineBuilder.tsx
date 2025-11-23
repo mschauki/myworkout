@@ -49,6 +49,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
   
   // Exercise configuration state
   const [selectedExerciseId, setSelectedExerciseId] = useState("");
+  const [exerciseSearchQuery, setExerciseSearchQuery] = useState("");
   const [sets, setSets] = useState("3");
   const [perSetConfig, setPerSetConfig] = useState<Array<{ reps?: string; duration?: string; restPeriod: string; weight?: string }>>([
     { reps: "10", restPeriod: "90", weight: "" },
@@ -832,23 +833,40 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                   {isLoading ? (
                     <Skeleton className="h-10 w-full" />
                   ) : (
-                    <Select value={selectedExerciseId} onValueChange={setSelectedExerciseId}>
-                      <SelectTrigger data-testid={`select-exercise-${day}`}>
-                        <SelectValue placeholder="Select exercise" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {exercises.map((exercise) => (
-                          <SelectItem key={exercise.id} value={exercise.id}>
-                            <div className="flex items-center gap-2">
-                              <span>{exercise.name}</span>
-                              <Badge variant="secondary" className="text-xs capitalize">
-                                {exercise.muscleGroup}
-                              </Badge>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Search exercises..."
+                        value={exerciseSearchQuery}
+                        onChange={(e) => setExerciseSearchQuery(e.target.value)}
+                        data-testid={`input-exercise-search-${day}`}
+                        className="h-10"
+                      />
+                      <Select value={selectedExerciseId} onValueChange={(value) => {
+                        setSelectedExerciseId(value);
+                        setExerciseSearchQuery("");
+                      }}>
+                        <SelectTrigger data-testid={`select-exercise-${day}`}>
+                          <SelectValue placeholder="Select exercise" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {exercises
+                            .filter((exercise) => 
+                              exercise.name.toLowerCase().includes(exerciseSearchQuery.toLowerCase()) ||
+                              exercise.muscleGroup.toLowerCase().includes(exerciseSearchQuery.toLowerCase())
+                            )
+                            .map((exercise) => (
+                              <SelectItem key={exercise.id} value={exercise.id}>
+                                <div className="flex items-center gap-2">
+                                  <span>{exercise.name}</span>
+                                  <Badge variant="secondary" className="text-xs capitalize">
+                                    {exercise.muscleGroup}
+                                  </Badge>
+                                </div>
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   )}
 
                   {/* Per-Set Configuration */}
