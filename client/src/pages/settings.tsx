@@ -218,12 +218,12 @@ export default function SettingsPage() {
                   <div className="relative">
                     <input
                       type="number"
-                      min="10"
+                      min="0"
                       max="600"
                       value={["60", "90", "120"].includes(defaultRestDuration) ? "" : defaultRestDuration}
                       onChange={(e) => {
                         const val = e.target.value;
-                        if (val && parseInt(val) >= 10 && parseInt(val) <= 600) {
+                        if (val && parseInt(val) >= 0 && parseInt(val) <= 600) {
                           setDefaultRestDuration(val);
                         }
                       }}
@@ -233,7 +233,7 @@ export default function SettingsPage() {
                     />
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">Default rest time between sets (10-600 seconds)</p>
+                <p className="text-xs text-muted-foreground mt-2">Default rest time between sets (0-600 seconds)</p>
               </div>
             </div>
           </CardContent>
