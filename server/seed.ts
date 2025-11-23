@@ -94,6 +94,11 @@ const seedExercises = async () => {
     { name: "Cuban Press", description: "External rotation combined with overhead press", muscleGroup: "shoulders", equipment: "dumbbell", imageUrl: null },
     { name: "Bradford Press", description: "Press barbell alternating front and back of head", muscleGroup: "shoulders", equipment: "barbell", imageUrl: null },
     { name: "Shrugs", description: "Elevate shoulders to work upper traps", muscleGroup: "shoulders", equipment: "dumbbell", imageUrl: null },
+    { name: "Dumbbell Shoulder Shrug", description: "Shrug dumbbells up to elevate shoulders", muscleGroup: "shoulders", equipment: "dumbbell", imageUrl: null },
+    { name: "Dumbbell Front Raise", description: "Raise dumbbells to front until arms are parallel to floor", muscleGroup: "shoulders", equipment: "dumbbell", imageUrl: null },
+    { name: "Dumbbell Lateral Raise", description: "Raise dumbbells to sides until arms are parallel to floor", muscleGroup: "shoulders", equipment: "dumbbell", imageUrl: null },
+    { name: "Dumbbell Reverse Fly", description: "Raise dumbbells out to sides while bent over for rear delts", muscleGroup: "shoulders", equipment: "dumbbell", imageUrl: null },
+    { name: "Dumbbell Seated Shoulder Press", description: "Press dumbbells overhead while seated on bench", muscleGroup: "shoulders", equipment: "dumbbell", imageUrl: null },
     
     // Arms (20 exercises)
     { name: "Barbell Curl", description: "Curl barbell up to shoulders", muscleGroup: "arms", equipment: "barbell", imageUrl: null },
