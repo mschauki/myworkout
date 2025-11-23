@@ -417,7 +417,7 @@ export default function Exercises() {
                 <Plus className="w-5 h-5" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="glass-surface-elevated">
+            <DialogContent className="glass-surface-elevated max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-2xl">Create Custom Exercise</DialogTitle>
               </DialogHeader>
@@ -619,7 +619,7 @@ export default function Exercises() {
 
       {/* Edit Exercise Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="glass-surface-elevated">
+        <DialogContent className="glass-surface-elevated max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl">Edit Exercise</DialogTitle>
           </DialogHeader>
