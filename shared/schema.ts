@@ -127,7 +127,7 @@ export const settings = pgTable("settings", {
   id: varchar("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   unitSystem: varchar("unit_system", { length: 10 }).notNull().default("lbs"), // "lbs" or "kg"
   firstDayOfWeek: integer("first_day_of_week").notNull().default(0), // 0-6 (0 = Sunday)
-  autoStartTimer: boolean("auto_start_timer").notNull().default(false), // auto-start rest timer
+  autoStartTimer: boolean("auto_start_timer").notNull().default(true), // auto-start rest timer
   restTimerSound: boolean("rest_timer_sound").notNull().default(true), // enable sound for rest timer
   defaultRestDuration: integer("default_rest_duration").notNull().default(90), // default rest time in seconds
   workoutHistoryRetentionDays: integer("workout_history_retention_days").notNull().default(-1), // -1 = unlimited

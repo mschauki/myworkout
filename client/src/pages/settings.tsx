@@ -16,7 +16,7 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [unitSystem, setUnitSystem] = useState<string>("lbs");
   const [firstDayOfWeek, setFirstDayOfWeek] = useState<string>("0");
-  const [autoStartTimer, setAutoStartTimer] = useState<boolean>(false);
+  const [autoStartTimer, setAutoStartTimer] = useState<boolean>(true);
   const [restTimerSound, setRestTimerSound] = useState<boolean>(true);
   const [defaultRestDuration, setDefaultRestDuration] = useState<string>("90");
   const [workoutHistoryRetention, setWorkoutHistoryRetention] = useState<string>("-1");
@@ -200,7 +200,7 @@ export default function SettingsPage() {
 
               <div className="pt-2 border-t border-border">
                 <Label className="text-sm font-medium text-foreground mb-2 block">Default Rest Duration</Label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-4 gap-2">
                   {[60, 90, 120].map((duration) => (
                     <button
                       key={duration}
@@ -215,8 +215,25 @@ export default function SettingsPage() {
                       {duration}s
                     </button>
                   ))}
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="10"
+                      max="600"
+                      value={["60", "90", "120"].includes(defaultRestDuration) ? "" : defaultRestDuration}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val && parseInt(val) >= 10 && parseInt(val) <= 600) {
+                          setDefaultRestDuration(val);
+                        }
+                      }}
+                      placeholder="Custom"
+                      className="w-full py-2 px-3 rounded-md text-sm bg-input text-foreground placeholder-muted-foreground border border-input focus:outline-none focus:ring-2 focus:ring-primary"
+                      data-testid="input-rest-duration-custom"
+                    />
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">Default rest time between sets</p>
+                <p className="text-xs text-muted-foreground mt-2">Default rest time between sets (10-600 seconds)</p>
               </div>
             </div>
           </CardContent>
