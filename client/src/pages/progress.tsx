@@ -45,6 +45,7 @@ export default function Progress() {
       <Tabs defaultValue="overview" className="mb-8">
         <TabsList className="w-full bg-card border border-card-border">
           <TabsTrigger value="overview" className="flex-1" data-testid="tab-overview">Overview</TabsTrigger>
+          <TabsTrigger value="calendar" className="flex-1" data-testid="tab-calendar">Calendar</TabsTrigger>
           <TabsTrigger value="exercises" className="flex-1" data-testid="tab-exercises">Exercises</TabsTrigger>
         </TabsList>
 
@@ -142,8 +143,9 @@ export default function Progress() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
 
-          {/* Workout Calendar */}
+        <TabsContent value="calendar" className="space-y-6 mt-6">
           <Card className="bg-card border border-card-border">
             <CardHeader>
               <CardTitle className="text-base">Workout Calendar</CardTitle>
