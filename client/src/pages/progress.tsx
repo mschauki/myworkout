@@ -7,7 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Exercise, WorkoutLog } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, Calendar as CalendarIcon } from "lucide-react";
+import { TrendingUp } from "lucide-react";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
 
 export default function Progress() {
   const [selectedExercise, setSelectedExercise] = useState<string>("");
@@ -141,18 +143,62 @@ export default function Progress() {
             </CardContent>
           </Card>
 
-          {/* Calendar Heatmap Placeholder */}
+          {/* Workout Calendar */}
           <Card className="bg-card border border-card-border">
             <CardHeader>
               <CardTitle className="text-base">Workout Calendar</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-48 flex items-center justify-center text-muted-foreground">
-                <div className="text-center">
-                  <CalendarIcon className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>Calendar view coming soon</p>
+              {isLoading ? (
+                <Skeleton className="h-80 w-full" />
+              ) : (
+                <div className="flex flex-col items-center gap-6">
+                  <div className="flex justify-center w-full overflow-x-auto">
+                    <DayPicker
+                      mode="multiple"
+                      selected={workoutLogs.map(log => new Date(log.date))}
+                      disabled={{
+                        before: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+                        after: new Date()
+                      }}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2 text-sm w-full">
+                    <div className="flex items-center gap-2">
+                      <div className="h-3 w-3 bg-primary rounded-sm"></div>
+                      <span className="text-muted-foreground">Day with completed workout</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-3 w-3 border border-input rounded-sm"></div>
+                      <span className="text-muted-foreground">No workout</span>
+                    </div>
+                  </div>
+                  {workoutLogs.length > 0 && (
+                    <div className="w-full pt-4 border-t border-border">
+                      <p className="text-sm font-medium text-foreground mb-3">Recent Workouts</p>
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {workoutLogs.slice().reverse().map((log) => (
+                          <div key={log.id} className="flex items-center justify-between p-2 bg-background rounded-md border border-input">
+                            <div>
+                              <p className="text-sm font-medium text-foreground">{log.routineName}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(log.date).toLocaleDateString('en-US', { 
+                                  month: 'short', 
+                                  day: 'numeric', 
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </p>
+                            </div>
+                            <Badge variant="secondary">{log.duration} min</Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
