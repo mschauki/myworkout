@@ -893,8 +893,8 @@ export default function Exercises() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredExercises.map((exercise) => (
               <Card key={exercise.id} className="glass-surface hover:scale-[1.02] transition-transform relative" data-testid={`card-exercise-${exercise.id}`}>
-                <CardContent className="p-5">
-                  <div className="absolute top-2 right-2 flex gap-1">
+                <CardContent className="p-5 relative">
+                  <div className="absolute top-2 right-2 flex gap-1 z-10">
                     <Button
                       size="icon"
                       variant="ghost"
