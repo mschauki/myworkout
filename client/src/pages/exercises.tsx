@@ -858,7 +858,7 @@ export default function Exercises() {
                   variant={selectedMuscleGroup === group ? "default" : "secondary"}
                   className={`cursor-pointer whitespace-nowrap px-4 py-2 text-sm ${
                     selectedMuscleGroup === group 
-                      ? "bg-card border border-card-border text-primary-foreground" 
+                      ? "bg-primary border border-primary text-primary-foreground" 
                       : "bg-card border border-card-border"
                   }`}
                   onClick={() => setSelectedMuscleGroup(group)}
