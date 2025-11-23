@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { Exercise, WorkoutLog } from "@shared/schema";
+import { Exercise, WorkoutLog, Settings } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp } from "lucide-react";
 import { DayPicker } from "react-day-picker";
@@ -22,6 +22,10 @@ export default function Progress() {
 
   const { data: workoutLogs = [], isLoading: logsLoading } = useQuery<WorkoutLog[]>({
     queryKey: ["/api/workout-logs"],
+  });
+
+  const { data: settings } = useQuery<Settings>({
+    queryKey: ["/api/settings"],
   });
 
   const isLoading = exercisesLoading || logsLoading;
@@ -161,6 +165,7 @@ export default function Progress() {
                       mode="single"
                       selected={selectedCalendarDay}
                       onSelect={setSelectedCalendarDay}
+                      firstDayOfWeek={settings?.firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6 || 0}
                     />
                   </div>
                   <div className="flex flex-col gap-2 text-sm w-full">
