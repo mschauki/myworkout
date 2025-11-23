@@ -248,8 +248,8 @@
   color: hsl(var(--muted-foreground));
   font-weight: 500;
   font-size: 0.75rem;
-  text-transform: uppercase;
-  padding: 0.5rem 0;
+  padding: 0.5rem 0.25rem;
+  width: 2.5rem;
 }
 
 .rdp-row {
