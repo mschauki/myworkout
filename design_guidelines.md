@@ -1,130 +1,155 @@
-# Jefit Glassmorphism - Design Guidelines v2
+# Jefit Minimalist - Design Guidelines
 
 ## Design Approach
-**System**: Material Design foundations with Glassmorphism aesthetic
-**Justification**: Fitness tracking demands data clarity. Glassmorphism's frosted surfaces create visual hierarchy while blue-to-orange gradients energize the experience. Translucent cards over vibrant backgrounds deliver premium appeal without sacrificing workout readability.
+**System**: Material Design foundations with minimalist aesthetic
+**Justification**: Fitness tracking prioritizes data clarity and quick input during workouts. Material Design's established patterns ensure immediate usability while a minimalist approach eliminates distractions. Clean surfaces, clear typography hierarchy, and purposeful whitespace keep focus on workout execution and progress tracking.
 
 **Key Principles**:
-- Elevated glass surfaces with precise opacity stratification
-- Premium micro-interactions that feel responsive and polished
-- Strategic gradient applications for visual energy
-- Mobile-first responsive architecture with desktop enhancements
-
-## Color System
-
-**Dark Mode** (primary):
-- Background: Diagonal gradient from #0f172a → #1e3a5f → #1e2a4a → #1a1410
-- Glass Base: rgba(255, 255, 255, 0.08) + backdrop-blur-xl
-- Glass Elevated: rgba(255, 255, 255, 0.12) for active states
-- Glass Premium: rgba(255, 255, 255, 0.15) for modals/overlays
-- Text Primary: rgba(255, 255, 255, 0.95)
-- Text Secondary: rgba(255, 255, 255, 0.65)
-- Accent Gradient: hsl(210, 85%, 52%) → hsl(25, 85%, 55%)
-- Success: #10b981 with emerald glow
-- Warning: #f59e0b amber
-- Border: rgba(255, 255, 255, 0.18) 1px
-
-**Light Mode**:
-- Background: hsl(210, 80%, 94%) → hsl(200, 70%, 96%) → hsl(25, 75%, 96%)
-- Glass: rgba(255, 255, 255, 0.7) + backdrop-blur-xl
-- Text Primary: rgba(0, 0, 0, 0.9)
-- Border: rgba(255, 255, 255, 0.35)
-
-**Glass Card Specification**:
-- Border: 1px solid rgba(255, 255, 255, 0.18)
-- Shadow: 0 8px 32px rgba(0, 0, 0, 0.37)
-- Backdrop-filter: blur(12px) saturate(180%)
+- Clean surfaces with subtle shadows for depth
+- Immediate readability with high-contrast typography
+- Intentional whitespace for visual breathing room
+- Mobile-first responsive architecture optimizing one-handed use during workouts
 
 ## Typography
-**Fonts**: Inter (UI), JetBrains Mono (numeric stats) via Google Fonts CDN
+**Fonts**: Inter (primary UI), Roboto Mono (numeric stats) via Google Fonts CDN
 
 **Hierarchy**:
-- Page Titles: text-3xl font-bold tracking-tight with gradient text
+- Page Titles: text-3xl font-bold tracking-tight
 - Section Headers: text-xl font-semibold
 - Exercise Names: text-lg font-medium
-- Stats/Numbers: text-4xl font-bold font-mono with gradient treatment
-- Body: text-base
+- Large Stats/Numbers: text-5xl font-bold font-mono
+- Medium Stats: text-2xl font-semibold font-mono
+- Body Text: text-base
 - Labels: text-sm font-medium uppercase tracking-wide
-- Micro: text-xs opacity-75
+- Micro Text: text-xs
+- Timestamps: text-xs font-mono
 
 ## Layout System
-**Spacing**: Tailwind units 2, 4, 6, 8
+**Spacing Units**: Tailwind 3, 4, 6, 8, 12
 - Card padding: p-6
-- Section gaps: gap-6
-- Bottom nav height: h-20
-- Touch targets: min-h-14
+- Section spacing: space-y-8
+- Grid gaps: gap-6
+- Bottom nav height: h-16
+- Touch targets: min-h-12 (48px minimum)
 
 **Breakpoints**:
-- Mobile: base (< 768px) - single column, full-width glass cards
-- Tablet: md (768px+) - 2-column grids, expanded nav
+- Mobile: base (< 768px) - single column, full-width cards
+- Tablet: md (768px+) - 2-column grids, sidebar navigation appears
 - Desktop: lg (1024px+) - 3-column grids, max-w-7xl container
 
 ## Component Library
 
-### Bottom Navigation
-Frosted glass bar (backdrop-blur-xl, rgba(255, 255, 255, 0.08)) fixed at bottom. 5 icon-only tabs with gradient underline indicator (2px height) on active state. Micro-interaction: Icon scales to 1.1 on tap with 150ms spring animation.
+### Navigation
+**Bottom Tab Bar (Mobile)**: Fixed bottom bar with 5 icons + labels. Active state shows solid underline indicator (h-1). Icons scale subtly (1.05) on tap.
+
+**Sidebar Navigation (Desktop)**: Left sidebar (w-64) with icon + label menu items. Active item has solid left border (w-1) and subtle background fill.
 
 ### Exercise Library
-Masonry grid (grid-cols-1 md:grid-cols-2 lg:grid-cols-3, gap-4). Glass cards with:
-- 16:9 exercise image with bottom gradient overlay
-- Muscle group chip (top-left, glass pill with gradient text)
-- Exercise name overlay with text-shadow
-- Floating quick-add button (bottom-right, gradient background with blur)
-Micro-interaction: Card lifts on hover (translateY(-4px), shadow deepens, blur intensifies to blur-2xl)
+**Layout**: Grid (grid-cols-1 md:grid-cols-2 lg:grid-cols-3) with gap-6. Cards feature:
+- 16:9 exercise demonstration image with rounded-lg corners
+- Muscle group badge (top-left overlay, solid small pill)
+- Exercise name below image (text-lg font-semibold)
+- Quick stats row (difficulty level, equipment needed) in text-sm
+- Floating "Add to Routine" button (bottom-right, solid rounded-full)
 
-### Workout Logger
-Full-screen glass interface. Sticky header (blur-2xl, opacity 0.15) with workout name gradient text and live timer. Exercise cards stack with accordion expansion. 
+**Interaction**: Cards elevate on hover (shadow-lg), images maintain aspect ratio, quick-add button pulses gently on long-press.
 
-**Set Table**: Frosted rows for Set#/Previous/Weight/Reps/Checkbox. Completed sets get emerald gradient left border (4px) and animated checkmark burst. Input fields use glass styling with gradient focus border.
+### Active Workout Interface
+**Header**: Sticky top bar with workout name (text-xl font-bold), live timer (font-mono), and pause/finish buttons. Solid background with shadow-md for depth.
 
-**Rest Timer Modal**: Centered overlay (blur-3xl, opacity 0.2), large gradient countdown, circular progress ring, glass pause/skip buttons. Micro-interaction: Numbers fade-scale transition on decrement.
+**Exercise Accordion**: Stacked cards with rounded-lg borders. Header shows exercise name + set count. Expansion reveals:
+- Exercise image (4:3 compact ratio)
+- Set table with columns: Set #, Previous, Weight, Reps, ✓
+- Large numeric input fields with +/- steppers
+- Rest timer countdown (appears after set completion)
+
+**Set Completion**: Completed sets get solid left border (w-1) and checkmark animation (scale + fade).
+
+**Rest Timer Modal**: Centered overlay (max-w-sm) with:
+- Large countdown number (text-6xl font-mono font-bold)
+- Circular progress ring (stroke-width-4)
+- Pause/Skip solid buttons below
+- Subtle background overlay (backdrop-blur-sm)
 
 ### Progress Dashboard
-2x2 stat cards (stacked on mobile). Large gradient numbers (text-4xl), animated gradient border pulse for PRs. Exercise performance charts in glass containers with gradient stroke lines. Glass dropdown for exercise selector, segmented glass control for time ranges.
+**Stats Grid**: 2x2 cards on mobile, 4-column on desktop. Each card displays:
+- Large primary metric (text-5xl font-mono)
+- Metric label (text-sm uppercase tracking-wide)
+- Trend indicator (arrow + percentage change)
+- Sparkline mini-chart (optional, using libraries)
+
+**Charts Section**: Full-width cards containing:
+- Line charts for exercise progress (using Chart.js or similar)
+- Bar charts for volume tracking
+- Dropdown selectors for exercise/time range (solid styled selects)
+
+**Personal Records Table**: Clean table with alternating row backgrounds, sortable columns, date stamps in font-mono.
 
 ### Routine Management
-Large glass cards with routine name (gradient text), exercise count badge, duration estimate, last performed timestamp. Glass icon buttons for Edit/Delete/Start. Drag handles appear with gradient on reorder mode. Micro-interaction: Card shadow expands during drag.
+**Routine Cards**: Large cards (rounded-xl) displaying:
+- Routine name header (text-2xl font-bold)
+- Exercise count badge
+- Estimated duration
+- Last performed timestamp (text-sm font-mono)
+- Action buttons row: Edit, Delete, Start Workout (solid buttons)
+
+**Drag Reorder**: Reorder mode shows drag handles (6-dot grid icon), cards lift with shadow-xl during drag.
+
+**Routine Builder**: Two-column layout (available exercises | selected exercises). Drag-and-drop between columns with visual placeholders.
 
 ### Forms & Inputs
-Glass text inputs: rgba(255, 255, 255, 0.1) background, 1px glass border, blur-sm. Focus adds gradient border glow with 200ms transition. Number inputs use large +/- glass buttons with press scale animation (0.95). Unit toggles (lbs/kg) as segmented glass control.
+**Text Inputs**: Solid borders (border-2), rounded-lg corners, internal padding (p-3). Focus state adds solid ring (ring-2).
+
+**Numeric Inputs**: Horizontal layout with large +/- buttons flanking centered number display (text-2xl font-mono). Rapid-tap supported for quick adjustments.
+
+**Selects/Dropdowns**: Solid styled selects matching text input treatment. Dropdown menus use shadow-xl and rounded-lg.
+
+**Toggle Switches**: Material Design-style switches for settings (lbs/kg, light/dark mode).
+
+**Primary Buttons**: Solid fills, rounded-lg, font-semibold, px-6 py-3. Press state scales to 0.98.
+
+**Secondary Buttons**: Solid border (border-2), transparent fill, matching padding.
+
+### Data Visualization
+**Line Charts**: Clean axis lines, single solid stroke for data line, grid lines at 25% opacity. Tooltips appear on hover with solid backgrounds.
+
+**Progress Rings**: Circular progress indicators (stroke-width-8) for goal completion. Percentage displayed center (text-2xl font-mono).
+
+**Calendar Heatmap**: Grid layout showing workout frequency, cells use intensity-based fills.
 
 ## Images
 
-**Exercise Demonstrations**: Required for all exercises. 16:9 aspect ratio with subtle gradient overlay (bottom 30%) for text readability. Used in:
-- Exercise detail view: Full-width with rounded-xl corners
-- Library cards: Thumbnail with rounded-lg corners and glass border
-- Workout logger: Compact 4:3 ratio in collapsed accordion state
+**Exercise Demonstrations**: Required for all exercises in library. Specifications:
+- Exercise Library: 16:9 ratio, rounded-lg, fills card width
+- Workout Logger: 4:3 compact ratio when accordion collapsed
+- Exercise Detail View: Large 16:9 header image, rounded-xl
 
-**Progress Photos**: Body tracking feature. Glass-bordered frames with date stamps, before/after split-view uses glass panels with gradient divider line.
+**Progress Photos**: Body tracking feature with:
+- Upload interface with preview
+- Grid gallery view (grid-cols-2 md:grid-cols-3)
+- Before/after comparison view with side-by-side layout
+- Date stamps overlaid on bottom (solid pill background)
 
-**No Hero Image**: Productivity app launches directly into bottom nav interface.
-
-## Glassmorphism Effects
-
-**4-Layer System**:
-- Background: Animated gradient (subtle 20s loop)
-- Base: Cards at blur-xl, opacity 0.08
-- Elevated: Active elements at blur-2xl, opacity 0.12
-- Overlay: Modals at blur-3xl, opacity 0.15-0.2
-
-**Borders**: 1px rgba(255, 255, 255, 0.18) on all glass. Active states add gradient border with glow effect.
-
-## Micro-Interactions
-
-**Core Animations**:
-- Set completion: Checkmark with emerald gradient burst (300ms)
-- Card hover: Scale 1.02, shadow deepens, blur increases (200ms ease-out)
-- Button press: Scale 0.95 (100ms), return 0.97 → 1.0 spring
-- Rest timer: Gradient pulse, smooth number transitions
-- Background gradient: Continuous 20s animation
-- Focus rings: Gradient ring fade-in (150ms)
-- Toast notifications: Slide-up from bottom with glass backdrop
-
-**Performance**: No animations during active set logging—prioritize input responsiveness.
+**No Marketing Hero**: App launches directly into dashboard/bottom nav interface. This is a productivity tool, not a marketing site.
 
 ## Accessibility
-- Contrast: 7:1 minimum via white text (opacity 0.9+) with text-shadow on glass
-- Touch targets: 56x56px minimum
-- Focus indicators: Gradient ring (2px, 4px offset)
-- High-contrast mode: Glass opacity increases to 0.9, gradients become solid colors
-- Screen reader labels on all icon-only navigation
+- Contrast ratios: Minimum 7:1 for all text
+- Touch targets: 48x48px minimum throughout
+- Focus indicators: Solid ring (ring-2) on all interactive elements
+- Form labels: Visible labels for all inputs (not placeholder-only)
+- Icon buttons: Include aria-label for screen readers
+- Keyboard navigation: Full support with visible focus states
+- Motion: Respect prefers-reduced-motion for all animations
+
+## Micro-Interactions
+**Minimal Animation Philosophy**: Animations only where they provide functional feedback.
+
+**Core Interactions**:
+- Set completion checkmark: Scale + fade (200ms)
+- Card hover: Shadow elevation change (150ms ease-out)
+- Button press: Scale to 0.98 (100ms)
+- Input focus: Ring appearance (150ms)
+- Rest timer: Smooth number decrement with fade
+- Toast notifications: Slide up from bottom (300ms)
+
+**No Animations During**: Active set logging to maintain input responsiveness.

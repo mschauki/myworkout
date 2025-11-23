@@ -591,13 +591,13 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                             <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-orange-500 rounded-full" />
                           )}
                           <Card 
-                            className={`glass-surface ${isSupersetContinuation ? 'ml-3' : ''} ${isInSuperset ? 'border-primary/30' : ''}`} 
+                            className={`bg-card border border-card-border ${isSupersetContinuation ? 'ml-3' : ''} ${isInSuperset ? 'border-primary/30' : ''}`} 
                             data-testid={`card-exercise-${day}-${index}`}
                           >
                             <CardContent className="p-3">
                               {isSupersetStart && (
                                 <div className="mb-2 flex items-center gap-2">
-                                  <Badge variant="default" className="text-xs glass-surface-elevated">
+                                  <Badge variant="default" className="text-xs bg-card border border-card-border">
                                     Superset
                                   </Badge>
                                 </div>
@@ -653,7 +653,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
               )}
 
               {/* Add Exercise Card */}
-              <Card className="glass-surface">
+              <Card className="bg-card border border-card-border">
                 <CardContent className="p-4 space-y-4">
                   <div className="flex items-center justify-between">
                     <Label className="text-sm font-medium">
@@ -671,7 +671,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                           Custom
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="glass-surface-elevated max-w-md">
+                      <DialogContent className="bg-card border border-card-border max-w-md">
                         <DialogHeader>
                           <DialogTitle>Create Custom Exercise</DialogTitle>
                         </DialogHeader>
@@ -703,7 +703,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                           </div>
                           <div>
                             <Label>Other Muscle Groups (Optional)</Label>
-                            <div className="grid grid-cols-2 gap-2 glass-surface p-3 rounded-lg mt-2">
+                            <div className="grid grid-cols-2 gap-2 bg-card border border-card-border p-3 rounded-lg mt-2">
                               {MUSCLE_GROUPS.map((group) => {
                                 const groupValue = group.toLowerCase();
                                 const isChecked = customOtherMuscleGroups.includes(groupValue);
@@ -905,7 +905,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                         const isBodyweight = selectedExercise?.equipment?.toLowerCase() === "bodyweight";
                         
                         return (
-                          <Card key={index} className="glass-surface bg-muted/30">
+                          <Card key={index} className="bg-card border border-card-border bg-muted/30">
                             <CardContent className="p-3">
                               <div className="flex items-start gap-2">
                                 <span className="text-xs font-medium min-w-[40px] pt-0.5">Set {index + 1}</span>

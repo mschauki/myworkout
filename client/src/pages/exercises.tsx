@@ -410,14 +410,14 @@ export default function Exercises() {
     <div className="pb-24 pt-8 max-w-6xl mx-auto">
       <div className="px-4 mb-6">
         <div className="flex items-center justify-between gap-4 mb-4">
-          <h1 className="text-4xl font-bold gradient-text" data-testid="text-page-title">Exercise Library</h1>
+          <h1 className="text-4xl font-bold text-foreground" data-testid="text-page-title">Exercise Library</h1>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="icon" className="glass-button" data-testid="button-create-exercise">
+              <Button size="icon" className="bg-primary text-primary-foreground hover-elevate" data-testid="button-create-exercise">
                 <Plus className="w-5 h-5" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="glass-surface-elevated max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="bg-card border border-card-border max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-2xl">Create Custom Exercise</DialogTitle>
               </DialogHeader>
@@ -470,7 +470,7 @@ export default function Exercises() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Other Muscle Groups (Optional)</FormLabel>
-                        <div className="grid grid-cols-2 gap-2 glass-surface p-3 rounded-lg">
+                        <div className="grid grid-cols-2 gap-2 bg-card border border-card-border p-3 rounded-lg">
                           {MUSCLE_GROUPS.filter(g => g !== "All").map((group) => {
                             const groupValue = group.toLowerCase();
                             const currentValue = (field.value || []) as string[];
@@ -520,7 +520,7 @@ export default function Exercises() {
                       )}
                       {uploadedImageUrl && (
                         <div className="space-y-2">
-                          <div className="relative w-full h-32 glass-surface rounded-lg overflow-hidden">
+                          <div className="relative w-full h-32 bg-card border border-card-border rounded-lg overflow-hidden">
                             <img
                               src={uploadedImageUrl}
                               alt="Preview"
@@ -616,12 +616,12 @@ export default function Exercises() {
             </DialogContent>
           </Dialog>
         </div>
-        <p className="text-base text-foreground/70">Browse {exercises.length}+ exercises</p>
+        <p className="text-base text-muted-foreground">Browse {exercises.length}+ exercises</p>
       </div>
 
       {/* Edit Exercise Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="glass-surface-elevated max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-card border border-card-border max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl">Edit Exercise</DialogTitle>
           </DialogHeader>
@@ -674,7 +674,7 @@ export default function Exercises() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Other Muscle Groups (Optional)</FormLabel>
-                    <div className="grid grid-cols-2 gap-2 glass-surface p-3 rounded-lg">
+                    <div className="grid grid-cols-2 gap-2 bg-card border border-card-border p-3 rounded-lg">
                       {MUSCLE_GROUPS.filter(g => g !== "All").map((group) => {
                         const groupValue = group.toLowerCase();
                         const currentValue = (field.value || []) as string[];
@@ -724,7 +724,7 @@ export default function Exercises() {
                   )}
                   {editUploadedImageUrl && (
                     <div className="space-y-2">
-                      <div className="relative w-full h-32 glass-surface rounded-lg overflow-hidden">
+                      <div className="relative w-full h-32 bg-card border border-card-border rounded-lg overflow-hidden">
                         <img
                           src={editUploadedImageUrl}
                           alt="Preview"
@@ -823,7 +823,7 @@ export default function Exercises() {
       {/* Tabs */}
       <Tabs value={selectedTab} onValueChange={(value) => setSelectedTab(value as "all" | "custom")} className="w-full">
         <div className="px-4 mb-6">
-          <TabsList className="grid w-full max-w-md grid-cols-2 glass-surface">
+          <TabsList className="grid w-full max-w-md grid-cols-2 bg-card border border-card-border">
             <TabsTrigger value="all" data-testid="tab-all-exercises">
               All Exercises
             </TabsTrigger>
@@ -837,13 +837,13 @@ export default function Exercises() {
           {/* Search */}
           <div className="px-4 mb-6">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/50" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Search exercises..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-11 glass-input h-12 text-base"
+                className="pl-11 bg-input border border-input rounded-md h-12 text-base"
                 data-testid="input-search-exercises"
               />
             </div>
@@ -858,8 +858,8 @@ export default function Exercises() {
                   variant={selectedMuscleGroup === group ? "default" : "secondary"}
                   className={`cursor-pointer whitespace-nowrap px-4 py-2 text-sm ${
                     selectedMuscleGroup === group 
-                      ? "glass-surface-elevated text-primary-foreground" 
-                      : "glass-surface"
+                      ? "bg-card border border-card-border text-primary-foreground" 
+                      : "bg-card border border-card-border"
                   }`}
                   onClick={() => setSelectedMuscleGroup(group)}
                   data-testid={`badge-filter-${group.toLowerCase()}`}
@@ -876,7 +876,7 @@ export default function Exercises() {
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <Card key={i} className="glass-surface">
+                  <Card key={i} className="bg-card border border-card-border">
                     <CardContent className="p-5">
                       <Skeleton className="h-40 w-full mb-4 rounded-lg" />
                       <Skeleton className="h-6 w-3/4 mb-2" />
@@ -886,23 +886,23 @@ export default function Exercises() {
                 ))}
               </div>
             ) : filteredExercises.length === 0 ? (
-              <Card className="glass-surface">
+              <Card className="bg-card border border-card-border">
                 <CardContent className="p-12 text-center">
                   <Dumbbell className="w-16 h-16 mx-auto mb-4 text-primary/40" />
-                  <p className="text-foreground/70 text-lg font-medium">No exercises found</p>
-                  <p className="text-sm text-foreground/50 mt-2">Try a different search or filter</p>
+                  <p className="text-muted-foreground text-lg font-medium">No exercises found</p>
+                  <p className="text-sm text-muted-foreground mt-2">Try a different search or filter</p>
                 </CardContent>
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredExercises.map((exercise) => (
-              <Card key={exercise.id} className="glass-surface hover:scale-[1.02] transition-transform relative" data-testid={`card-exercise-${exercise.id}`}>
+              <Card key={exercise.id} className="bg-card border border-card-border hover:scale-[1.02] transition-transform relative" data-testid={`card-exercise-${exercise.id}`}>
                 <CardContent className="p-5 relative">
                   <div className="absolute top-2 right-2 flex gap-1 z-10">
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-8 w-8 glass-surface"
+                      className="h-8 w-8 bg-card border border-card-border"
                       onClick={() => handleEditExercise(exercise)}
                       data-testid={`button-edit-exercise-${exercise.id}`}
                     >
@@ -911,7 +911,7 @@ export default function Exercises() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-8 w-8 glass-surface"
+                      className="h-8 w-8 bg-card border border-card-border"
                       onClick={() => setDeletingExercise(exercise)}
                       data-testid={`button-delete-exercise-${exercise.id}`}
                     >
@@ -919,7 +919,7 @@ export default function Exercises() {
                     </Button>
                   </div>
                   {exercise.imageUrl && (
-                    <div className="aspect-video glass-surface rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-primary/10 to-purple-500/10 overflow-hidden">
+                    <div className="aspect-video bg-card border border-card-border rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-primary/10 to-purple-500/10 overflow-hidden">
                       <img 
                         src={exercise.imageUrl} 
                         alt={exercise.name}
@@ -929,24 +929,24 @@ export default function Exercises() {
                     </div>
                   )}
                   <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge variant="secondary" className="text-xs capitalize glass-surface" data-testid="badge-muscle-group">
+                    <Badge variant="secondary" className="text-xs capitalize bg-card border border-card-border" data-testid="badge-muscle-group">
                       {exercise.muscleGroup}
                     </Badge>
                     <Badge variant="outline" className="text-xs capitalize" data-testid="badge-equipment">
                       {exercise.equipment}
                     </Badge>
                     {exercise.isCustom && (
-                      <Badge variant="default" className="text-xs glass-surface-elevated" data-testid="badge-custom">
+                      <Badge variant="default" className="text-xs bg-card border border-card-border" data-testid="badge-custom">
                         Custom
                       </Badge>
                     )}
                   </div>
                   <h3 className="text-lg font-semibold mb-2" data-testid="text-exercise-name">{exercise.name}</h3>
-                  <p className="text-sm text-foreground/60 line-clamp-2 mb-3">{exercise.description}</p>
+                  <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{exercise.description}</p>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full mt-2 glass-surface"
+                    className="w-full mt-2 bg-card border border-card-border"
                     onClick={() => handleOpenAddToRoutine(exercise)}
                     data-testid={`button-add-to-routine-${exercise.id}`}
                   >
@@ -970,7 +970,7 @@ export default function Exercises() {
           }
         }}
       >
-        <DialogContent className="glass-surface-elevated max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-card border border-card-border max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl">
               Add {selectedExercise?.name} to Routine
@@ -1058,7 +1058,7 @@ export default function Exercises() {
                   const isBodyweight = selectedExercise?.equipment?.toLowerCase() === "bodyweight";
                   
                   return (
-                    <Card key={index} className="glass-surface bg-muted/30">
+                    <Card key={index} className="bg-card border border-card-border bg-muted/30">
                       <CardContent className="p-3">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-medium min-w-[40px]">Set {index + 1}</span>
@@ -1147,7 +1147,7 @@ export default function Exercises() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deletingExercise} onOpenChange={(open) => !open && setDeletingExercise(null)}>
-        <AlertDialogContent className="glass-surface-elevated">
+        <AlertDialogContent className="bg-card border border-card-border">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Exercise</AlertDialogTitle>
             <AlertDialogDescription>

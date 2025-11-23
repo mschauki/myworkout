@@ -624,7 +624,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
       {/* Rest Timer */}
       {restTimer > 0 && (
         <div className="sticky top-[120px] z-30 mx-4 mt-4">
-          <Card className="glass-surface-elevated bg-primary/90 text-primary-foreground border-primary">
+          <Card className="bg-card border border-card-border bg-primary/90 text-primary-foreground border-primary">
             <CardContent className="p-4">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 flex-1">
@@ -711,7 +711,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                     <div className="flex items-center gap-3 mb-2">
                       <h2 className="text-4xl font-bold">{log.exerciseName}</h2>
                       {isSupersetStart && (
-                        <Badge variant="default" className="text-xs glass-surface-elevated">
+                        <Badge variant="default" className="text-xs bg-card border border-card-border">
                           Superset
                         </Badge>
                       )}
@@ -736,7 +736,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
 
                 {/* Exercise Image */}
                 {exercise?.imageUrl && (
-                  <Card className="glass-surface mb-6 overflow-hidden">
+                  <Card className="bg-card border border-card-border mb-6 overflow-hidden">
                     <img 
                       src={exercise.imageUrl} 
                       alt={log.exerciseName}
