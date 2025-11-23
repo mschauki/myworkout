@@ -519,21 +519,23 @@ export default function Exercises() {
                         <p className="text-sm text-muted-foreground">Uploading image...</p>
                       )}
                       {uploadedImageUrl && (
-                        <div className="relative w-full h-32 glass-surface rounded-lg overflow-hidden">
-                          <img
-                            src={uploadedImageUrl}
-                            alt="Preview"
-                            className="w-full h-full object-cover"
-                          />
+                        <div className="space-y-2">
+                          <div className="relative w-full h-32 glass-surface rounded-lg overflow-hidden">
+                            <img
+                              src={uploadedImageUrl}
+                              alt="Preview"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
                           <Button
                             type="button"
                             variant="destructive"
-                            size="icon"
-                            className="absolute top-2 right-2 h-6 w-6"
+                            size="sm"
                             onClick={() => setUploadedImageUrl("")}
                             data-testid="button-remove-uploaded-image"
+                            className="w-full"
                           >
-                            ×
+                            Remove Image
                           </Button>
                         </div>
                       )}
@@ -721,21 +723,23 @@ export default function Exercises() {
                     <p className="text-sm text-muted-foreground">Uploading image...</p>
                   )}
                   {editUploadedImageUrl && (
-                    <div className="relative w-full h-32 glass-surface rounded-lg overflow-hidden">
-                      <img
-                        src={editUploadedImageUrl}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="space-y-2">
+                      <div className="relative w-full h-32 glass-surface rounded-lg overflow-hidden">
+                        <img
+                          src={editUploadedImageUrl}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                       <Button
                         type="button"
                         variant="destructive"
-                        size="icon"
-                        className="absolute top-2 right-2 h-6 w-6"
+                        size="sm"
                         onClick={() => setEditUploadedImageUrl("")}
                         data-testid="button-remove-edit-uploaded-image"
+                        className="w-full"
                       >
-                        ×
+                        Remove Image
                       </Button>
                     </div>
                   )}
