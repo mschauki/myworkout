@@ -1,4 +1,4 @@
-import { Home, Dumbbell, Library, TrendingUp, User } from "lucide-react";
+import { Home, Dumbbell, Library, TrendingUp, User, Settings } from "lucide-react";
 import { useLocation, Link } from "wouter";
 
 export function BottomNav() {
@@ -10,6 +10,7 @@ export function BottomNav() {
     { path: "/exercises", icon: Library, label: "Exercises" },
     { path: "/progress", icon: TrendingUp, label: "Progress" },
     { path: "/profile", icon: User, label: "Profile" },
+    { path: "/settings", icon: Settings, label: "Settings" },
   ];
 
   return (

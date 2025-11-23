@@ -11,6 +11,7 @@ import {
   insertWorkoutLogSchema,
   insertProgressRecordSchema,
   insertBodyStatsSchema,
+  insertSettingsSchema,
   type InsertWorkoutRoutine,
   type InsertWorkoutLog
 } from "@shared/schema";
@@ -527,6 +528,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(stats);
     } catch (error) {
       res.status(400).json({ error: "Invalid body stats data" });
+    }
+  });
+
+  // Settings
+  app.get("/api/settings", async (req, res) => {
+    try {
+      const setting = await storage.getSettings();
+      res.json(setting);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch settings" });
+    }
+  });
+
+  app.post("/api/settings", async (req, res) => {
+    try {
+      const validatedData = insertSettingsSchema.parse(req.body);
+      const setting = await storage.updateSettings(validatedData);
+      res.json(setting);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid settings data" });
     }
   });
 

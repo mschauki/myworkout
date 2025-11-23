@@ -121,3 +121,21 @@ export const insertBodyStatsSchema = createInsertSchema(bodyStats).omit({
 export const selectBodyStatsSchema = createSelectSchema(bodyStats);
 export type BodyStats = typeof bodyStats.$inferSelect;
 export type InsertBodyStats = z.infer<typeof insertBodyStatsSchema>;
+
+// Settings table
+export const settings = pgTable("settings", {
+  id: varchar("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  unitSystem: varchar("unit_system", { length: 10 }).notNull().default("lbs"), // "lbs" or "kg"
+  firstDayOfWeek: integer("first_day_of_week").notNull().default(0), // 0-6 (0 = Sunday)
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertSettingsSchema = createInsertSchema(settings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const selectSettingsSchema = createSelectSchema(settings);
+export type Settings = typeof settings.$inferSelect;
+export type InsertSettings = z.infer<typeof insertSettingsSchema>;

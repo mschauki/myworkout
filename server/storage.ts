@@ -4,6 +4,7 @@ import {
   workoutLogs,
   progressRecords,
   bodyStats,
+  settings,
   type Exercise, 
   type InsertExercise,
   type WorkoutRoutine,
@@ -13,7 +14,9 @@ import {
   type ProgressRecord,
   type InsertProgressRecord,
   type BodyStats,
-  type InsertBodyStats
+  type InsertBodyStats,
+  type Settings,
+  type InsertSettings
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -48,6 +51,10 @@ export interface IStorage {
   getAllBodyStats(): Promise<BodyStats[]>;
   getBodyStats(id: string): Promise<BodyStats | undefined>;
   createBodyStats(stats: InsertBodyStats): Promise<BodyStats>;
+  
+  // Settings
+  getSettings(): Promise<Settings>;
+  updateSettings(data: Partial<InsertSettings>): Promise<Settings>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -220,6 +227,37 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return stats;
+  }
+
+  // Settings
+  async getSettings(): Promise<Settings> {
+    const [setting] = await db.select().from(settings);
+    if (setting) {
+      return setting;
+    }
+    // Create default settings if none exist
+    const [newSetting] = await db
+      .insert(settings)
+      .values({
+        unitSystem: "lbs",
+        firstDayOfWeek: 0,
+      })
+      .returning();
+    return newSetting;
+  }
+
+  async updateSettings(data: Partial<InsertSettings>): Promise<Settings> {
+    const updateValues: any = {};
+    if (data.unitSystem !== undefined) updateValues.unitSystem = data.unitSystem;
+    if (data.firstDayOfWeek !== undefined) updateValues.firstDayOfWeek = data.firstDayOfWeek;
+    updateValues.updatedAt = new Date();
+    
+    const [setting] = await db
+      .update(settings)
+      .set(updateValues)
+      .where(eq(settings.id, (await this.getSettings()).id))
+      .returning();
+    return setting;
   }
 }
 
