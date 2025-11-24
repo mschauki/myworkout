@@ -10,6 +10,7 @@ import Workouts from "@/pages/workouts";
 import Progress from "@/pages/progress";
 import Profile from "@/pages/profile";
 import Settings from "@/pages/settings";
+import WorkoutLogDetail from "@/pages/workout-log-detail";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/exercises" component={Exercises} />
       <Route path="/workouts" component={Workouts} />
       <Route path="/progress" component={Progress} />
+      <Route path="/workout-log/:id" component={WorkoutLogDetail} />
       <Route path="/profile" component={Profile} />
       <Route path="/settings" component={Settings} />
       <Route component={NotFound} />

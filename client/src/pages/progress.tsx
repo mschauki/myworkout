@@ -11,6 +11,7 @@ import { TrendingUp } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { useUnitSystem } from "@/hooks/use-unit-system";
+import { Link } from "wouter";
 
 export default function Progress() {
   const { formatWeight, getUnitLabel, convertWeight } = useUnitSystem();
@@ -222,21 +223,23 @@ export default function Progress() {
                         </p>
                         <div className="space-y-2">
                           {dayWorkouts.map((log) => (
-                            <div key={log.id} className="flex items-center justify-between p-3 bg-background rounded-md border border-input">
-                              <div>
-                                <p className="text-sm font-medium text-foreground">{log.routineName}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  {new Date(log.date).toLocaleTimeString('en-US', { 
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  })}
-                                </p>
+                            <Link key={log.id} href={`/workout-log/${log.id}`}>
+                              <div className="flex items-center justify-between p-3 bg-background rounded-md border border-input hover-elevate active-elevate-2 cursor-pointer" data-testid={`card-workout-${log.id}`}>
+                                <div>
+                                  <p className="text-sm font-medium text-foreground">{log.routineName}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {new Date(log.date).toLocaleTimeString('en-US', { 
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <Badge variant="secondary">{log.duration} min</Badge>
+                                  <p className="text-xs text-muted-foreground mt-1">{formatWeight(log.totalVolume)}</p>
+                                </div>
                               </div>
-                              <div className="text-right">
-                                <Badge variant="secondary">{log.duration} min</Badge>
-                                <p className="text-xs text-muted-foreground mt-1">{formatWeight(log.totalVolume)}</p>
-                              </div>
-                            </div>
+                            </Link>
                           ))}
                         </div>
                       </div>
