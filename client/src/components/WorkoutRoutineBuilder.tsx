@@ -55,8 +55,10 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
   const { formatWeight, getUnitLabel, convertWeight, convertToLbs } = useUnitSystem();
   
   // Helper to format weight for display without trailing .0
-  const formatWeightValue = (weightInLbs: number): string => {
-    const converted = convertWeight(weightInLbs);
+  const formatWeightValue = (weightInLbs: number | string): string => {
+    const numValue = typeof weightInLbs === "string" ? parseFloat(weightInLbs) : weightInLbs;
+    if (!numValue || isNaN(numValue)) return "";
+    const converted = convertWeight(numValue);
     // Round to 1 decimal for kg, 0 for lbs
     const precision = getUnitLabel() === "kg" ? 1 : 0;
     const rounded = Math.round(converted * Math.pow(10, precision)) / Math.pow(10, precision);
@@ -898,7 +900,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                                 min="0"
                                                 step={getUnitLabel() === "kg" ? "0.5" : "2.5"}
                                                 placeholder={getUnitLabel()}
-                                                value={set.weight || ""}
+                                                value={set.weight ? formatWeightValue(set.weight) : ""}
                                                 onChange={(e) => updateEditPerSet(setIdx, 'weight', e.target.value)}
                                                 className="text-xs h-8"
                                                 data-testid={`input-edit-weight-${day}-${index}-${setIdx}`}
