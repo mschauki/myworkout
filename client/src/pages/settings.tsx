@@ -36,6 +36,45 @@ export default function SettingsPage() {
     }
   }, [settings]);
 
+  // Safety mechanism: Sync cache with local state when they diverge
+  // This handles cases where Select onChange doesn't fire (keyboard nav, testing, etc.)
+  useEffect(() => {
+    const cachedSettings = queryClient.getQueryData<Settings>(["/api/settings"]);
+    
+    // Only update if:
+    // 1. Settings have loaded (so we're not syncing with initial "lbs" state)
+    // 2. Local state differs from cache
+    if (settings && cachedSettings && unitSystem !== cachedSettings.unitSystem) {
+      // Update cache to match local state
+      queryClient.setQueryData<Settings>(["/api/settings"], (oldData) => {
+        const baseData = oldData || {
+          id: 1,
+          unitSystem: "lbs" as "lbs" | "kg",
+          firstDayOfWeek: 0,
+          autoStartTimer: true,
+          restTimerSound: true,
+          defaultRestDuration: 90,
+          workoutHistoryRetentionDays: -1,
+        };
+        
+        return {
+          ...baseData,
+          unitSystem: unitSystem as "lbs" | "kg",
+        };
+      });
+      
+      // Auto-save to backend
+      updateSettingsMutation.mutate({
+        unitSystem,
+        firstDayOfWeek: parseInt(firstDayOfWeek),
+        autoStartTimer,
+        restTimerSound,
+        defaultRestDuration: parseInt(defaultRestDuration),
+        workoutHistoryRetentionDays: parseInt(workoutHistoryRetention),
+      });
+    }
+  }, [unitSystem, settings]);
+
   const updateSettingsMutation = useMutation({
     mutationFn: async (newSettings: any) => {
       return apiRequest("POST", "/api/settings", newSettings);
@@ -68,26 +107,8 @@ export default function SettingsPage() {
   };
 
   const handleUnitSystemChange = (newUnitSystem: string) => {
+    // Just update local state - the useEffect will handle cache sync and auto-save
     setUnitSystem(newUnitSystem);
-    
-    // Optimistically update the cache immediately for instant UI updates
-    queryClient.setQueryData<Settings>(["/api/settings"], (oldData) => {
-      if (!oldData) return oldData;
-      return {
-        ...oldData,
-        unitSystem: newUnitSystem as "lbs" | "kg",
-      };
-    });
-    
-    // Auto-save unit system change to backend
-    updateSettingsMutation.mutate({
-      unitSystem: newUnitSystem,
-      firstDayOfWeek: parseInt(firstDayOfWeek),
-      autoStartTimer,
-      restTimerSound,
-      defaultRestDuration: parseInt(defaultRestDuration),
-      workoutHistoryRetentionDays: parseInt(workoutHistoryRetention),
-    });
   };
 
   const dayLabels = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
