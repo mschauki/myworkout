@@ -2,14 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE (DEFAULT) - Liquid Design */
+/* LIGHT MODE (DEFAULT) - Glassmorphism Design */
 :root {
-  /* Liquid Design - Glassmorphism Effects */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.18);
+  /* Glassmorphism Effects - Enhanced */
+  --glass-bg: rgba(255, 255, 255, 0.2);
+  --glass-bg-strong: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.3);
   --blur-amount: 16px;
+  --blur-amount-lg: 20px;
   --blur-amount-xl: 24px;
-  --blur-amount-2xl: 32px;
+  --blur-amount-2xl: 40px;
   
   /* Elevation System */
   --button-outline: rgba(0, 0, 0, 0.08);
@@ -18,143 +20,148 @@
   --elevate-1: rgba(0, 0, 0, 0.04);
   --elevate-2: rgba(0, 0, 0, 0.08);
 
-  /* Liquid Gradients */
-  --gradient-primary: linear-gradient(135deg, hsl(210, 100%, 50%) 0%, hsl(195, 90%, 50%) 100%);
-  --gradient-accent: linear-gradient(135deg, hsl(25, 95%, 53%) 0%, hsl(35, 95%, 58%) 100%);
-  --gradient-mesh-bg: radial-gradient(at 0% 0%, hsla(210, 100%, 95%, 0.8) 0, transparent 50%),
-                      radial-gradient(at 100% 0%, hsla(195, 90%, 95%, 0.6) 0, transparent 50%),
-                      radial-gradient(at 100% 100%, hsla(25, 95%, 95%, 0.4) 0, transparent 50%),
-                      radial-gradient(at 0% 100%, hsla(210, 100%, 95%, 0.5) 0, transparent 50%);
+  /* Glassmorphism Gradients - Blue & Orange */
+  --gradient-primary: linear-gradient(135deg, hsl(210, 75%, 58%) 0%, hsl(205, 80%, 55%) 100%);
+  --gradient-accent: linear-gradient(135deg, hsl(17, 100%, 61%) 0%, hsl(22, 100%, 58%) 100%);
+  --gradient-mesh-bg: radial-gradient(at 0% 0%, hsla(210, 75%, 95%, 0.6) 0, transparent 50%),
+                      radial-gradient(at 100% 0%, hsla(17, 100%, 95%, 0.4) 0, transparent 50%),
+                      radial-gradient(at 100% 100%, hsla(205, 80%, 95%, 0.5) 0, transparent 50%),
+                      radial-gradient(at 0% 100%, hsla(17, 100%, 95%, 0.3) 0, transparent 50%);
   
-  /* Base Colors - Premium Light Mode */
-  --background: 220 20% 98%;
-  --foreground: 220 15% 12%;
-  --border: 220 15% 88%;
+  /* Base Colors - Premium Light Mode with Glass */
+  --background: 210 20% 98%;
+  --foreground: 220 15% 15%;
+  --border: 220 10% 90%;
   
-  /* Glass Card */
+  /* Glass Card - Semi-transparent white */
   --card: 0 0% 100%;
-  --card-foreground: 220 15% 12%;
-  --card-border: 220 15% 92%;
+  --card-foreground: 220 15% 15%;
+  --card-border: 0 0% 100%;
   
-  /* Sidebar - Translucent */
-  --sidebar: 220 20% 97%;
+  /* Sidebar - Frosted Glass */
+  --sidebar: 210 20% 98%;
   --sidebar-foreground: 220 15% 20%;
-  --sidebar-border: 220 15% 88%;
-  --sidebar-primary: 210 100% 50%;
+  --sidebar-border: 220 10% 90%;
+  --sidebar-primary: 210 75% 58%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 220 20% 93%;
-  --sidebar-accent-foreground: 210 100% 50%;
-  --sidebar-ring: 210 100% 50%;
+  --sidebar-accent: 220 15% 94%;
+  --sidebar-accent-foreground: 210 75% 58%;
+  --sidebar-ring: 210 75% 58%;
   
-  /* Popover */
+  /* Popover - Glass Effect */
   --popover: 0 0% 100%;
-  --popover-foreground: 220 15% 12%;
-  --popover-border: 220 15% 88%;
+  --popover-foreground: 220 15% 15%;
+  --popover-border: 0 0% 100%;
   
-  /* Primary - Vibrant Blue Gradient */
-  --primary: 210 100% 50%;
+  /* Primary - Vibrant Blue (#4A90E2) */
+  --primary: 210 75% 58%;
   --primary-foreground: 0 0% 100%;
   
   /* Secondary - Soft Glass */
-  --secondary: 220 15% 93%;
-  --secondary-foreground: 220 15% 20%;
+  --secondary: 220 15% 94%;
+  --secondary-foreground: 220 15% 25%;
   
-  /* Muted */
-  --muted: 220 15% 85%;
-  --muted-foreground: 220 10% 50%;
+  /* Muted - Light Glass */
+  --muted: 220 15% 92%;
+  --muted-foreground: 220 10% 45%;
   
-  /* Accent - Warm Orange Gradient */
-  --accent: 25 95% 53%;
+  /* Accent - Vibrant Orange (#FF6B35) */
+  --accent: 17 100% 61%;
   --accent-foreground: 0 0% 100%;
   
   /* Destructive */
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
   
-  /* Input */
-  --input: 220 15% 95%;
-  --ring: 210 100% 50%;
+  /* Input - Glass Style */
+  --input: 220 15% 96%;
+  --ring: 17 100% 61%;
   
-  /* Chart Colors - Gradient Palette */
-  --chart-1: 210 100% 50%;
-  --chart-2: 195 90% 50%;
-  --chart-3: 170 85% 48%;
-  --chart-4: 150 80% 46%;
-  --chart-5: 135 75% 44%;
+  /* Chart Colors - Blue & Orange Palette */
+  --chart-1: 210 75% 58%;
+  --chart-2: 205 80% 55%;
+  --chart-3: 17 100% 61%;
+  --chart-4: 22 100% 58%;
+  --chart-5: 200 70% 52%;
   
   /* Typography */
-  --font-sans: Inter, system-ui, -apple-system, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: 'SF Mono', 'Roboto Mono', 'JetBrains Mono', monospace;
   
-  /* Liquid Border Radius */
-  --radius: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-2xl: 2rem;
-  --radius-3xl: 3rem;
+  /* Border Radius - Small for glassmorphism */
+  --radius: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
   
-  /* Soft Shadows for Depth */
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
-  --shadow-glass-lg: 0 12px 48px 0 rgba(0, 0, 0, 0.12);
-  --shadow-glow: 0 0 20px rgba(33, 150, 243, 0.3);
+  /* Glass Shadows for Depth */
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  --shadow-glass-lg: 0 12px 48px 0 rgba(31, 38, 135, 0.25);
+  --shadow-glow-blue: 0 0 30px rgba(74, 144, 226, 0.3);
+  --shadow-glow-orange: 0 0 30px rgba(255, 107, 53, 0.3);
+  --shadow-glow: var(--shadow-glow-blue);
 }
 
-/* DARK MODE - Liquid Design */
+/* DARK MODE - Glassmorphism Design */
 .dark {
-  /* Glassmorphism for Dark Mode */
-  --glass-bg: rgba(15, 23, 42, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  /* Glassmorphism for Dark Mode - Enhanced */
+  --glass-bg: rgba(15, 23, 42, 0.3);
+  --glass-bg-strong: rgba(15, 23, 42, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.15);
   
-  /* Gradient Mesh - Dark */
-  --gradient-mesh-bg: radial-gradient(at 0% 0%, hsla(210, 100%, 25%, 0.3) 0, transparent 50%),
-                      radial-gradient(at 100% 0%, hsla(195, 90%, 25%, 0.2) 0, transparent 50%),
-                      radial-gradient(at 100% 100%, hsla(25, 95%, 25%, 0.15) 0, transparent 50%),
-                      radial-gradient(at 0% 100%, hsla(210, 100%, 25%, 0.2) 0, transparent 50%);
+  /* Gradient Mesh - Dark with Blue & Orange */
+  --gradient-mesh-bg: radial-gradient(at 0% 0%, hsla(210, 75%, 20%, 0.3) 0, transparent 50%),
+                      radial-gradient(at 100% 0%, hsla(17, 100%, 25%, 0.2) 0, transparent 50%),
+                      radial-gradient(at 100% 100%, hsla(205, 80%, 20%, 0.25) 0, transparent 50%),
+                      radial-gradient(at 0% 100%, hsla(17, 100%, 20%, 0.15) 0, transparent 50%);
   
-  --background: 222 47% 11%;
-  --foreground: 210 40% 98%;
-  --border: 217 33% 17%;
+  --background: 220 20% 10%;
+  --foreground: 210 20% 98%;
+  --border: 220 15% 25%;
   
-  --card: 222 47% 14%;
-  --card-foreground: 210 40% 98%;
-  --card-border: 217 33% 20%;
+  --card: 220 20% 15%;
+  --card-foreground: 210 20% 98%;
+  --card-border: 220 15% 30%;
   
-  --sidebar: 222 47% 13%;
-  --sidebar-foreground: 210 40% 95%;
-  --sidebar-border: 217 33% 18%;
-  --sidebar-primary: 210 100% 55%;
+  --sidebar: 220 20% 12%;
+  --sidebar-foreground: 210 20% 95%;
+  --sidebar-border: 220 15% 25%;
+  --sidebar-primary: 210 75% 65%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 217 33% 20%;
-  --sidebar-accent-foreground: 210 100% 55%;
-  --sidebar-ring: 210 100% 55%;
+  --sidebar-accent: 220 15% 20%;
+  --sidebar-accent-foreground: 210 75% 65%;
+  --sidebar-ring: 210 75% 65%;
   
-  --popover: 222 47% 14%;
-  --popover-foreground: 210 40% 98%;
-  --popover-border: 217 33% 20%;
+  --popover: 220 20% 15%;
+  --popover-foreground: 210 20% 98%;
+  --popover-border: 220 15% 30%;
   
-  --primary: 210 100% 55%;
+  --primary: 210 75% 65%;
   --primary-foreground: 0 0% 100%;
   
-  --secondary: 217 33% 20%;
-  --secondary-foreground: 210 40% 95%;
+  --secondary: 220 15% 20%;
+  --secondary-foreground: 210 20% 95%;
   
-  --muted: 217 33% 25%;
-  --muted-foreground: 215 20% 65%;
+  --muted: 220 15% 25%;
+  --muted-foreground: 220 10% 65%;
   
-  --accent: 25 95% 58%;
+  --accent: 17 100% 65%;
   --accent-foreground: 0 0% 100%;
   
-  --destructive: 0 63% 55%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive: 0 70% 60%;
+  --destructive-foreground: 0 0% 100%;
   
-  --input: 217 33% 18%;
-  --ring: 210 100% 55%;
+  --input: 220 15% 18%;
+  --ring: 17 100% 65%;
   
-  /* Soft Shadows for Dark Mode */
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-  --shadow-glass-lg: 0 12px 48px 0 rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 20px rgba(100, 181, 246, 0.4);
+  /* Glass Shadows for Dark Mode */
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  --shadow-glass-lg: 0 12px 48px 0 rgba(0, 0, 0, 0.7);
+  --shadow-glow-blue: 0 0 30px rgba(74, 144, 226, 0.5);
+  --shadow-glow-orange: 0 0 30px rgba(255, 107, 53, 0.5);
+  --shadow-glow: var(--shadow-glow-blue);
   
   /* Dark Elevation */
   --elevate-1: rgba(255, 255, 255, 0.05);
@@ -178,8 +185,34 @@
   }
 
   body {
-    @apply font-sans antialiased text-foreground bg-background;
+    @apply font-sans antialiased text-foreground;
     min-height: 100vh;
+    background: var(--gradient-mesh-bg), hsl(var(--background));
+    background-attachment: fixed;
+  }
+  
+  /* Glassmorphism base utilities */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--blur-amount-lg));
+    -webkit-backdrop-filter: blur(var(--blur-amount-lg));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass);
+  }
+  
+  .glass-card-strong {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(var(--blur-amount-xl));
+    -webkit-backdrop-filter: blur(var(--blur-amount-xl));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass-lg);
+  }
+  
+  .glass-nav {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--blur-amount-2xl));
+    -webkit-backdrop-filter: blur(var(--blur-amount-2xl));
+    border-top: 1px solid var(--glass-border);
   }
 }
 
