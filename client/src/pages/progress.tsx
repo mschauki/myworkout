@@ -162,6 +162,7 @@ export default function Progress() {
                 <div className="flex flex-col items-center gap-6">
                   <div className="flex justify-center w-full">
                     <DayPicker
+                      key={`${settings?.firstDayOfWeek || 0}`}
                       mode="single"
                       selected={selectedCalendarDay}
                       onSelect={setSelectedCalendarDay}
