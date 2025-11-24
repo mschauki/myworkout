@@ -616,81 +616,43 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
               <X className="w-5 h-5" />
             </Button>
           </div>
-          <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <Timer className="w-4 h-4 text-muted-foreground" />
-              <span className="font-mono font-medium" data-testid="text-elapsed-time">{formatTime(elapsedTime)}</span>
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Timer className="w-4 h-4 text-muted-foreground" />
+                <span className="font-mono font-medium" data-testid="text-elapsed-time">{formatTime(elapsedTime)}</span>
+              </div>
+              <Badge variant="secondary" data-testid="badge-progress">
+                {completedSets}/{totalSets} sets
+              </Badge>
             </div>
-            <Badge variant="secondary" data-testid="badge-progress">
-              {completedSets}/{totalSets} sets
-            </Badge>
+            {restTimer > 0 && (
+              <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/30 rounded-md">
+                <Timer className="w-4 h-4 text-primary" />
+                <span className="font-mono font-bold text-primary" data-testid="text-rest-timer">{formatTime(restTimer)}</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={() => setRestPaused(!restPaused)}
+                  data-testid="button-rest-toggle"
+                >
+                  {restPaused ? <Play className="w-3 h-3" /> : <Pause className="w-3 h-3" />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={() => setRestTimer(0)}
+                  data-testid="button-rest-skip"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Rest Timer */}
-      {restTimer > 0 && (
-        <div className="sticky top-[120px] z-30 mx-4 mt-4">
-          <Card className="bg-card border border-card-border bg-primary/90 text-primary-foreground border-primary">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 flex-1">
-                  <Timer className="w-5 h-5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Rest Timer</p>
-                    <p className="text-2xl font-bold font-mono">{formatTime(restTimer)}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Input
-                        type="number"
-                        min="1"
-                        step="5"
-                        value={currentRestPeriod}
-                        onChange={(e) => {
-                          const parsed = parseInt(e.target.value) || 90;
-                          const clamped = Math.max(1, parsed);
-                          setCurrentRestPeriod(clamped);
-                        }}
-                        onBlur={(e) => {
-                          const parsed = parseInt(e.target.value) || 90;
-                          handleRestPeriodChange(parsed);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            const parsed = parseInt(e.currentTarget.value) || 90;
-                            handleRestPeriodChange(parsed);
-                          }
-                        }}
-                        className="w-20 h-8 bg-primary-foreground text-primary text-sm"
-                        data-testid="input-edit-rest"
-                      />
-                      <span className="text-xs">seconds</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    onClick={() => setRestPaused(!restPaused)}
-                    data-testid="button-rest-toggle"
-                  >
-                    {restPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    onClick={() => setRestTimer(0)}
-                    data-testid="button-rest-skip"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
       {/* Current Exercise - Fullscreen */}
       {exerciseLogs.length > 0 && (
         <div className="min-h-screen flex flex-col px-4 pt-6 pb-20">
