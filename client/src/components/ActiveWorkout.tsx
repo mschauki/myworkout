@@ -741,6 +741,27 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                   </div>
                 </div>
 
+                {/* Sticky Done Button */}
+                {!allComplete && (
+                  <div className="sticky top-[120px] z-20 mb-4 flex gap-2">
+                    <Button
+                      onClick={() => {
+                        const nextIncompleteIndex = log.sets.findIndex(s => !s.completed);
+                        if (nextIncompleteIndex !== -1) {
+                          completeSet(currentExerciseIndex, nextIncompleteIndex);
+                        }
+                      }}
+                      size="lg"
+                      className="flex-1 h-14 text-lg font-bold"
+                      disabled={log.sets.findIndex(s => !s.completed) === -1 || (isTimeBased ? (log.sets[log.sets.findIndex(s => !s.completed)]?.duration ?? 0) <= 0 : (log.sets[log.sets.findIndex(s => !s.completed)]?.reps ?? 0) <= 0)}
+                      data-testid={`button-done-set-${currentExerciseIndex}`}
+                    >
+                      <Check className="w-5 h-5 mr-2" />
+                      Done
+                    </Button>
+                  </div>
+                )}
+
                 {/* Exercise Image */}
                 {exercise?.imageUrl && (
                   <Card className="bg-card border border-card-border mb-6 overflow-hidden">
@@ -826,29 +847,20 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                   </Button>
                 </div>
 
-                {/* Bottom Actions - Single Main Button */}
-                <div className="mt-auto pt-8 space-y-2 flex flex-col">
-                  {!allComplete ? (
-                    <>
-                      {/* Mark Set Done Button */}
-                      <Button
-                        onClick={() => {
-                          const nextIncompleteIndex = log.sets.findIndex(s => !s.completed);
-                          if (nextIncompleteIndex !== -1) {
-                            completeSet(currentExerciseIndex, nextIncompleteIndex);
-                          }
-                        }}
-                        size="lg"
-                        className="w-full h-16 text-lg font-bold"
-                        disabled={log.sets.findIndex(s => !s.completed) === -1 || (isTimeBased ? (log.sets[log.sets.findIndex(s => !s.completed)]?.duration ?? 0) <= 0 : (log.sets[log.sets.findIndex(s => !s.completed)]?.reps ?? 0) <= 0)}
-                        data-testid={`button-done-set-${currentExerciseIndex}`}
-                      >
-                        <Check className="w-6 h-6 mr-2" />
-                        Done
-                      </Button>
-                      
-                      {/* Previous Exercise Button */}
-                      {currentExerciseIndex > 0 && (
+                {/* Bottom Actions - Navigation and Finish Buttons (only when all sets complete) */}
+                {allComplete && (
+                  <div className="mt-auto pt-8 space-y-2 flex flex-col">
+                    {/* Next Exercise or Finish Button */}
+                    {currentExerciseIndex < exerciseLogs.length - 1 ? (
+                      <>
+                        <Button
+                          onClick={() => setCurrentExerciseIndex(currentExerciseIndex + 1)}
+                          size="lg"
+                          className="w-full h-16 text-lg font-bold"
+                          data-testid={`button-next-exercise-${currentExerciseIndex}`}
+                        >
+                          Next Exercise
+                        </Button>
                         <Button
                           variant="secondary"
                           onClick={() => setCurrentExerciseIndex(currentExerciseIndex - 1)}
@@ -857,21 +869,19 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                         >
                           Previous Exercise
                         </Button>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      {/* Next Exercise or Finish Button */}
-                      {currentExerciseIndex < exerciseLogs.length - 1 ? (
-                        <>
-                          <Button
-                            onClick={() => setCurrentExerciseIndex(currentExerciseIndex + 1)}
-                            size="lg"
-                            className="w-full h-16 text-lg font-bold"
-                            data-testid={`button-next-exercise-${currentExerciseIndex}`}
-                          >
-                            Next Exercise
-                          </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          onClick={finishWorkout}
+                          size="lg"
+                          className="w-full h-16 text-lg font-bold"
+                          disabled={saveWorkoutMutation.isPending || completedSets === 0}
+                          data-testid="button-finish-workout"
+                        >
+                          {saveWorkoutMutation.isPending ? "Saving..." : "Finish Workout"}
+                        </Button>
+                        {currentExerciseIndex > 0 && (
                           <Button
                             variant="secondary"
                             onClick={() => setCurrentExerciseIndex(currentExerciseIndex - 1)}
@@ -880,33 +890,11 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                           >
                             Previous Exercise
                           </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button
-                            onClick={finishWorkout}
-                            size="lg"
-                            className="w-full h-16 text-lg font-bold"
-                            disabled={saveWorkoutMutation.isPending || completedSets === 0}
-                            data-testid="button-finish-workout"
-                          >
-                            {saveWorkoutMutation.isPending ? "Saving..." : "Finish Workout"}
-                          </Button>
-                          {currentExerciseIndex > 0 && (
-                            <Button
-                              variant="secondary"
-                              onClick={() => setCurrentExerciseIndex(currentExerciseIndex - 1)}
-                              size="sm"
-                              data-testid={`button-prev-exercise-${currentExerciseIndex}`}
-                            >
-                              Previous Exercise
-                            </Button>
-                          )}
-                        </>
-                      )}
-                    </>
-                  )}
-                </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })()}
