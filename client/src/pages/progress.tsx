@@ -26,6 +26,9 @@ export default function Progress() {
 
   const { data: settings } = useQuery<Settings>({
     queryKey: ["/api/settings"],
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   const isLoading = exercisesLoading || logsLoading;
