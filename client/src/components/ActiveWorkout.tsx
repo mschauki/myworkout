@@ -68,6 +68,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
   const [pendingSetAddition, setPendingSetAddition] = useState<{
     exerciseIndex: number;
   } | null>(null);
+  const [showExitConfirmDialog, setShowExitConfirmDialog] = useState(false);
 
   const { toast } = useToast();
 
@@ -610,7 +611,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
             <Button
               variant="ghost"
               size="icon"
-              onClick={onComplete}
+              onClick={() => setShowExitConfirmDialog(true)}
               data-testid="button-cancel-workout"
             >
               <X className="w-5 h-5" />
@@ -912,6 +913,39 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
               data-testid="button-add-set-permanent"
             >
               Yes, save for future workouts
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Exit Confirmation Dialog */}
+      <AlertDialog open={showExitConfirmDialog} onOpenChange={setShowExitConfirmDialog}>
+        <AlertDialogContent data-testid="dialog-exit-confirmation">
+          <AlertDialogHeader>
+            <AlertDialogTitle>End Workout?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have {completedSets} completed sets. Would you like to save your progress to history?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={() => {
+                setShowExitConfirmDialog(false);
+                onComplete();
+              }}
+              data-testid="button-exit-discard"
+            >
+              Discard
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                setShowExitConfirmDialog(false);
+                finishWorkout();
+                onComplete();
+              }}
+              data-testid="button-exit-save"
+            >
+              Save & Exit
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
