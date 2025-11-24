@@ -105,8 +105,8 @@ export default function Home() {
         <h2 className="text-3xl font-bold mb-6 tracking-tight">Your Stats</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* This Month Workouts - Blue Theme */}
-          <Card data-testid="card-stat-workouts" className="relative overflow-hidden border-0 bg-gradient-to-br from-blue-500/10 via-blue-400/5 to-transparent backdrop-blur-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 hover:scale-[1.02] group">
-            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-500 to-blue-600"></div>
+          <Card data-testid="card-stat-workouts" className="relative overflow-visible border border-blue-200/30 dark:border-blue-500/30 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 group">
+            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-500 to-blue-600 rounded-l-lg"></div>
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -128,8 +128,8 @@ export default function Home() {
           </Card>
 
           {/* Total Volume - Orange Theme */}
-          <Card data-testid="card-stat-volume" className="relative overflow-hidden border-0 bg-gradient-to-br from-orange-500/10 via-orange-400/5 to-transparent backdrop-blur-lg hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-500 hover:scale-[1.02] group">
-            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-orange-500 to-orange-600"></div>
+          <Card data-testid="card-stat-volume" className="relative overflow-visible border border-orange-200/30 dark:border-orange-500/30 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 group">
+            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-orange-500 to-orange-600 rounded-l-lg"></div>
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -151,8 +151,8 @@ export default function Home() {
           </Card>
 
           {/* Streak - Amber Theme */}
-          <Card data-testid="card-stat-streak" className="relative overflow-hidden border-0 bg-gradient-to-br from-amber-500/10 via-amber-400/5 to-transparent backdrop-blur-lg hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500 hover:scale-[1.02] group">
-            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-amber-500 to-amber-600"></div>
+          <Card data-testid="card-stat-streak" className="relative overflow-visible border border-amber-200/30 dark:border-amber-500/30 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl hover:shadow-2xl hover:shadow-amber-500/30 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 group">
+            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-amber-500 to-amber-600 rounded-l-lg"></div>
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -174,8 +174,8 @@ export default function Home() {
           </Card>
 
           {/* Body Weight - Emerald Theme */}
-          <Card data-testid="card-stat-weight" className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-500/10 via-emerald-400/5 to-transparent backdrop-blur-lg hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-500 hover:scale-[1.02] group">
-            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-emerald-500 to-emerald-600"></div>
+          <Card data-testid="card-stat-weight" className="relative overflow-visible border border-emerald-200/30 dark:border-emerald-500/30 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 group">
+            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-l-lg"></div>
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
