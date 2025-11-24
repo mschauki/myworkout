@@ -1,5 +1,6 @@
 import { Home, Dumbbell, Library, TrendingUp, User, Settings } from "lucide-react";
 import { useLocation, Link } from "wouter";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function BottomNav() {
   const [location] = useLocation();
@@ -19,7 +20,9 @@ export function BottomNav() {
       <div className="absolute inset-0 h-20 glass-card-lg border-t" style={{ background: "rgba(255,255,255,0.1)" }} />
       
       {/* Content */}
-      <div className="relative flex items-center justify-around h-20 max-w-6xl mx-auto px-2">
+      <div className="relative flex items-center justify-between h-20 max-w-6xl mx-auto px-2">
+        {/* Navigation Items */}
+        <div className="flex items-center justify-around flex-1">
           {navItems.map((item) => {
             const isActive = location === item.path;
             const Icon = item.icon;
@@ -55,6 +58,12 @@ export function BottomNav() {
               </Link>
             );
           })}
+        </div>
+        
+        {/* Theme Toggle - Globally Accessible */}
+        <div className="ml-2">
+          <ThemeToggle />
+        </div>
       </div>
     </nav>
   );

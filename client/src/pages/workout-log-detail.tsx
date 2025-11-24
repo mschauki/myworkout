@@ -66,6 +66,15 @@ export default function WorkoutLogDetail() {
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
+      {/* Hero Section */}
+      <div className="relative mb-12 mx-4 overflow-hidden rounded-3xl">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
+        <div className="relative z-10 p-8 md:p-12">
+          <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient">Workout Details</h1>
+          <p className="text-lg text-muted-foreground">Review your performance</p>
+        </div>
+      </div>
+
       {/* Header with back button */}
       <Link href="/progress">
         <Button variant="ghost" className="mb-6" data-testid="button-back">

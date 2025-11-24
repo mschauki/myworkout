@@ -67,6 +67,15 @@ export default function Profile() {
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
+      {/* Hero Section */}
+      <div className="relative mb-12 mx-4 overflow-hidden rounded-3xl">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
+        <div className="relative z-10 p-8 md:p-12">
+          <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient">Body Stats</h1>
+          <p className="text-lg text-muted-foreground">Monitor your body composition</p>
+        </div>
+      </div>
+
       <div className="mb-8">
         <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">Profile</h1>
         <p className="text-base text-muted-foreground">Track your body stats and measurements</p>

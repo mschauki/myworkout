@@ -509,6 +509,15 @@ export default function Workouts() {
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
+      {/* Hero Section */}
+      <div className="relative mb-12 mx-4 overflow-hidden rounded-3xl">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
+        <div className="relative z-10 p-8 md:p-12">
+          <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient">My Workouts</h1>
+          <p className="text-lg text-muted-foreground">Train smarter, not harder</p>
+        </div>
+      </div>
+
       <div className="flex items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">My Workouts</h1>
