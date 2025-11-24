@@ -116,23 +116,16 @@ export default function SettingsPage() {
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-      <div className="flex items-center gap-4 mb-8">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate("/")}
-          data-testid="button-back"
-          className="h-10 w-10"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-5xl md:text-6xl font-bold text-gradient" data-testid="text-page-title">
-            Settings
-          </h1>
-          <p className="text-lg text-muted-foreground">Customize your experience</p>
+      {/* Hero Section */}
+      <div className="relative mb-12 overflow-hidden rounded-3xl">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
+        <div className="relative z-10 p-8 md:p-12 flex items-center justify-between gap-4">
+          <div className="flex-1">
+            <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">Settings</h1>
+            <p className="text-lg text-muted-foreground">Customize your experience</p>
+          </div>
+          <ThemeToggle />
         </div>
-        <ThemeToggle />
       </div>
 
       <div className="space-y-6">

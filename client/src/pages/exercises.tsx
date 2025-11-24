@@ -420,14 +420,13 @@ export default function Exercises() {
       <div className="relative mb-12 mx-4 overflow-hidden rounded-3xl">
         <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
         <div className="relative z-10 p-8 md:p-12">
-          <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient">Exercise Library</h1>
+          <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">Exercise Library</h1>
           <p className="text-lg text-muted-foreground">Build strength with 133+ exercises</p>
         </div>
       </div>
 
       <div className="px-4 mb-6">
         <div className="flex items-center justify-between gap-4 mb-4">
-          <h1 className="text-4xl font-bold text-foreground" data-testid="text-page-title">Exercise Library</h1>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button size="icon" className="bg-primary text-primary-foreground hover-elevate" data-testid="button-create-exercise">
