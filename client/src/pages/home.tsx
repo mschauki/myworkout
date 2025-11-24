@@ -65,83 +65,139 @@ export default function Home() {
   const isLoading = logsLoading || statsLoading;
 
   return (
-    <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2" data-testid="text-page-title">Dashboard</h1>
-        <p className="text-base text-muted-foreground">Track your fitness journey</p>
+    <div className="pb-24">
+      {/* Hero Section with Full-Bleed Image */}
+      <div className="relative h-[50vh] min-h-[400px] -mt-4 mb-12 overflow-hidden">
+        {/* Background Image with Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-orange-500"></div>
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200')] bg-cover bg-center opacity-30"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/50 to-transparent"></div>
+        
+        {/* Hero Content */}
+        <div className="relative h-full flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto">
+          <div className="mb-6">
+            <Dumbbell className="w-16 h-16 mx-auto text-white drop-shadow-lg animate-pulse" />
+          </div>
+          <h1 className="text-5xl md:text-7xl font-black mb-4 text-white drop-shadow-2xl tracking-tight" data-testid="text-page-title">
+            Your Fitness<br/>
+            <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">Journey Starts Here</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-white/90 mb-8 font-medium max-w-2xl drop-shadow-lg">
+            Track workouts. Crush goals. Build strength.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Button size="lg" className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-2xl shadow-orange-500/50 text-lg px-8 border-0">
+              <Flame className="w-5 h-5 mr-2" />
+              Start Workout
+            </Button>
+            <Button size="lg" variant="outline" className="bg-white/20 backdrop-blur-md border-white/30 text-white hover:bg-white/30 shadow-xl text-lg px-8">
+              <Trophy className="w-5 h-5 mr-2" />
+              View Progress
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        <Card data-testid="card-stat-workouts" className="hover-elevate transition-all relative overflow-hidden group">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">This Month</CardTitle>
-            <Calendar className="w-5 h-5 text-primary/60" />
-          </CardHeader>
-          <CardContent className="relative">
-            {isLoading ? (
-              <Skeleton className="h-12 w-20" />
-            ) : (
-              <>
-                <div className="text-5xl font-bold font-mono text-primary" data-testid="text-stat-workouts">{thisMonthWorkouts}</div>
-                <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest font-semibold">Workouts</p>
-              </>
-            )}
-          </CardContent>
-        </Card>
+      {/* Content Container */}
+      <div className="px-4 max-w-6xl mx-auto">
+        {/* Stats Grid - Dynamic & Bold */}
+      <div className="mb-12">
+        <h2 className="text-3xl font-bold mb-6 tracking-tight">Your Stats</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* This Month Workouts - Blue Theme */}
+          <Card data-testid="card-stat-workouts" className="relative overflow-hidden border-0 bg-gradient-to-br from-blue-500/10 via-blue-400/5 to-transparent backdrop-blur-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 hover:scale-[1.02] group">
+            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-500 to-blue-600"></div>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">This Month</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest">Workouts</p>
+                </div>
+                <div className="p-3 bg-blue-500/10 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                  <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                </div>
+              </div>
+              {isLoading ? (
+                <Skeleton className="h-16 w-24" />
+              ) : (
+                <div className="text-6xl md:text-7xl font-black font-mono bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent" data-testid="text-stat-workouts">
+                  {thisMonthWorkouts}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-        <Card data-testid="card-stat-volume" className="hover-elevate transition-all relative overflow-hidden group">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Total Volume</CardTitle>
-            <TrendingUp className="w-5 h-5 text-primary/60" />
-          </CardHeader>
-          <CardContent className="relative">
-            {isLoading ? (
-              <Skeleton className="h-12 w-24" />
-            ) : (
-              <>
-                <div className="text-5xl font-bold font-mono text-primary" data-testid="text-stat-volume">{displayTotalVolume}</div>
-                <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest font-semibold">{getUnitLabel()} lifted</p>
-              </>
-            )}
-          </CardContent>
-        </Card>
+          {/* Total Volume - Orange Theme */}
+          <Card data-testid="card-stat-volume" className="relative overflow-hidden border-0 bg-gradient-to-br from-orange-500/10 via-orange-400/5 to-transparent backdrop-blur-lg hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-500 hover:scale-[1.02] group">
+            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-orange-500 to-orange-600"></div>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="text-sm font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-1">Total Volume</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest">{getUnitLabel()} Lifted</p>
+                </div>
+                <div className="p-3 bg-orange-500/10 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                  <TrendingUp className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                </div>
+              </div>
+              {isLoading ? (
+                <Skeleton className="h-16 w-32" />
+              ) : (
+                <div className="text-6xl md:text-7xl font-black font-mono bg-gradient-to-br from-orange-600 to-orange-800 dark:from-orange-400 dark:to-orange-600 bg-clip-text text-transparent" data-testid="text-stat-volume">
+                  {displayTotalVolume}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-        <Card data-testid="card-stat-streak" className="hover-elevate transition-all relative overflow-hidden group">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Streak</CardTitle>
-            <Flame className="w-5 h-5 text-amber-400/60" />
-          </CardHeader>
-          <CardContent className="relative">
-            {isLoading ? (
-              <Skeleton className="h-12 w-16" />
-            ) : (
-              <>
-                <div className="text-5xl font-bold font-mono text-amber-500" data-testid="text-stat-streak">0</div>
-                <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest font-semibold">Days</p>
-              </>
-            )}
-          </CardContent>
-        </Card>
+          {/* Streak - Amber Theme */}
+          <Card data-testid="card-stat-streak" className="relative overflow-hidden border-0 bg-gradient-to-br from-amber-500/10 via-amber-400/5 to-transparent backdrop-blur-lg hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-500 hover:scale-[1.02] group">
+            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-amber-500 to-amber-600"></div>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="text-sm font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Current Streak</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest">Days Active</p>
+                </div>
+                <div className="p-3 bg-amber-500/10 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                  <Flame className="w-6 h-6 text-amber-600 dark:text-amber-400 animate-pulse" />
+                </div>
+              </div>
+              {isLoading ? (
+                <Skeleton className="h-16 w-20" />
+              ) : (
+                <div className="text-6xl md:text-7xl font-black font-mono bg-gradient-to-br from-amber-600 to-amber-800 dark:from-amber-400 dark:to-amber-600 bg-clip-text text-transparent" data-testid="text-stat-streak">
+                  0
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-        <Card data-testid="card-stat-weight" className="hover-elevate transition-all relative overflow-hidden group">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
-            <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Body Weight</CardTitle>
-            <Trophy className="w-5 h-5 text-emerald-400/60" />
-          </CardHeader>
-          <CardContent className="relative">
-            {isLoading ? (
-              <Skeleton className="h-12 w-20" />
-            ) : currentWeight ? (
-              <>
-                <div className="text-5xl font-bold font-mono text-emerald-500" data-testid="text-stat-weight">{currentWeight}</div>
-                <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest font-semibold">{getUnitLabel()}</p>
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground">No data</p>
-            )}
-          </CardContent>
-        </Card>
+          {/* Body Weight - Emerald Theme */}
+          <Card data-testid="card-stat-weight" className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-500/10 via-emerald-400/5 to-transparent backdrop-blur-lg hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-500 hover:scale-[1.02] group">
+            <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-emerald-500 to-emerald-600"></div>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">Body Weight</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest">Current {getUnitLabel()}</p>
+                </div>
+                <div className="p-3 bg-emerald-500/10 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                  <Trophy className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                </div>
+              </div>
+              {isLoading ? (
+                <Skeleton className="h-16 w-24" />
+              ) : currentWeight ? (
+                <div className="text-6xl md:text-7xl font-black font-mono bg-gradient-to-br from-emerald-600 to-emerald-800 dark:from-emerald-400 dark:to-emerald-600 bg-clip-text text-transparent" data-testid="text-stat-weight">
+                  {currentWeight}
+                </div>
+              ) : (
+                <p className="text-lg text-muted-foreground font-medium">No data yet</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Recent Workouts */}
@@ -198,6 +254,7 @@ export default function Home() {
             ))}
           </div>
         )}
+      </div>
       </div>
 
       {/* Delete Confirmation Dialog */}
