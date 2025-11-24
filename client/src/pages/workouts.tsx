@@ -256,11 +256,9 @@ export default function Workouts() {
             <ChevronLeft className="w-4 h-4 mr-2" />
             Back to Days
           </Button>
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient">{viewingRoutine.name}</h1>
-              <p className="text-base text-muted-foreground">{dayTitle}</p>
-            </div>
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 text-gradient">{viewingRoutine.name}</h1>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-base text-muted-foreground">{dayTitle}</p>
             {dayExercises.length > 0 && (
               <Button
                 onClick={() => {
@@ -268,7 +266,7 @@ export default function Workouts() {
                   setSelectedDay(viewingDay);
                   setStartingExerciseIndex(null);
                 }}
-                className="bg-primary text-primary-foreground hover-elevate mt-1"
+                className="bg-primary text-primary-foreground hover-elevate"
                 size="lg"
                 data-testid="button-start-workout"
               >
