@@ -156,8 +156,13 @@ export default function Workouts() {
       }
     }}>
       <DialogTrigger asChild>
-        <Button size="icon" className="bg-primary text-primary-foreground hover-elevate" data-testid="button-create-routine">
-          <Plus className="w-5 h-5" />
+        <Button 
+          size="lg" 
+          className="bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/30 transition-all duration-300" 
+          data-testid="button-create-routine"
+        >
+          <Plus className="w-5 h-5 mr-2" />
+          <span className="hidden sm:inline">Create Routine</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card border border-card-border">
@@ -228,24 +233,26 @@ export default function Workouts() {
       <>
         {builderDialog}
         <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-        <div className="mb-6">
+        <div className="mb-8">
           <Button
             variant="ghost"
             onClick={() => setViewingDay(null)}
-            className="mb-4"
+            className="mb-4 hover:bg-white/20 dark:hover:bg-gray-900/20"
             data-testid="button-back-to-days"
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
             Back to Days
           </Button>
-          <h1 className="text-4xl font-bold mb-2 text-foreground">{viewingRoutine.name}</h1>
-          <p className="text-base text-muted-foreground">{dayTitle}</p>
+          <h1 className="text-5xl md:text-6xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-orange-400 bg-clip-text text-transparent">
+            {viewingRoutine.name}
+          </h1>
+          <p className="text-lg text-muted-foreground">{dayTitle}</p>
         </div>
 
         {dayExercises.length === 0 ? (
-          <Card className="bg-card border border-card-border">
+          <Card className="bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30">
             <CardContent className="p-12 text-center">
-              <Dumbbell className="w-16 h-16 mx-auto mb-4 text-primary/40" />
+              <Dumbbell className="w-16 h-16 mx-auto mb-4 text-blue-500/60" />
               <p className="text-muted-foreground">No exercises for this day</p>
             </CardContent>
           </Card>
@@ -258,25 +265,28 @@ export default function Workouts() {
                 return (
                 <Card 
                   key={idx} 
-                  className="bg-card border border-card-border cursor-pointer hover-elevate" 
+                  className="group relative overflow-visible bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer" 
                   data-testid={`card-exercise-${idx}`}
                   onClick={() => setViewingExerciseIndex(idx)}
                 >
-                  <CardContent className="p-5">
+                  <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-500 to-blue-600 rounded-l-lg"></div>
+                  <CardContent className="p-5 pl-7">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold mb-2" data-testid="text-exercise-name">
+                        <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent" data-testid="text-exercise-name">
                           {getExerciseName(exercise.exerciseId)}
                         </h3>
                         <div className="flex flex-wrap gap-2">
-                          <Badge variant="secondary" className="bg-card border border-card-border">
+                          <Badge variant="secondary" className="bg-blue-500/20 backdrop-blur-sm border border-blue-200/30 dark:border-blue-500/30 text-blue-700 dark:text-blue-300">
                             {config.sets}
                           </Badge>
-                          <Badge variant="outline">
+                          <Badge variant="secondary" className="bg-white/30 dark:bg-gray-900/30 backdrop-blur-sm border border-white/30">
                             {config.rest}
                           </Badge>
                           {exerciseInfo?.isTimeBased && (
-                            <Badge variant="outline" className="text-xs">Time-based</Badge>
+                            <Badge variant="secondary" className="text-xs bg-amber-500/20 backdrop-blur-sm border border-amber-200/30 dark:border-amber-500/30 text-amber-700 dark:text-amber-300">
+                              Time-based
+                            </Badge>
                           )}
                         </div>
                       </div>
@@ -293,7 +303,7 @@ export default function Workouts() {
                 setSelectedDay(viewingDay);
                 setStartingExerciseIndex(null);
               }}
-              className="w-full bg-primary text-primary-foreground hover-elevate"
+              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/30 transition-all duration-300"
               size="lg"
               data-testid="button-start-workout"
             >
@@ -392,11 +402,11 @@ export default function Workouts() {
       <>
         {builderDialog}
         <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-        <div className="mb-6">
+        <div className="mb-8">
           <Button
             variant="ghost"
             onClick={() => setViewingRoutineId(null)}
-            className="mb-4"
+            className="mb-4 hover:bg-white/20 dark:hover:bg-gray-900/20"
             data-testid="button-back-to-routines"
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
@@ -404,7 +414,7 @@ export default function Workouts() {
           </Button>
           <div className="flex items-start justify-between gap-4 mb-2">
             <div className="flex-1">
-              <h1 className="text-4xl font-bold mb-2 text-foreground" data-testid="text-routine-name">
+              <h1 className="text-5xl md:text-6xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-orange-400 bg-clip-text text-transparent" data-testid="text-routine-name">
                 {viewingRoutine.name}
               </h1>
               {viewingRoutine.description && (
@@ -413,8 +423,9 @@ export default function Workouts() {
             </div>
             <div className="flex items-center gap-2">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
+                className="bg-white/30 dark:bg-gray-900/30 backdrop-blur-md border border-white/30 hover:bg-white/40 dark:hover:bg-gray-900/40"
                 onClick={(e) => {
                   e.stopPropagation();
                   setEditingRoutineId(viewingRoutine.id);
@@ -425,22 +436,23 @@ export default function Workouts() {
                 <Pencil className="w-5 h-5" />
               </Button>
               <Button
-                variant="destructive"
+                variant="ghost"
                 size="icon"
+                className="bg-white/30 dark:bg-gray-900/30 backdrop-blur-md border border-white/30 hover:bg-red-500/20"
                 onClick={(e) => {
                   e.stopPropagation();
                   setDeleteRoutineId(viewingRoutine.id);
                 }}
                 data-testid="button-delete-routine"
               >
-                <Trash2 className="w-5 h-5" />
+                <Trash2 className="w-5 h-5 text-red-500" />
               </Button>
             </div>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold mb-4 text-foreground/90">Select Training Day</h2>
+        <div className="space-y-3">
+          <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">Select Training Day</h2>
           {daysWithExercises.map(day => {
             const dayExercises = getExercisesForDay(viewingRoutine, day);
             const exerciseCount = dayExercises.length;
@@ -451,28 +463,31 @@ export default function Workouts() {
             return (
               <Card
                 key={day}
-                className="bg-card border border-card-border hover:scale-[1.01] transition-all cursor-pointer"
+                className="group relative overflow-visible bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer"
                 onClick={() => setViewingDay(day)}
                 data-testid={`card-day-${day}`}
               >
-                <CardContent className="p-5">
+                <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-500 to-blue-600 rounded-l-lg"></div>
+                <CardContent className="p-5 pl-7">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Calendar className="w-5 h-5 text-primary/60" />
+                      <Calendar className="w-5 h-5 text-blue-500" />
                       <div>
-                        <h3 className="font-semibold">
+                        <h3 className="font-bold text-lg">
                           {dayTitle}
                         </h3>
                         {isToday && !isAny && (
-                          <Badge variant="secondary" className="text-xs mt-1">Today</Badge>
+                          <Badge variant="secondary" className="text-xs mt-1 bg-amber-500/20 backdrop-blur-sm border border-amber-200/30 dark:border-amber-500/30 text-amber-700 dark:text-amber-300">
+                            Today
+                          </Badge>
                         )}
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Badge variant="secondary" className="bg-card border border-card-border">
+                      <Badge variant="secondary" className="bg-blue-500/20 backdrop-blur-sm border border-blue-200/30 dark:border-blue-500/30 text-blue-700 dark:text-blue-300">
                         {exerciseCount} exercise{exerciseCount !== 1 ? "s" : ""}
                       </Badge>
-                      <ArrowRight className="w-5 h-5 text-foreground/40" />
+                      <ArrowRight className="w-5 h-5 text-blue-500 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </CardContent>
@@ -509,10 +524,13 @@ export default function Workouts() {
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
+      {/* Page Header with Gradient */}
       <div className="flex items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-4xl font-bold mb-2 text-foreground" data-testid="text-page-title">My Workouts</h1>
-          <p className="text-base text-muted-foreground">Create and track your routines</p>
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-orange-600 to-orange-400 bg-clip-text text-transparent mb-2" data-testid="text-page-title">
+            My Workouts
+          </h1>
+          <p className="text-muted-foreground text-lg">Create and track your routines</p>
         </div>
         {builderDialog}
       </div>
@@ -520,22 +538,27 @@ export default function Workouts() {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="bg-card border border-card-border">
-              <CardContent className="p-4">
-                <Skeleton className="h-6 w-48 mb-3" />
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-32" />
+            <Card key={i} className="relative bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-orange-200/30 dark:border-orange-500/30">
+              <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-orange-500 to-orange-600 rounded-l-lg"></div>
+              <CardContent className="p-6 pl-8">
+                <Skeleton className="h-6 w-48 mb-3 bg-white/30 dark:bg-gray-900/30" />
+                <Skeleton className="h-4 w-full mb-2 bg-white/30 dark:bg-gray-900/30" />
+                <Skeleton className="h-4 w-32 bg-white/30 dark:bg-gray-900/30" />
               </CardContent>
             </Card>
           ))}
         </div>
       ) : routines.length === 0 ? (
-        <Card className="bg-card border border-card-border">
+        <Card className="bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-orange-200/30 dark:border-orange-500/30">
           <CardContent className="p-12 text-center">
-            <Dumbbell className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+            <Dumbbell className="w-16 h-16 mx-auto mb-4 text-orange-500/60" />
             <h3 className="text-xl font-semibold mb-2">No workout routines yet</h3>
             <p className="text-muted-foreground mb-6">Create your first routine to get started</p>
-            <Button onClick={() => setIsBuilderOpen(true)} data-testid="button-create-first-routine">
+            <Button 
+              onClick={() => setIsBuilderOpen(true)} 
+              data-testid="button-create-first-routine"
+              className="bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/30 transition-all duration-300"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Create Routine
             </Button>
@@ -546,31 +569,36 @@ export default function Workouts() {
           {routines.map((routine) => (
             <Card
               key={routine.id}
-              className="bg-card border border-card-border hover:scale-[1.01] transition-all cursor-pointer"
+              className="group relative overflow-visible bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-orange-200/30 dark:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-300 cursor-pointer"
               onClick={() => setViewingRoutineId(routine.id)}
               data-testid={`card-routine-${routine.id}`}
             >
-              <CardHeader className="pb-3">
+              {/* Gradient Accent Ribbon */}
+              <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-orange-500 to-orange-600 rounded-l-lg"></div>
+              
+              <CardHeader className="pb-3 pl-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-xl mb-1" data-testid="text-routine-name">{routine.name}</CardTitle>
+                    <CardTitle className="text-2xl mb-1 bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent" data-testid="text-routine-name">
+                      {routine.name}
+                    </CardTitle>
                     {routine.description && (
                       <p className="text-sm text-muted-foreground">{routine.description}</p>
                     )}
                   </div>
-                  <ArrowRight className="w-6 h-6 text-foreground/40 flex-shrink-0" />
+                  <ArrowRight className="w-6 h-6 text-orange-500 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Dumbbell className="w-4 h-4" />
-                    <span>{routine.exercises.length} exercises</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    <span>~{routine.exercises.length * 5} min</span>
-                  </div>
+              <CardContent className="pl-6">
+                <div className="flex flex-wrap items-center gap-4">
+                  <Badge variant="secondary" className="bg-orange-500/20 backdrop-blur-sm border border-orange-200/30 dark:border-orange-500/30 text-orange-700 dark:text-orange-300">
+                    <Dumbbell className="w-3 h-3 mr-1" />
+                    {routine.exercises.length} exercises
+                  </Badge>
+                  <Badge variant="secondary" className="bg-white/30 dark:bg-gray-900/30 backdrop-blur-sm border border-white/30">
+                    <Clock className="w-3 h-3 mr-1" />
+                    ~{routine.exercises.length * 5} min
+                  </Badge>
                 </div>
               </CardContent>
             </Card>

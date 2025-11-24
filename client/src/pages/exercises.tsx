@@ -416,13 +416,24 @@ export default function Exercises() {
 
   return (
     <div className="pb-24 pt-8 max-w-6xl mx-auto">
-      <div className="px-4 mb-6">
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <h1 className="text-4xl font-bold text-foreground" data-testid="text-page-title">Exercise Library</h1>
+      {/* Page Header with Gradient */}
+      <div className="px-4 mb-8">
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent mb-2" data-testid="text-page-title">
+              Exercise Library
+            </h1>
+            <p className="text-muted-foreground text-lg">Build your perfect workout</p>
+          </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="icon" className="bg-primary text-primary-foreground hover-elevate" data-testid="button-create-exercise">
-                <Plus className="w-5 h-5" />
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/30 transition-all duration-300" 
+                data-testid="button-create-exercise"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                <span className="hidden sm:inline">Create Exercise</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="bg-card border border-card-border max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -828,46 +839,54 @@ export default function Exercises() {
         </DialogContent>
       </Dialog>
 
-      {/* Tabs */}
+      {/* Tabs with Glass Styling */}
       <Tabs value={selectedTab} onValueChange={(value) => setSelectedTab(value as "all" | "custom")} className="w-full">
         <div className="px-4 mb-6">
-          <TabsList className="grid w-full max-w-md grid-cols-2 bg-card border border-card-border">
-            <TabsTrigger value="all" data-testid="tab-all-exercises">
+          <TabsList className="grid w-full max-w-md grid-cols-2 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30 p-1">
+            <TabsTrigger 
+              value="all" 
+              data-testid="tab-all-exercises"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/30"
+            >
               All Exercises
             </TabsTrigger>
-            <TabsTrigger value="custom" data-testid="tab-custom-exercises">
+            <TabsTrigger 
+              value="custom" 
+              data-testid="tab-custom-exercises"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/30"
+            >
               Custom Exercises
             </TabsTrigger>
           </TabsList>
         </div>
 
         <TabsContent value={selectedTab} className="mt-0">
-          {/* Search */}
+          {/* Glass Search Panel */}
           <div className="px-4 mb-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <div className="relative bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30 rounded-lg p-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-500" />
               <Input
                 type="search"
                 placeholder="Search exercises..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-11 bg-input border border-input rounded-md h-12 text-base"
+                className="pl-12 bg-transparent border-0 h-12 text-base focus-visible:ring-0 focus-visible:ring-offset-0"
                 data-testid="input-search-exercises"
               />
             </div>
           </div>
 
-          {/* Muscle Group Filter */}
+          {/* Vibrant Filter Pills */}
           <ScrollArea className="w-full mb-8">
             <div className="flex gap-2 px-4 pb-3">
               {MUSCLE_GROUPS.map((group) => (
                 <Badge
                   key={group}
-                  variant={selectedMuscleGroup === group ? "default" : "secondary"}
-                  className={`cursor-pointer whitespace-nowrap px-4 py-2 text-sm ${
+                  variant="secondary"
+                  className={`cursor-pointer whitespace-nowrap px-4 py-2 text-sm transition-all duration-300 ${
                     selectedMuscleGroup === group 
-                      ? "bg-primary border border-primary text-primary-foreground" 
-                      : "bg-card border border-card-border"
+                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 shadow-lg shadow-orange-500/30 scale-105" 
+                      : "bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30 hover:bg-white/30 dark:hover:bg-gray-900/30"
                   }`}
                   onClick={() => setSelectedMuscleGroup(group)}
                   data-testid={`badge-filter-${group.toLowerCase()}`}
@@ -882,35 +901,44 @@ export default function Exercises() {
           {/* Exercise Grid */}
           <div className="px-4">
             {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <Card key={i} className="bg-card border border-card-border">
-                    <CardContent className="p-5">
-                      <Skeleton className="h-40 w-full mb-4 rounded-lg" />
-                      <Skeleton className="h-6 w-3/4 mb-2" />
-                      <Skeleton className="h-4 w-full" />
+                  <Card key={i} className="relative bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-500 to-blue-600 rounded-l-lg"></div>
+                    <CardContent className="p-5 pl-7">
+                      <Skeleton className="h-40 w-full mb-4 rounded-lg bg-white/30 dark:bg-gray-900/30" />
+                      <Skeleton className="h-6 w-3/4 mb-2 bg-white/30 dark:bg-gray-900/30" />
+                      <Skeleton className="h-4 w-full bg-white/30 dark:bg-gray-900/30" />
                     </CardContent>
                   </Card>
                 ))}
               </div>
             ) : filteredExercises.length === 0 ? (
-              <Card className="bg-card border border-card-border">
+              <Card className="bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30">
                 <CardContent className="p-12 text-center">
-                  <Dumbbell className="w-16 h-16 mx-auto mb-4 text-primary/40" />
-                  <p className="text-muted-foreground text-lg font-medium">No exercises found</p>
+                  <Dumbbell className="w-16 h-16 mx-auto mb-4 text-blue-500/60" />
+                  <p className="text-foreground text-lg font-medium">No exercises found</p>
                   <p className="text-sm text-muted-foreground mt-2">Try a different search or filter</p>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredExercises.map((exercise) => (
-              <Card key={exercise.id} className="bg-card border border-card-border hover:scale-[1.02] transition-transform relative" data-testid={`card-exercise-${exercise.id}`}>
-                <CardContent className="p-5 relative">
-                  <div className="absolute top-2 right-2 flex gap-1 z-10">
+              <Card 
+                key={exercise.id} 
+                className="group relative overflow-visible bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300" 
+                data-testid={`card-exercise-${exercise.id}`}
+              >
+                {/* Gradient Accent Ribbon */}
+                <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-500 to-blue-600 rounded-l-lg"></div>
+                
+                <CardContent className="p-5 pl-7 relative">
+                  {/* Action Buttons with Glass Styling */}
+                  <div className="absolute top-3 right-3 flex gap-1 z-10">
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-8 w-8 bg-card border border-card-border"
+                      className="h-8 w-8 bg-white/30 dark:bg-gray-900/30 backdrop-blur-md border border-white/30 hover:bg-white/40 dark:hover:bg-gray-900/40 transition-all"
                       onClick={() => handleEditExercise(exercise)}
                       data-testid={`button-edit-exercise-${exercise.id}`}
                     >
@@ -919,42 +947,67 @@ export default function Exercises() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-8 w-8 bg-card border border-card-border"
+                      className="h-8 w-8 bg-white/30 dark:bg-gray-900/30 backdrop-blur-md border border-white/30 hover:bg-red-500/20 transition-all"
                       onClick={() => setDeletingExercise(exercise)}
                       data-testid={`button-delete-exercise-${exercise.id}`}
                     >
-                      <Trash2 className="w-4 h-4 text-destructive" />
+                      <Trash2 className="w-4 h-4 text-red-500" />
                     </Button>
                   </div>
+                  
+                  {/* Exercise Image with Gradient Overlay */}
                   {exercise.imageUrl && (
-                    <div className="aspect-video bg-card border border-card-border rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-primary/10 to-purple-500/10 overflow-hidden">
+                    <div className="relative aspect-video rounded-lg mb-4 overflow-hidden">
                       <img 
                         src={exercise.imageUrl} 
                         alt={exercise.name}
                         className="w-full h-full object-cover"
                         data-testid="img-exercise"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                     </div>
                   )}
+                  
+                  {/* Glass Badge Pills */}
                   <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge variant="secondary" className="text-xs capitalize bg-card border border-card-border" data-testid="badge-muscle-group">
+                    <Badge 
+                      variant="secondary" 
+                      className="text-xs capitalize bg-blue-500/20 backdrop-blur-sm border border-blue-200/30 dark:border-blue-500/30 text-blue-700 dark:text-blue-300" 
+                      data-testid="badge-muscle-group"
+                    >
                       {exercise.muscleGroup}
                     </Badge>
-                    <Badge variant="outline" className="text-xs capitalize" data-testid="badge-equipment">
+                    <Badge 
+                      variant="secondary" 
+                      className="text-xs capitalize bg-white/30 dark:bg-gray-900/30 backdrop-blur-sm border border-white/30" 
+                      data-testid="badge-equipment"
+                    >
                       {exercise.equipment}
                     </Badge>
                     {exercise.isCustom && (
-                      <Badge variant="default" className="text-xs bg-card border border-card-border" data-testid="badge-custom">
+                      <Badge 
+                        variant="secondary" 
+                        className="text-xs bg-orange-500/20 backdrop-blur-sm border border-orange-200/30 dark:border-orange-500/30 text-orange-700 dark:text-orange-300" 
+                        data-testid="badge-custom"
+                      >
                         Custom
                       </Badge>
                     )}
                   </div>
-                  <h3 className="text-lg font-semibold mb-2" data-testid="text-exercise-name">{exercise.name}</h3>
-                  <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{exercise.description}</p>
+                  
+                  {/* Exercise Title */}
+                  <h3 className="text-xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent" data-testid="text-exercise-name">
+                    {exercise.name}
+                  </h3>
+                  
+                  {/* Description */}
+                  <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{exercise.description}</p>
+                  
+                  {/* Vibrant CTA Button */}
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full mt-2 bg-card border border-card-border"
+                    className="w-full mt-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 shadow-lg shadow-orange-500/30 transition-all duration-300"
                     onClick={() => handleOpenAddToRoutine(exercise)}
                     data-testid={`button-add-to-routine-${exercise.id}`}
                   >

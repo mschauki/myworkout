@@ -105,7 +105,7 @@ export default function Home() {
         <h2 className="text-3xl font-bold mb-6 tracking-tight">Your Stats</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* This Month Workouts - Blue Theme */}
-          <Card data-testid="card-stat-workouts" className="relative overflow-visible border border-blue-200/30 dark:border-blue-500/30 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 group">
+          <Card data-testid="card-stat-workouts" className="relative overflow-visible border border-blue-200/30 dark:border-blue-500/30 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 group">
             <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-500 to-blue-600 rounded-l-lg"></div>
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
@@ -113,7 +113,7 @@ export default function Home() {
                   <p className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">This Month</p>
                   <p className="text-xs text-muted-foreground uppercase tracking-widest">Workouts</p>
                 </div>
-                <div className="p-3 bg-blue-500/10 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                <div className="p-3 bg-blue-500/10 rounded-xl transition-transform duration-300">
                   <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
@@ -128,7 +128,7 @@ export default function Home() {
           </Card>
 
           {/* Total Volume - Orange Theme */}
-          <Card data-testid="card-stat-volume" className="relative overflow-visible border border-orange-200/30 dark:border-orange-500/30 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 group">
+          <Card data-testid="card-stat-volume" className="relative overflow-visible border border-orange-200/30 dark:border-orange-500/30 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 group">
             <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-orange-500 to-orange-600 rounded-l-lg"></div>
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
@@ -136,7 +136,7 @@ export default function Home() {
                   <p className="text-sm font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider mb-1">Total Volume</p>
                   <p className="text-xs text-muted-foreground uppercase tracking-widest">{getUnitLabel()} Lifted</p>
                 </div>
-                <div className="p-3 bg-orange-500/10 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                <div className="p-3 bg-orange-500/10 rounded-xl transition-transform duration-300">
                   <TrendingUp className="w-6 h-6 text-orange-600 dark:text-orange-400" />
                 </div>
               </div>
@@ -151,7 +151,7 @@ export default function Home() {
           </Card>
 
           {/* Streak - Amber Theme */}
-          <Card data-testid="card-stat-streak" className="relative overflow-visible border border-amber-200/30 dark:border-amber-500/30 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl hover:shadow-2xl hover:shadow-amber-500/30 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 group">
+          <Card data-testid="card-stat-streak" className="relative overflow-visible border border-amber-200/30 dark:border-amber-500/30 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl hover:shadow-2xl hover:shadow-amber-500/30 transition-all duration-300 group">
             <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-amber-500 to-amber-600 rounded-l-lg"></div>
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
@@ -159,7 +159,7 @@ export default function Home() {
                   <p className="text-sm font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Current Streak</p>
                   <p className="text-xs text-muted-foreground uppercase tracking-widest">Days Active</p>
                 </div>
-                <div className="p-3 bg-amber-500/10 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                <div className="p-3 bg-amber-500/10 rounded-xl transition-transform duration-300">
                   <Flame className="w-6 h-6 text-amber-600 dark:text-amber-400 animate-pulse" />
                 </div>
               </div>
@@ -174,7 +174,7 @@ export default function Home() {
           </Card>
 
           {/* Body Weight - Emerald Theme */}
-          <Card data-testid="card-stat-weight" className="relative overflow-visible border border-emerald-200/30 dark:border-emerald-500/30 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 group">
+          <Card data-testid="card-stat-weight" className="relative overflow-visible border border-emerald-200/30 dark:border-emerald-500/30 bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 group">
             <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-l-lg"></div>
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
@@ -182,7 +182,7 @@ export default function Home() {
                   <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">Body Weight</p>
                   <p className="text-xs text-muted-foreground uppercase tracking-widest">Current {getUnitLabel()}</p>
                 </div>
-                <div className="p-3 bg-emerald-500/10 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                <div className="p-3 bg-emerald-500/10 rounded-xl transition-transform duration-300">
                   <Trophy className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                 </div>
               </div>

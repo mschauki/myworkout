@@ -62,44 +62,71 @@ export default function Progress() {
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
+      {/* Page Header with Gradient */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 text-foreground" data-testid="text-page-title">Progress</h1>
-        <p className="text-base text-muted-foreground">Track your fitness journey</p>
+        <h1 className="text-5xl md:text-6xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent" data-testid="text-page-title">
+          Progress
+        </h1>
+        <p className="text-muted-foreground text-lg">Track your fitness journey</p>
       </div>
 
       <Tabs defaultValue="overview" className="mb-8">
-        <TabsList className="w-full bg-card border border-card-border">
-          <TabsTrigger value="overview" className="flex-1" data-testid="tab-overview">Overview</TabsTrigger>
-          <TabsTrigger value="calendar" className="flex-1" data-testid="tab-calendar">Calendar</TabsTrigger>
-          <TabsTrigger value="exercises" className="flex-1" data-testid="tab-exercises">Exercises</TabsTrigger>
+        <TabsList className="w-full bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30 p-1">
+          <TabsTrigger 
+            value="overview" 
+            className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/30" 
+            data-testid="tab-overview"
+          >
+            Overview
+          </TabsTrigger>
+          <TabsTrigger 
+            value="calendar" 
+            className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/30" 
+            data-testid="tab-calendar"
+          >
+            Calendar
+          </TabsTrigger>
+          <TabsTrigger 
+            value="exercises" 
+            className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/30" 
+            data-testid="tab-exercises"
+          >
+            Exercises
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6 mt-6">
-          {/* Stats Summary */}
+          {/* Glass Stats Cards */}
           <div className="grid grid-cols-2 gap-4">
-            <Card data-testid="card-total-workouts" className="bg-card border border-card-border">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Total Workouts</CardTitle>
+            <Card data-testid="card-total-workouts" className="relative overflow-visible bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300">
+              <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-blue-500 to-blue-600 rounded-l-lg"></div>
+              <CardHeader className="pb-3 pl-5">
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Total Workouts</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pl-5">
                 {isLoading ? (
-                  <Skeleton className="h-12 w-20 bg-card border border-card-border" />
+                  <Skeleton className="h-12 w-20 bg-white/30 dark:bg-gray-900/30" />
                 ) : (
-                  <div className="text-4xl font-bold font-mono text-foreground" data-testid="text-total-workouts">{totalWorkouts}</div>
+                  <div className="text-5xl font-bold font-mono bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent" data-testid="text-total-workouts">
+                    {totalWorkouts}
+                  </div>
                 )}
               </CardContent>
             </Card>
 
-            <Card data-testid="card-total-volume" className="bg-card border border-card-border">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Total Volume</CardTitle>
+            <Card data-testid="card-total-volume" className="relative overflow-visible bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-orange-200/30 dark:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-300">
+              <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-orange-500 to-orange-600 rounded-l-lg"></div>
+              <CardHeader className="pb-3 pl-5">
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Total Volume</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pl-5">
                 {isLoading ? (
-                  <Skeleton className="h-12 w-24 bg-card border border-card-border" />
+                  <Skeleton className="h-12 w-24 bg-white/30 dark:bg-gray-900/30" />
                 ) : (
                   <>
-                    <div className="text-4xl font-bold font-mono text-foreground" data-testid="text-total-volume">{displayTotalVolume}</div>
+                    <div className="text-5xl font-bold font-mono bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent" data-testid="text-total-volume">
+                      {displayTotalVolume}
+                    </div>
                     <p className="text-xs text-muted-foreground mt-2 uppercase tracking-wide">{getUnitLabel()}</p>
                   </>
                 )}
@@ -107,8 +134,8 @@ export default function Progress() {
             </Card>
           </div>
 
-          {/* Volume Chart */}
-          <Card className="bg-card border border-card-border">
+          {/* Glass Chart Container */}
+          <Card className="bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30">
             <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
               <CardTitle className="text-base">Volume Progression</CardTitle>
               <div className="flex items-center gap-2">
@@ -171,7 +198,7 @@ export default function Progress() {
         </TabsContent>
 
         <TabsContent value="calendar" className="space-y-6 mt-6">
-          <Card className="bg-card border border-card-border">
+          <Card className="bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30">
             <CardHeader>
               <CardTitle className="text-base">Workout Calendar</CardTitle>
             </CardHeader>
@@ -249,7 +276,7 @@ export default function Progress() {
         </TabsContent>
 
         <TabsContent value="exercises" className="space-y-6 mt-6">
-          <Card className="bg-card border border-card-border">
+          <Card className="bg-white/20 dark:bg-gray-900/20 backdrop-blur-xl border border-blue-200/30 dark:border-blue-500/30">
             <CardHeader>
               <CardTitle className="text-base">Exercise Progress</CardTitle>
             </CardHeader>
@@ -339,13 +366,15 @@ export default function Progress() {
                     <div className="space-y-2">
                       <h3 className="text-sm font-medium text-muted-foreground mb-3">Personal Records</h3>
                       <div className="grid grid-cols-1 gap-3">
-                        <div className="flex items-center justify-between p-3 rounded-md border" data-testid="pr-max-weight">
+                        <div className="flex items-center justify-between p-4 rounded-lg bg-white/30 dark:bg-gray-900/30 backdrop-blur-md border border-blue-200/30 dark:border-blue-500/30" data-testid="pr-max-weight">
                           <div>
-                            <p className="text-sm text-muted-foreground">Best Weight</p>
-                            <p className="text-2xl font-bold font-mono">{formatWeight(maxWeight)}</p>
+                            <p className="text-sm text-muted-foreground uppercase tracking-wide">Best Weight</p>
+                            <p className="text-3xl font-bold font-mono bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">{formatWeight(maxWeight)}</p>
                           </div>
                           <div className="text-right">
-                            <Badge variant="secondary">{exerciseSets.find(s => s.weight === maxWeight)?.reps} reps</Badge>
+                            <Badge variant="secondary" className="bg-blue-500/20 backdrop-blur-sm border border-blue-200/30 dark:border-blue-500/30 text-blue-700 dark:text-blue-300">
+                              {exerciseSets.find(s => s.weight === maxWeight)?.reps} reps
+                            </Badge>
                             {maxWeightDate && (
                               <p className="text-xs text-muted-foreground mt-1">
                                 {maxWeightDate.toLocaleDateString()}
@@ -354,13 +383,15 @@ export default function Progress() {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between p-3 rounded-md border" data-testid="pr-max-reps">
+                        <div className="flex items-center justify-between p-4 rounded-lg bg-white/30 dark:bg-gray-900/30 backdrop-blur-md border border-orange-200/30 dark:border-orange-500/30" data-testid="pr-max-reps">
                           <div>
-                            <p className="text-sm text-muted-foreground">Best Reps</p>
-                            <p className="text-2xl font-bold font-mono">{maxReps} reps</p>
+                            <p className="text-sm text-muted-foreground uppercase tracking-wide">Best Reps</p>
+                            <p className="text-3xl font-bold font-mono bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">{maxReps} reps</p>
                           </div>
                           <div className="text-right">
-                            <Badge variant="secondary">{formatWeight(exerciseSets.find(s => s.reps === maxReps)?.weight || 0)}</Badge>
+                            <Badge variant="secondary" className="bg-orange-500/20 backdrop-blur-sm border border-orange-200/30 dark:border-orange-500/30 text-orange-700 dark:text-orange-300">
+                              {formatWeight(exerciseSets.find(s => s.reps === maxReps)?.weight || 0)}
+                            </Badge>
                             {maxRepsDate && (
                               <p className="text-xs text-muted-foreground mt-1">
                                 {maxRepsDate.toLocaleDateString()}
@@ -369,13 +400,13 @@ export default function Progress() {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between p-3 rounded-md border" data-testid="pr-max-volume">
+                        <div className="flex items-center justify-between p-4 rounded-lg bg-white/30 dark:bg-gray-900/30 backdrop-blur-md border border-emerald-200/30 dark:border-emerald-500/30" data-testid="pr-max-volume">
                           <div>
-                            <p className="text-sm text-muted-foreground">Best Volume (Single Set)</p>
-                            <p className="text-2xl font-bold font-mono">{formatWeight(maxVolume)}</p>
+                            <p className="text-sm text-muted-foreground uppercase tracking-wide">Best Volume (Single Set)</p>
+                            <p className="text-3xl font-bold font-mono bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent">{formatWeight(maxVolume)}</p>
                           </div>
                           <div className="text-right">
-                            <Badge variant="secondary">
+                            <Badge variant="secondary" className="bg-emerald-500/20 backdrop-blur-sm border border-emerald-200/30 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300">
                               {formatWeight(bestWeightSet?.weight || 0, { includeUnit: false })} {getUnitLabel()} × {bestWeightSet?.reps}
                             </Badge>
                             {maxVolumeDate && (
