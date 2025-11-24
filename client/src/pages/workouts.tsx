@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 const WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+const ACTIVE_WORKOUT_STORAGE_KEY = "jefit-active-workout";
 
 export default function Workouts() {
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
@@ -25,6 +26,39 @@ export default function Workouts() {
   const [startingExerciseIndex, setStartingExerciseIndex] = useState<number | null>(null);
   const { toast } = useToast();
 
+  // Load active workout state from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(ACTIVE_WORKOUT_STORAGE_KEY);
+      if (stored) {
+        const { activeRoutineId, selectedDay, startingExerciseIndex } = JSON.parse(stored);
+        setActiveRoutineId(activeRoutineId);
+        setSelectedDay(selectedDay);
+        setStartingExerciseIndex(startingExerciseIndex);
+      }
+    } catch (error) {
+      console.error("Failed to load active workout from localStorage:", error);
+    }
+  }, []);
+
+  // Save active workout state to localStorage whenever it changes
+  useEffect(() => {
+    if (activeRoutineId && selectedDay) {
+      try {
+        localStorage.setItem(ACTIVE_WORKOUT_STORAGE_KEY, JSON.stringify({
+          activeRoutineId,
+          selectedDay,
+          startingExerciseIndex
+        }));
+      } catch (error) {
+        console.error("Failed to save active workout to localStorage:", error);
+      }
+    } else {
+      // Clear localStorage when no active workout
+      localStorage.removeItem(ACTIVE_WORKOUT_STORAGE_KEY);
+    }
+  }, [activeRoutineId, selectedDay, startingExerciseIndex]);
+
   const { data: routines = [], isLoading } = useQuery<WorkoutRoutine[]>({
     queryKey: ["/api/workout-routines"],
   });
@@ -36,6 +70,17 @@ export default function Workouts() {
   const viewingRoutine = routines.find(r => r.id === viewingRoutineId);
   const activeRoutine = routines.find(r => r.id === activeRoutineId);
   const editingRoutine = routines.find(r => r.id === editingRoutineId);
+
+  // Clear active workout if the routine no longer exists
+  useEffect(() => {
+    if (activeRoutineId && !isLoading && !activeRoutine) {
+      // Routine was deleted or doesn't exist, clear the active workout
+      setActiveRoutineId(null);
+      setSelectedDay(null);
+      setStartingExerciseIndex(null);
+      localStorage.removeItem(ACTIVE_WORKOUT_STORAGE_KEY);
+    }
+  }, [activeRoutineId, activeRoutine, isLoading]);
 
   // Get today's day name
   const todayDayName = WEEKDAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
