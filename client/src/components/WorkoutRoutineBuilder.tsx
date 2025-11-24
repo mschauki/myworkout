@@ -884,6 +884,8 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                             <div>
                                               <Input
                                                 type="number"
+                                                min="0"
+                                                step={getUnitLabel() === "kg" ? "0.5" : "2.5"}
                                                 placeholder={getUnitLabel()}
                                                 value={set.weight || ""}
                                                 onChange={(e) => updateEditPerSet(setIdx, 'weight', e.target.value)}
@@ -1226,7 +1228,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                       <Input
                                         type="number"
                                         min="0"
-                                        step={getUnitLabel() === "kg" ? "0.5" : "5"}
+                                        step={getUnitLabel() === "kg" ? "0.5" : "2.5"}
                                         value={set.weight || ""}
                                         onChange={(e) => updatePerSet(index, 'weight', e.target.value)}
                                         placeholder={`Weight (${getUnitLabel()})`}

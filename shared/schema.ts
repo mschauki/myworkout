@@ -64,6 +64,7 @@ export const workoutLogs = pgTable("workout_logs", {
     sets: Array<{
       weight: number;
       reps: number;
+      duration?: number; // Duration in seconds (for time-based exercises like Plank)
       completed: boolean;
       restPeriod?: number; // Optional: rest period in seconds for this set (from per-set configuration)
     }>;

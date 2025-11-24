@@ -784,8 +784,8 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                               <Input
                                 type="number"
                                 min="0"
-                                step={getUnitLabel() === "kg" ? "2.5" : "5"}
-                                value={set.weight ? convertWeight(set.weight).toFixed(getUnitLabel() === "kg" ? 1 : 0) : ""}
+                                step={getUnitLabel() === "kg" ? "0.5" : "2.5"}
+                                value={set.weight ? convertWeight(set.weight).toFixed(1) : ""}
                                 onChange={(e) => updateSet(currentExerciseIndex, setIndex, "weight", e.target.value)}
                                 disabled={set.completed}
                                 className="h-12 text-lg"
