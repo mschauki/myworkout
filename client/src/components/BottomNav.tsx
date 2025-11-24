@@ -15,8 +15,8 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 safe-area-padding-bottom">
-      {/* Background */}
-      <div className="absolute inset-0 h-20 bg-background border-t border-border" />
+      {/* Glass Background with Blur */}
+      <div className="absolute inset-0 h-20 glass-card-lg border-t" style={{ background: "rgba(255,255,255,0.1)" }} />
       
       {/* Content */}
       <div className="relative flex items-center justify-around h-20 max-w-6xl mx-auto px-2">

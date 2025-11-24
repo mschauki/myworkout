@@ -66,65 +66,69 @@ export default function Home() {
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2" data-testid="text-page-title">Dashboard</h1>
-        <p className="text-base text-muted-foreground">Track your fitness journey</p>
+      {/* Hero Section with Gradient Mesh */}
+      <div className="relative mb-12 overflow-hidden rounded-3xl">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
+        <div className="relative z-10 p-8 md:p-12">
+          <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">Dashboard</h1>
+          <p className="text-lg text-muted-foreground">Track your fitness journey with precision</p>
+        </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Stats Grid - Liquid Glass */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <Card data-testid="card-stat-workouts" className="hover-elevate transition-all relative overflow-hidden group">
+        <Card data-testid="card-stat-workouts" className="glass-card glass-hover">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">This Month</CardTitle>
-            <Calendar className="w-5 h-5 text-primary/60" />
+            <Calendar className="w-5 h-5 text-primary/70" />
           </CardHeader>
           <CardContent className="relative">
             {isLoading ? (
-              <Skeleton className="h-12 w-20" />
+              <Skeleton className="h-12 w-20 shimmer" />
             ) : (
               <>
-                <div className="text-5xl font-bold font-mono text-primary" data-testid="text-stat-workouts">{thisMonthWorkouts}</div>
+                <div className="text-5xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent" data-testid="text-stat-workouts">{thisMonthWorkouts}</div>
                 <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest font-semibold">Workouts</p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card data-testid="card-stat-volume" className="hover-elevate transition-all relative overflow-hidden group">
+        <Card data-testid="card-stat-volume" className="glass-card glass-hover">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Total Volume</CardTitle>
-            <TrendingUp className="w-5 h-5 text-primary/60" />
+            <TrendingUp className="w-5 h-5 text-accent/70" />
           </CardHeader>
           <CardContent className="relative">
             {isLoading ? (
-              <Skeleton className="h-12 w-24" />
+              <Skeleton className="h-12 w-24 shimmer" />
             ) : (
               <>
-                <div className="text-5xl font-bold font-mono text-primary" data-testid="text-stat-volume">{displayTotalVolume}</div>
+                <div className="text-5xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-accent to-primary" data-testid="text-stat-volume">{displayTotalVolume}</div>
                 <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest font-semibold">{getUnitLabel()} lifted</p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card data-testid="card-stat-streak" className="hover-elevate transition-all relative overflow-hidden group">
+        <Card data-testid="card-stat-streak" className="glass-card glass-hover">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Streak</CardTitle>
-            <Flame className="w-5 h-5 text-amber-400/60" />
+            <Flame className="w-5 h-5 text-accent/70" />
           </CardHeader>
           <CardContent className="relative">
             {isLoading ? (
-              <Skeleton className="h-12 w-16" />
+              <Skeleton className="h-12 w-16 shimmer" />
             ) : (
               <>
-                <div className="text-5xl font-bold font-mono text-amber-500" data-testid="text-stat-streak">0</div>
+                <div className="text-5xl font-bold font-mono bg-clip-text text-transparent bg-gradient-to-r from-accent to-primary" data-testid="text-stat-streak">0</div>
                 <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest font-semibold">Days</p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card data-testid="card-stat-weight" className="hover-elevate transition-all relative overflow-hidden group">
+        <Card data-testid="card-stat-weight" className="glass-card glass-hover">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Body Weight</CardTitle>
             <Trophy className="w-5 h-5 text-emerald-400/60" />

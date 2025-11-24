@@ -269,6 +269,90 @@
   }
 }
 
+/**
+ * Liquid Glass Enhancement Utilities
+ */
+@layer components {
+  /* Premium Glass Card - Enhanced */
+  .glass-card {
+    @apply relative rounded-2xl backdrop-blur-xl overflow-hidden border;
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .glass-card {
+    background: rgba(15, 23, 42, 0.4);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  }
+
+  /* Glass Card Elevated - More Blur */
+  .glass-card-lg {
+    @apply relative rounded-3xl backdrop-blur-2xl overflow-hidden border;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.15);
+  }
+
+  .dark .glass-card-lg {
+    background: rgba(15, 23, 42, 0.5);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.4);
+  }
+
+  /* Gradient Text Effect */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(210, 100%, 50%), hsl(25, 95%, 53%));
+  }
+
+  /* Gradient Glow Border */
+  .border-gradient {
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, hsl(210, 100%, 50%), hsl(25, 95%, 53%)) border-box;
+    border: 2px solid transparent;
+  }
+
+  /* Liquid Float Animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .float-animation {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Shimmer Loading Effect */
+  @keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+  }
+
+  .shimmer {
+    background-image: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  /* Glass Hover Elevation */
+  .glass-hover {
+    @apply transition-all duration-300 cursor-pointer;
+  }
+
+  .glass-hover:hover {
+    @apply backdrop-blur-2xl translate-y-[-4px];
+    background: rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .dark .glass-hover:hover {
+    background: rgba(15, 23, 42, 0.6) !important;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4) !important;
+  }
+}
+
 /* React DayPicker - Liquid Styling */
 .rdp {
   --rdp-cell-size: 44px;
