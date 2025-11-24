@@ -741,26 +741,6 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                   </div>
                 </div>
 
-                {/* Sticky Done Button */}
-                {!allComplete && (
-                  <div className="sticky top-[120px] z-20 mb-4 flex gap-2">
-                    <Button
-                      onClick={() => {
-                        const nextIncompleteIndex = log.sets.findIndex(s => !s.completed);
-                        if (nextIncompleteIndex !== -1) {
-                          completeSet(currentExerciseIndex, nextIncompleteIndex);
-                        }
-                      }}
-                      size="lg"
-                      className="flex-1 h-14 text-lg font-bold"
-                      disabled={log.sets.findIndex(s => !s.completed) === -1 || (isTimeBased ? (log.sets[log.sets.findIndex(s => !s.completed)]?.duration ?? 0) <= 0 : (log.sets[log.sets.findIndex(s => !s.completed)]?.reps ?? 0) <= 0)}
-                      data-testid={`button-done-set-${currentExerciseIndex}`}
-                    >
-                      <Check className="w-5 h-5 mr-2" />
-                      Done
-                    </Button>
-                  </div>
-                )}
 
                 {/* Exercise Image */}
                 {exercise?.imageUrl && (
@@ -780,7 +760,8 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                   <div className={`grid ${isBodyweight ? 'grid-cols-8' : 'grid-cols-12'} gap-2 text-xs font-medium text-muted-foreground px-2`}>
                     <div className="col-span-2">Set</div>
                     {!isBodyweight && <div className="col-span-4">Weight ({getUnitLabel()})</div>}
-                    <div className={isBodyweight ? 'col-span-6' : 'col-span-6'}>{isTimeBased ? 'Duration (s)' : 'Reps'}</div>
+                    <div className={isBodyweight ? 'col-span-4' : 'col-span-4'}>{isTimeBased ? 'Duration (s)' : 'Reps'}</div>
+                    <div className="col-span-2">Done</div>
                   </div>
 
                   {/* Sets */}
@@ -824,7 +805,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                               />
                             </div>
                           )}
-                          <div className={isBodyweight ? 'col-span-6' : 'col-span-6'}>
+                          <div className={isBodyweight ? 'col-span-4' : 'col-span-4'}>
                             <Input
                               type="number"
                               min="0"
@@ -836,9 +817,19 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                               data-testid={`input-${isTimeBased ? 'duration' : 'reps'}-${currentExerciseIndex}-${setIndex}`}
                             />
                           </div>
-                          {set.completed && (
-                            <Check className="w-6 h-6 text-primary ml-auto" />
-                          )}
+                          <div className="col-span-2 flex justify-center">
+                            <Button
+                              type="button"
+                              variant={set.completed ? "default" : "outline"}
+                              size="icon"
+                              onClick={() => completeSet(currentExerciseIndex, setIndex)}
+                              disabled={(isTimeBased ? (set.duration ?? 0) <= 0 : (set.reps ?? 0) <= 0) && !set.completed}
+                              className="h-10 w-10"
+                              data-testid={`button-done-set-${currentExerciseIndex}-${setIndex}`}
+                            >
+                              <Check className="w-5 h-5" />
+                            </Button>
+                          </div>
                         </div>
                       );
                     })}
