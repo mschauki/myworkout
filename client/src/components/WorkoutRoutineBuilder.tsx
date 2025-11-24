@@ -319,9 +319,11 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
       };
 
       if (isTimeBased) {
-        config.duration = parseInt(set.duration || "30") || 30;
+        const durationValue = set.duration?.trim();
+        config.duration = durationValue ? (parseInt(durationValue) || 30) : 30;
       } else {
-        config.reps = parseInt(set.reps || "10") || 10;
+        const repsValue = set.reps?.trim();
+        config.reps = repsValue ? (parseInt(repsValue) || 10) : 10;
       }
 
       if (!isBodyweight && set.weight && set.weight.trim() !== "") {
@@ -845,42 +847,80 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                   <div className="space-y-2">
                                     <Label className="text-xs">Per-Set Configuration</Label>
                                     {editPerSetConfig.map((set, setIdx) => (
-                                      <div key={setIdx} className="grid gap-2" style={{ gridTemplateColumns: isBodyweight ? "auto 1fr 1fr" : "auto 1fr 1fr 1fr" }}>
-                                        <div className="flex items-center justify-center">
-                                          <span className="text-xs text-muted-foreground">S{setIdx + 1}</span>
-                                        </div>
-                                        {!isBodyweight && (
+                                      <div key={setIdx} className="space-y-1">
+                                        <div className="grid gap-2" style={{ gridTemplateColumns: isBodyweight ? "auto 1fr 1fr" : "auto 1fr 1fr 1fr" }}>
+                                          <div className="flex items-center justify-center">
+                                            <span className="text-xs text-muted-foreground">S{setIdx + 1}</span>
+                                          </div>
+                                          {!isBodyweight && (
+                                            <div>
+                                              <Input
+                                                type="number"
+                                                placeholder={getUnitLabel()}
+                                                value={set.weight || ""}
+                                                onChange={(e) => updateEditPerSet(setIdx, 'weight', e.target.value)}
+                                                className="text-xs h-8"
+                                                data-testid={`input-edit-weight-${day}-${index}-${setIdx}`}
+                                              />
+                                            </div>
+                                          )}
                                           <div>
                                             <Input
                                               type="number"
-                                              placeholder={getUnitLabel()}
-                                              value={set.weight || ""}
-                                              onChange={(e) => updateEditPerSet(setIdx, 'weight', e.target.value)}
+                                              placeholder={isTimeBased ? "Sec" : "Reps"}
+                                              value={isTimeBased ? set.duration || "" : set.reps || ""}
+                                              onChange={(e) => updateEditPerSet(setIdx, isTimeBased ? 'duration' : 'reps', e.target.value)}
                                               className="text-xs h-8"
-                                              data-testid={`input-edit-weight-${day}-${index}-${setIdx}`}
+                                              data-testid={`input-edit-${isTimeBased ? 'duration' : 'reps'}-${day}-${index}-${setIdx}`}
                                             />
                                           </div>
+                                          <div>
+                                            <Input
+                                              type="number"
+                                              placeholder="Rest (s)"
+                                              value={set.restPeriod || ""}
+                                              onChange={(e) => updateEditPerSet(setIdx, 'restPeriod', e.target.value)}
+                                              className="text-xs h-8"
+                                              data-testid={`input-edit-rest-${day}-${index}-${setIdx}`}
+                                            />
+                                          </div>
+                                        </div>
+                                        {setIdx === 0 && editPerSetConfig.length > 1 && (
+                                          <div className="grid gap-2 pl-8" style={{ gridTemplateColumns: isBodyweight ? "1fr 1fr" : "1fr 1fr 1fr" }}>
+                                            {!isBodyweight && (
+                                              <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-6 text-xs"
+                                                onClick={() => copyEditToAllSets(setIdx, 'weight')}
+                                                data-testid={`button-copy-edit-weight-${day}-${index}`}
+                                              >
+                                                Copy to all
+                                              </Button>
+                                            )}
+                                            <Button
+                                              type="button"
+                                              variant="ghost"
+                                              size="sm"
+                                              className="h-6 text-xs"
+                                              onClick={() => copyEditToAllSets(setIdx, isTimeBased ? 'duration' : 'reps')}
+                                              data-testid={`button-copy-edit-${isTimeBased ? 'duration' : 'reps'}-${day}-${index}`}
+                                            >
+                                              Copy to all
+                                            </Button>
+                                            <Button
+                                              type="button"
+                                              variant="ghost"
+                                              size="sm"
+                                              className="h-6 text-xs"
+                                              onClick={() => copyEditToAllSets(setIdx, 'restPeriod')}
+                                              data-testid={`button-copy-edit-rest-${day}-${index}`}
+                                            >
+                                              Copy to all
+                                            </Button>
+                                          </div>
                                         )}
-                                        <div>
-                                          <Input
-                                            type="number"
-                                            placeholder={isTimeBased ? "Sec" : "Reps"}
-                                            value={isTimeBased ? set.duration || "" : set.reps || ""}
-                                            onChange={(e) => updateEditPerSet(setIdx, isTimeBased ? 'duration' : 'reps', e.target.value)}
-                                            className="text-xs h-8"
-                                            data-testid={`input-edit-${isTimeBased ? 'duration' : 'reps'}-${day}-${index}-${setIdx}`}
-                                          />
-                                        </div>
-                                        <div>
-                                          <Input
-                                            type="number"
-                                            placeholder="Rest (s)"
-                                            value={set.restPeriod || ""}
-                                            onChange={(e) => updateEditPerSet(setIdx, 'restPeriod', e.target.value)}
-                                            className="text-xs h-8"
-                                            data-testid={`input-edit-rest-${day}-${index}-${setIdx}`}
-                                          />
-                                        </div>
                                       </div>
                                     ))}
                                   </div>
