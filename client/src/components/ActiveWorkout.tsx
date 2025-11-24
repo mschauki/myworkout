@@ -628,26 +628,26 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
               </Badge>
             </div>
             {restTimer > 0 && (
-              <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/30 rounded-md">
-                <Timer className="w-4 h-4 text-primary" />
-                <span className="font-mono font-bold text-primary" data-testid="text-rest-timer">{formatTime(restTimer)}</span>
+              <div className="flex items-center gap-3 px-4 py-2 bg-primary/15 border border-primary/40 rounded-lg">
+                <Timer className="w-5 h-5 text-primary" />
+                <span className="font-mono font-bold text-primary text-lg" data-testid="text-rest-timer">{formatTime(restTimer)}</span>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6"
+                  className="h-7 w-7"
                   onClick={() => setRestPaused(!restPaused)}
                   data-testid="button-rest-toggle"
                 >
-                  {restPaused ? <Play className="w-3 h-3" /> : <Pause className="w-3 h-3" />}
+                  {restPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6"
+                  className="h-7 w-7"
                   onClick={() => setRestTimer(0)}
                   data-testid="button-rest-skip"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-4 h-4" />
                 </Button>
               </div>
             )}
