@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,6 +15,7 @@ export default function Progress() {
   const [selectedExercise, setSelectedExercise] = useState<string>("");
   const [timeRange, setTimeRange] = useState("3M");
   const [selectedCalendarDay, setSelectedCalendarDay] = useState<Date | undefined>(undefined);
+  const queryClient = useQueryClient();
 
   const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
     queryKey: ["/api/exercises"],
@@ -26,10 +27,19 @@ export default function Progress() {
 
   const { data: settings } = useQuery<Settings>({
     queryKey: ["/api/settings"],
-    staleTime: 0,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
   });
+
+  // Force refetch settings when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        queryClient.refetchQueries({ queryKey: ["/api/settings"] });
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [queryClient]);
 
   const isLoading = exercisesLoading || logsLoading;
 
