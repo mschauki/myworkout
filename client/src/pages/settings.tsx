@@ -11,6 +11,48 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useTheme } from "@/components/theme-provider";
+import { Monitor, Moon, Sun } from "lucide-react";
+
+function AppearanceSelector() {
+  const { theme, setTheme } = useTheme();
+
+  const themes = [
+    { value: "light", label: "Light", icon: Sun, description: "Light mode" },
+    { value: "dark", label: "Dark", icon: Moon, description: "Dark mode" },
+    { value: "system", label: "System", icon: Monitor, description: "Match device theme" },
+  ] as const;
+
+  return (
+    <div className="grid grid-cols-3 gap-3">
+      {themes.map((themeOption) => {
+        const Icon = themeOption.icon;
+        const isActive = theme === themeOption.value;
+        
+        return (
+          <button
+            key={themeOption.value}
+            onClick={() => setTheme(themeOption.value)}
+            className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all hover-elevate ${
+              isActive
+                ? "border-primary bg-primary/5"
+                : "border-card-border bg-card"
+            }`}
+            data-testid={`button-theme-${themeOption.value}`}
+          >
+            <Icon className={`w-6 h-6 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+            <div className="text-center">
+              <p className={`text-sm font-medium ${isActive ? "text-primary" : "text-foreground"}`}>
+                {themeOption.label}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">{themeOption.description}</p>
+            </div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function SettingsPage() {
   const [_, navigate] = useLocation();
@@ -129,6 +171,19 @@ export default function SettingsPage() {
       </div>
 
       <div className="space-y-6">
+        {/* Appearance Setting */}
+        <Card className="glass-card glass-hover">
+          <CardHeader>
+            <CardTitle className="text-base">Appearance</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Choose how the app looks. System mode automatically matches your device's theme.
+            </p>
+            <AppearanceSelector />
+          </CardContent>
+        </Card>
+
         {/* Unit System Setting */}
         <Card className="glass-card glass-hover">
           <CardHeader>
