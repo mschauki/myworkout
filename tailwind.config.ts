@@ -10,24 +10,11 @@ export default {
         sm: ".1875rem", /* 3px */
       },
       colors: {
-        // Material Design 3 - Base colors
+        // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
         border: "hsl(var(--border) / <alpha-value>)",
         input: "hsl(var(--input) / <alpha-value>)",
-        
-        // Material Surface Colors
-        surface: {
-          DEFAULT: "hsl(var(--surface) / <alpha-value>)",
-          dim: "hsl(var(--surface-dim) / <alpha-value>)",
-          bright: "hsl(var(--surface-bright) / <alpha-value>)",
-          "container-lowest": "hsl(var(--surface-container-lowest) / <alpha-value>)",
-          "container-low": "hsl(var(--surface-container-low) / <alpha-value>)",
-          container: "hsl(var(--surface-container) / <alpha-value>)",
-          "container-high": "hsl(var(--surface-container-high) / <alpha-value>)",
-          "container-highest": "hsl(var(--surface-container-highest) / <alpha-value>)",
-        },
-        
         card: {
           DEFAULT: "hsl(var(--card) / <alpha-value>)",
           foreground: "hsl(var(--card-foreground) / <alpha-value>)",
@@ -47,11 +34,6 @@ export default {
           DEFAULT: "hsl(var(--secondary) / <alpha-value>)",
           foreground: "hsl(var(--secondary-foreground) / <alpha-value>)",
           border: "var(--secondary-border)",
-        },
-        tertiary: {
-          DEFAULT: "hsl(var(--tertiary) / <alpha-value>)",
-          foreground: "hsl(var(--tertiary-foreground) / <alpha-value>)",
-          border: "var(--tertiary-border)",
         },
         muted: {
           DEFAULT: "hsl(var(--muted) / <alpha-value>)",
