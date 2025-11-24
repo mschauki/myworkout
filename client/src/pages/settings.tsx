@@ -10,6 +10,7 @@ import { Settings } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function SettingsPage() {
   const [_, navigate] = useLocation();
@@ -125,17 +126,18 @@ export default function SettingsPage() {
         >
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <div>
-          <h1 className="text-4xl font-bold text-foreground" data-testid="text-page-title">
+        <div className="flex-1">
+          <h1 className="text-5xl md:text-6xl font-bold text-gradient" data-testid="text-page-title">
             Settings
           </h1>
-          <p className="text-base text-muted-foreground">Customize your preferences</p>
+          <p className="text-lg text-muted-foreground">Customize your experience</p>
         </div>
+        <ThemeToggle />
       </div>
 
       <div className="space-y-6">
         {/* Unit System Setting */}
-        <Card className="bg-card border border-card-border">
+        <Card className="glass-card glass-hover">
           <CardHeader>
             <CardTitle className="text-base">Measurement Unit</CardTitle>
           </CardHeader>
@@ -165,7 +167,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Calendar Setting */}
-        <Card className="bg-card border border-card-border">
+        <Card className="glass-card glass-hover">
           <CardHeader>
             <CardTitle className="text-base">Calendar</CardTitle>
           </CardHeader>
@@ -196,7 +198,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Workout Timer Settings */}
-        <Card className="bg-card border border-card-border">
+        <Card className="glass-card glass-hover">
           <CardHeader>
             <CardTitle className="text-base">Workout Timer</CardTitle>
           </CardHeader>
@@ -284,7 +286,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Data Management */}
-        <Card className="bg-card border border-card-border">
+        <Card className="glass-card glass-hover">
           <CardHeader>
             <CardTitle className="text-base">Data Management</CardTitle>
           </CardHeader>
@@ -328,7 +330,7 @@ export default function SettingsPage() {
         </div>
 
         {/* About Section */}
-        <Card className="bg-card border border-card-border">
+        <Card className="glass-card glass-hover">
           <CardHeader>
             <CardTitle className="text-sm">About</CardTitle>
           </CardHeader>

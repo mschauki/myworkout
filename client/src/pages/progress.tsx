@@ -64,7 +64,7 @@ export default function Progress() {
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 text-foreground" data-testid="text-page-title">Progress</h1>
+        <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">Progress</h1>
         <p className="text-base text-muted-foreground">Track your fitness journey</p>
       </div>
 
@@ -78,7 +78,7 @@ export default function Progress() {
         <TabsContent value="overview" className="space-y-6 mt-6">
           {/* Stats Summary */}
           <div className="grid grid-cols-2 gap-4">
-            <Card data-testid="card-total-workouts" className="bg-card border border-card-border">
+            <Card data-testid="card-total-workouts" className="glass-card glass-hover">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Workouts</CardTitle>
               </CardHeader>
@@ -91,7 +91,7 @@ export default function Progress() {
               </CardContent>
             </Card>
 
-            <Card data-testid="card-total-volume" className="bg-card border border-card-border">
+            <Card data-testid="card-total-volume" className="glass-card glass-hover">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Volume</CardTitle>
               </CardHeader>
@@ -109,7 +109,7 @@ export default function Progress() {
           </div>
 
           {/* Volume Chart */}
-          <Card className="bg-card border border-card-border">
+          <Card className="glass-card glass-hover">
             <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
               <CardTitle className="text-base">Volume Progression</CardTitle>
               <div className="flex items-center gap-2">
@@ -172,7 +172,7 @@ export default function Progress() {
         </TabsContent>
 
         <TabsContent value="calendar" className="space-y-6 mt-6">
-          <Card className="bg-card border border-card-border">
+          <Card className="glass-card glass-hover">
             <CardHeader>
               <CardTitle className="text-base">Workout Calendar</CardTitle>
             </CardHeader>
@@ -252,7 +252,7 @@ export default function Progress() {
         </TabsContent>
 
         <TabsContent value="exercises" className="space-y-6 mt-6">
-          <Card className="bg-card border border-card-border">
+          <Card className="glass-card glass-hover">
             <CardHeader>
               <CardTitle className="text-base">Exercise Progress</CardTitle>
             </CardHeader>

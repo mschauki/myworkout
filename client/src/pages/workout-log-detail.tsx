@@ -43,7 +43,7 @@ export default function WorkoutLogDetail() {
             Back to Progress
           </Button>
         </Link>
-        <Card className="bg-card border border-card-border">
+        <Card className="glass-card glass-hover">
           <CardContent className="pt-6">
             <p className="text-muted-foreground text-center">Workout not found</p>
           </CardContent>
@@ -124,7 +124,7 @@ export default function WorkoutLogDetail() {
           const totalSets = exercise.sets.length;
 
           return (
-            <Card key={exerciseIndex} className="bg-card border border-card-border" data-testid={`card-exercise-${exerciseIndex}`}>
+            <Card key={exerciseIndex} className="glass-card glass-hover" data-testid={`card-exercise-${exerciseIndex}`}>
               <CardHeader>
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">

@@ -187,7 +187,7 @@ export default function Workouts() {
         <>
           {builderDialog}
           <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-            <Card className="bg-card border border-card-border">
+            <Card className="glass-card glass-hover">
               <CardContent className="p-12 text-center">
                 <Calendar className="w-16 h-16 mx-auto mb-4 text-primary/40" />
                 <h3 className="text-xl font-semibold mb-2">No exercises for this day</h3>
@@ -238,12 +238,12 @@ export default function Workouts() {
             <ChevronLeft className="w-4 h-4 mr-2" />
             Back to Days
           </Button>
-          <h1 className="text-4xl font-bold mb-2 text-foreground">{viewingRoutine.name}</h1>
+          <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient">{viewingRoutine.name}</h1>
           <p className="text-base text-muted-foreground">{dayTitle}</p>
         </div>
 
         {dayExercises.length === 0 ? (
-          <Card className="bg-card border border-card-border">
+          <Card className="glass-card glass-hover">
             <CardContent className="p-12 text-center">
               <Dumbbell className="w-16 h-16 mx-auto mb-4 text-primary/40" />
               <p className="text-muted-foreground">No exercises for this day</p>
@@ -269,7 +269,7 @@ export default function Workouts() {
                           {getExerciseName(exercise.exerciseId)}
                         </h3>
                         <div className="flex flex-wrap gap-2">
-                          <Badge variant="secondary" className="bg-card border border-card-border">
+                          <Badge variant="secondary" className="glass-card glass-hover">
                             {config.sets}
                           </Badge>
                           <Badge variant="outline">
@@ -320,7 +320,7 @@ export default function Workouts() {
                     <div className="space-y-2">
                       <p className="text-sm text-muted-foreground">Sets Configuration</p>
                       <div className="flex gap-2">
-                        <Badge variant="secondary" className="bg-card border border-card-border">
+                        <Badge variant="secondary" className="glass-card glass-hover">
                           {config.sets}
                         </Badge>
                         <Badge variant="outline">
@@ -404,7 +404,7 @@ export default function Workouts() {
           </Button>
           <div className="flex items-start justify-between gap-4 mb-2">
             <div className="flex-1">
-              <h1 className="text-4xl font-bold mb-2 text-foreground" data-testid="text-routine-name">
+              <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-routine-name">
                 {viewingRoutine.name}
               </h1>
               {viewingRoutine.description && (
@@ -469,7 +469,7 @@ export default function Workouts() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Badge variant="secondary" className="bg-card border border-card-border">
+                      <Badge variant="secondary" className="glass-card glass-hover">
                         {exerciseCount} exercise{exerciseCount !== 1 ? "s" : ""}
                       </Badge>
                       <ArrowRight className="w-5 h-5 text-foreground/40" />
@@ -483,7 +483,7 @@ export default function Workouts() {
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={!!deleteRoutineId} onOpenChange={(open) => !open && setDeleteRoutineId(null)}>
-          <AlertDialogContent className="bg-card border border-card-border">
+          <AlertDialogContent className="glass-card glass-hover">
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Routine?</AlertDialogTitle>
               <AlertDialogDescription>
@@ -511,7 +511,7 @@ export default function Workouts() {
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-4xl font-bold mb-2 text-foreground" data-testid="text-page-title">My Workouts</h1>
+          <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">My Workouts</h1>
           <p className="text-base text-muted-foreground">Create and track your routines</p>
         </div>
         {builderDialog}
@@ -520,7 +520,7 @@ export default function Workouts() {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="bg-card border border-card-border">
+            <Card key={i} className="glass-card glass-hover">
               <CardContent className="p-4">
                 <Skeleton className="h-6 w-48 mb-3" />
                 <Skeleton className="h-4 w-full mb-2" />
@@ -530,7 +530,7 @@ export default function Workouts() {
           ))}
         </div>
       ) : routines.length === 0 ? (
-        <Card className="bg-card border border-card-border">
+        <Card className="glass-card glass-hover">
           <CardContent className="p-12 text-center">
             <Dumbbell className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-xl font-semibold mb-2">No workout routines yet</h3>

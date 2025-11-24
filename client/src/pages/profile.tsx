@@ -68,13 +68,13 @@ export default function Profile() {
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 text-foreground" data-testid="text-page-title">Profile</h1>
+        <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">Profile</h1>
         <p className="text-base text-muted-foreground">Track your body stats and measurements</p>
       </div>
 
       {/* Current Stats */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <Card data-testid="card-current-weight" className="bg-card border border-card-border">
+        <Card data-testid="card-current-weight" className="glass-card glass-hover">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Current Weight</CardTitle>
             <Weight className="w-5 h-5 text-primary/60" />
@@ -95,7 +95,7 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        <Card data-testid="card-current-bodyfat" className="bg-card border border-card-border">
+        <Card data-testid="card-current-bodyfat" className="glass-card glass-hover">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Body Fat</CardTitle>
             <TrendingDown className="w-5 h-5 text-emerald-400/80" />
@@ -195,7 +195,7 @@ export default function Profile() {
       </Card>
 
       {/* Weight Chart */}
-      <Card className="bg-card border border-card-border">
+      <Card className="glass-card glass-hover">
         <CardHeader>
           <CardTitle className="text-base">Weight Progress</CardTitle>
         </CardHeader>

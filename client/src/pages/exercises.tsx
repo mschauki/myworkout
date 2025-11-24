@@ -884,7 +884,7 @@ export default function Exercises() {
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <Card key={i} className="bg-card border border-card-border">
+                  <Card key={i} className="glass-card glass-hover">
                     <CardContent className="p-5">
                       <Skeleton className="h-40 w-full mb-4 rounded-lg" />
                       <Skeleton className="h-6 w-3/4 mb-2" />
@@ -894,7 +894,7 @@ export default function Exercises() {
                 ))}
               </div>
             ) : filteredExercises.length === 0 ? (
-              <Card className="bg-card border border-card-border">
+              <Card className="glass-card glass-hover">
                 <CardContent className="p-12 text-center">
                   <Dumbbell className="w-16 h-16 mx-auto mb-4 text-primary/40" />
                   <p className="text-muted-foreground text-lg font-medium">No exercises found</p>
@@ -1155,7 +1155,7 @@ export default function Exercises() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deletingExercise} onOpenChange={(open) => !open && setDeletingExercise(null)}>
-        <AlertDialogContent className="bg-card border border-card-border">
+        <AlertDialogContent className="glass-card glass-hover">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Exercise</AlertDialogTitle>
             <AlertDialogDescription>
