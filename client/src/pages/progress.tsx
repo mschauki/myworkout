@@ -25,21 +25,25 @@ export default function Progress() {
     queryKey: ["/api/workout-logs"],
   });
 
-  const { data: settings } = useQuery<Settings>({
+  const { data: settings, refetch: refetchSettings } = useQuery<Settings>({
     queryKey: ["/api/settings"],
+    staleTime: 0,
+    gcTime: 0,
   });
 
-  // Force refetch settings when page becomes visible
+  // Refetch settings on mount and when component visibility changes
   useEffect(() => {
+    refetchSettings();
+    
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        queryClient.refetchQueries({ queryKey: ["/api/settings"] });
+        refetchSettings();
       }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [queryClient]);
+  }, [refetchSettings]);
 
   const isLoading = exercisesLoading || logsLoading;
 
