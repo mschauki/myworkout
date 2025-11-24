@@ -66,7 +66,6 @@ const seedExercises = async () => {
     { name: "Single-Leg Deadlift", description: "Deadlift on one leg for balance and unilateral work", muscleGroup: "upper legs", equipment: "dumbbell", imageUrl: null },
     { name: "Pistol Squat", description: "Single-leg squat to full depth", muscleGroup: "upper legs", equipment: "bodyweight", imageUrl: null },
     { name: "Wall Sit", description: "Hold squat position against wall", muscleGroup: "upper legs", equipment: "bodyweight", imageUrl: null },
-    { name: "Glute Bridge", description: "Thrust hips up while lying on back", muscleGroup: "upper legs", equipment: "bodyweight", imageUrl: null },
     { name: "Dumbbell Squat", description: "Squat while holding dumbbells at sides or shoulders", muscleGroup: "upper legs", equipment: "dumbbell", imageUrl: null },
     { name: "Cable Hip Abduction", description: "Abduct leg against cable resistance to target hip and glute", muscleGroup: "upper legs", equipment: "cable", imageUrl: null },
     { name: "Bridge", description: "Hold bridge position while lying on back", muscleGroup: "upper legs", equipment: "bodyweight", imageUrl: null, isTimeBased: true },
