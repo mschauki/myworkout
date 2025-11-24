@@ -71,6 +71,10 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
   const [customImagePreview, setCustomImagePreview] = useState<string | null>(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
 
+  // Edit exercise state
+  const [editingExerciseKey, setEditingExerciseKey] = useState<string | null>(null);
+  const [editPerSetConfig, setEditPerSetConfig] = useState<Array<{ reps?: string; duration?: string; restPeriod: string; weight?: string }>>([]);
+
   const { toast } = useToast();
 
   const { data: exercises = [], isLoading } = useQuery<Exercise[]>({
@@ -275,6 +279,123 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
       ...prev,
       [day]: (prev[day] || []).filter((_, i) => i !== index)
     }));
+  };
+
+  const startEditingExercise = (day: string, index: number) => {
+    const exercise = exercisesByDay[day]?.[index];
+    if (!exercise) return;
+
+    const key = `${day}-${index}`;
+    setEditingExerciseKey(key);
+
+    // Populate edit config from existing exercise
+    const config = (exercise.setsConfig || []).map(set => ({
+      reps: set.reps !== undefined ? String(set.reps) : undefined,
+      duration: set.duration !== undefined ? String(set.duration) : undefined,
+      restPeriod: String(set.restPeriod || 90),
+      weight: set.weight ? String(convertWeight(set.weight)) : "",
+    }));
+
+    setEditPerSetConfig(config);
+  };
+
+  const cancelEditingExercise = () => {
+    setEditingExerciseKey(null);
+    setEditPerSetConfig([]);
+  };
+
+  const saveEditingExercise = (day: string, index: number) => {
+    const exercise = exercisesByDay[day]?.[index];
+    if (!exercise) return;
+
+    const selectedExercise = exercises.find(e => e.id === exercise.exerciseId);
+    const isBodyweight = selectedExercise?.equipment?.toLowerCase() === "bodyweight";
+    const isTimeBased = selectedExercise?.isTimeBased || false;
+
+    // Build updated setsConfig from editPerSetConfig
+    const setsConfig = editPerSetConfig.map(set => {
+      const config: { reps?: number; duration?: number; restPeriod: number; weight?: number } = {
+        restPeriod: Math.max(0, parseInt(set.restPeriod || "90") || 90),
+      };
+
+      if (isTimeBased) {
+        config.duration = parseInt(set.duration || "30") || 30;
+      } else {
+        config.reps = parseInt(set.reps || "10") || 10;
+      }
+
+      if (!isBodyweight && set.weight && set.weight.trim() !== "") {
+        const weightValue = parseFloat(set.weight);
+        if (!isNaN(weightValue) && weightValue > 0) {
+          config.weight = convertToLbs(weightValue);
+        }
+      }
+
+      return config;
+    });
+
+    // Update the exercise in exercisesByDay
+    setExercisesByDay(prev => {
+      const dayExercises = [...(prev[day] || [])];
+      dayExercises[index] = {
+        ...dayExercises[index],
+        sets: setsConfig.length,
+        reps: setsConfig[0]?.reps || 10,
+        setsConfig,
+      };
+
+      return {
+        ...prev,
+        [day]: dayExercises
+      };
+    });
+
+    // Clear editing state
+    setEditingExerciseKey(null);
+    setEditPerSetConfig([]);
+    
+    toast({ title: "Exercise updated" });
+  };
+
+  const updateEditPerSet = (index: number, field: 'reps' | 'duration' | 'restPeriod' | 'weight', value: string) => {
+    const updated = [...editPerSetConfig];
+    updated[index] = { ...updated[index], [field]: value };
+    setEditPerSetConfig(updated);
+  };
+
+  const copyEditToAllSets = (index: number, field: 'reps' | 'duration' | 'restPeriod' | 'weight') => {
+    const sourceValue = editPerSetConfig[index]?.[field];
+    if (sourceValue === undefined || sourceValue === "") {
+      toast({ 
+        title: `Cannot copy empty ${field}`, 
+        variant: "destructive" 
+      });
+      return;
+    }
+    
+    const updated = editPerSetConfig.map((set, idx) => ({
+      ...set,
+      [field]: idx === index ? set[field] : sourceValue
+    }));
+    setEditPerSetConfig(updated);
+    toast({ 
+      title: `${field.charAt(0).toUpperCase() + field.slice(1)} copied to all sets` 
+    });
+  };
+
+  const updateEditSetCount = (newCount: number) => {
+    const count = Math.max(1, Math.min(10, newCount));
+    
+    const currentConfig = [...editPerSetConfig];
+    if (count > currentConfig.length) {
+      const lastSet = currentConfig[currentConfig.length - 1] || { reps: "10", restPeriod: "90", weight: "" };
+      while (currentConfig.length < count) {
+        currentConfig.push({ ...lastSet });
+      }
+    } else {
+      currentConfig.splice(count);
+    }
+    setEditPerSetConfig(currentConfig);
   };
 
   const toggleSuperset = (day: string, index: number) => {
@@ -587,6 +708,11 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                       const isInSuperset = !!exercise.supersetGroup;
                       const isSupersetStart = isInSuperset && (!prevExercise || prevExercise.supersetGroup !== exercise.supersetGroup);
                       const isSupersetContinuation = isInSuperset && prevExercise && prevExercise.supersetGroup === exercise.supersetGroup;
+                      const exerciseKey = `${day}-${index}`;
+                      const isEditing = editingExerciseKey === exerciseKey;
+                      const selectedExercise = exercises.find(e => e.id === exercise.exerciseId);
+                      const isBodyweight = selectedExercise?.equipment?.toLowerCase() === "bodyweight";
+                      const isTimeBased = selectedExercise?.isTimeBased || false;
                       
                       return (
                         <div key={index} className="relative">
@@ -605,47 +731,161 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                   </Badge>
                                 </div>
                               )}
-                              <div className="flex items-center justify-between gap-4">
-                                <div className="flex items-center gap-3 flex-1 min-w-0">
-                                  <Dumbbell className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-medium truncate">{getExerciseName(exercise.exerciseId)}</p>
-                                    <p className="text-sm text-muted-foreground">
-                                      {exercise.sets} sets
-                                    </p>
-                                    {exercise.setsConfig && (
-                                      <div className="text-xs text-muted-foreground mt-1">
-                                        {exercise.setsConfig.map((set, i) => (
-                                          <span key={i} className="inline-block mr-2">
-                                            Set {i + 1}: {set.weight ? `${formatWeight(set.weight)} × ` : ''}{set.reps} reps, {set.restPeriod}s rest
-                                          </span>
-                                        ))}
-                                      </div>
-                                    )}
+                              
+                              {!isEditing ? (
+                                // Read-only view
+                                <div className="flex items-center justify-between gap-4">
+                                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <Dumbbell className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                    <div className="flex-1 min-w-0">
+                                      <p className="font-medium truncate">{getExerciseName(exercise.exerciseId)}</p>
+                                      <p className="text-sm text-muted-foreground">
+                                        {exercise.sets} sets
+                                      </p>
+                                      {exercise.setsConfig && (
+                                        <div className="text-xs text-muted-foreground mt-1">
+                                          {exercise.setsConfig.map((set, i) => (
+                                            <span key={i} className="inline-block mr-2">
+                                              Set {i + 1}: {set.weight ? `${formatWeight(set.weight)} × ` : ''}{isTimeBased ? `${set.duration}s` : `${set.reps} reps`}, {set.restPeriod}s rest
+                                            </span>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="flex gap-1">
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-8 px-2 text-xs"
+                                      onClick={() => startEditingExercise(day, index)}
+                                      data-testid={`button-edit-exercise-${day}-${index}`}
+                                    >
+                                      Edit
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant={isInSuperset ? "default" : "outline"}
+                                      size="sm"
+                                      className="h-8 px-2 text-xs"
+                                      onClick={() => toggleSuperset(day, index)}
+                                      data-testid={`button-toggle-superset-${day}-${index}`}
+                                    >
+                                      {isInSuperset ? "Remove SS" : "Superset"}
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => removeExerciseFromDay(day, index)}
+                                      data-testid={`button-remove-exercise-${day}-${index}`}
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </Button>
                                   </div>
                                 </div>
-                                <div className="flex gap-1">
-                                  <Button
-                                    type="button"
-                                    variant={isInSuperset ? "default" : "outline"}
-                                    size="sm"
-                                    className="h-8 px-2 text-xs"
-                                    onClick={() => toggleSuperset(day, index)}
-                                    data-testid={`button-toggle-superset-${day}-${index}`}
-                                  >
-                                    {isInSuperset ? "Remove SS" : "Superset"}
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => removeExerciseFromDay(day, index)}
-                                    data-testid={`button-remove-exercise-${day}-${index}`}
-                                  >
-                                    <X className="w-4 h-4" />
-                                  </Button>
+                              ) : (
+                                // Edit mode
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <Dumbbell className="w-4 h-4 text-muted-foreground" />
+                                      <p className="font-medium">{getExerciseName(exercise.exerciseId)}</p>
+                                    </div>
+                                    <div className="flex gap-1">
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => saveEditingExercise(day, index)}
+                                        data-testid={`button-save-edit-${day}-${index}`}
+                                      >
+                                        Save
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={cancelEditingExercise}
+                                        data-testid={`button-cancel-edit-${day}-${index}`}
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </div>
+                                  </div>
+                                  
+                                  <div>
+                                    <Label className="text-xs">Number of Sets</Label>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => updateEditSetCount(editPerSetConfig.length - 1)}
+                                        disabled={editPerSetConfig.length <= 1}
+                                        data-testid={`button-decrease-edit-sets-${day}-${index}`}
+                                      >
+                                        -
+                                      </Button>
+                                      <span className="text-sm font-medium w-8 text-center">{editPerSetConfig.length}</span>
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => updateEditSetCount(editPerSetConfig.length + 1)}
+                                        disabled={editPerSetConfig.length >= 10}
+                                        data-testid={`button-increase-edit-sets-${day}-${index}`}
+                                      >
+                                        +
+                                      </Button>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="space-y-2">
+                                    <Label className="text-xs">Per-Set Configuration</Label>
+                                    {editPerSetConfig.map((set, setIdx) => (
+                                      <div key={setIdx} className="grid gap-2" style={{ gridTemplateColumns: isBodyweight ? "auto 1fr 1fr" : "auto 1fr 1fr 1fr" }}>
+                                        <div className="flex items-center justify-center">
+                                          <span className="text-xs text-muted-foreground">S{setIdx + 1}</span>
+                                        </div>
+                                        {!isBodyweight && (
+                                          <div>
+                                            <Input
+                                              type="number"
+                                              placeholder={getUnitLabel()}
+                                              value={set.weight || ""}
+                                              onChange={(e) => updateEditPerSet(setIdx, 'weight', e.target.value)}
+                                              className="text-xs h-8"
+                                              data-testid={`input-edit-weight-${day}-${index}-${setIdx}`}
+                                            />
+                                          </div>
+                                        )}
+                                        <div>
+                                          <Input
+                                            type="number"
+                                            placeholder={isTimeBased ? "Sec" : "Reps"}
+                                            value={isTimeBased ? set.duration || "" : set.reps || ""}
+                                            onChange={(e) => updateEditPerSet(setIdx, isTimeBased ? 'duration' : 'reps', e.target.value)}
+                                            className="text-xs h-8"
+                                            data-testid={`input-edit-${isTimeBased ? 'duration' : 'reps'}-${day}-${index}-${setIdx}`}
+                                          />
+                                        </div>
+                                        <div>
+                                          <Input
+                                            type="number"
+                                            placeholder="Rest (s)"
+                                            value={set.restPeriod || ""}
+                                            onChange={(e) => updateEditPerSet(setIdx, 'restPeriod', e.target.value)}
+                                            className="text-xs h-8"
+                                            data-testid={`input-edit-rest-${day}-${index}-${setIdx}`}
+                                          />
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
                                 </div>
-                              </div>
+                              )}
                             </CardContent>
                           </Card>
                         </div>
