@@ -5,11 +5,11 @@
 /* LIGHT MODE (DEFAULT) - Liquid Design */
 :root {
   /* Liquid Design - Glassmorphism Effects */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --blur-amount: 16px;
-  --blur-amount-xl: 24px;
-  --blur-amount-2xl: 32px;
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --blur-amount: 24px;
+  --blur-amount-xl: 32px;
+  --blur-amount-2xl: 48px;
   
   /* Elevation System */
   --button-outline: rgba(0, 0, 0, 0.08);
@@ -21,10 +21,10 @@
   /* Liquid Gradients */
   --gradient-primary: linear-gradient(135deg, hsl(210, 100%, 50%) 0%, hsl(195, 90%, 50%) 100%);
   --gradient-accent: linear-gradient(135deg, hsl(25, 95%, 53%) 0%, hsl(35, 95%, 58%) 100%);
-  --gradient-mesh-bg: radial-gradient(at 0% 0%, hsla(210, 100%, 95%, 0.8) 0, transparent 50%),
-                      radial-gradient(at 100% 0%, hsla(195, 90%, 95%, 0.6) 0, transparent 50%),
-                      radial-gradient(at 100% 100%, hsla(25, 95%, 95%, 0.4) 0, transparent 50%),
-                      radial-gradient(at 0% 100%, hsla(210, 100%, 95%, 0.5) 0, transparent 50%);
+  --gradient-mesh-bg: radial-gradient(at 0% 0%, hsla(210, 100%, 95%, 1) 0, transparent 50%),
+                      radial-gradient(at 100% 0%, hsla(195, 90%, 95%, 0.7) 0, transparent 50%),
+                      radial-gradient(at 100% 100%, hsla(25, 95%, 95%, 0.5) 0, transparent 50%),
+                      radial-gradient(at 0% 100%, hsla(210, 100%, 95%, 0.6) 0, transparent 50%);
   
   /* Base Colors - Premium Light Mode */
   --background: 220 20% 98%;
@@ -95,22 +95,22 @@
   --radius-3xl: 3rem;
   
   /* Soft Shadows for Depth */
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
-  --shadow-glass-lg: 0 12px 48px 0 rgba(0, 0, 0, 0.12);
-  --shadow-glow: 0 0 20px rgba(33, 150, 243, 0.3);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.12);
+  --shadow-glass-lg: 0 20px 64px 0 rgba(0, 0, 0, 0.16);
+  --shadow-glow: 0 0 30px rgba(33, 150, 243, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
 }
 
 /* DARK MODE - Liquid Design */
 .dark {
   /* Glassmorphism for Dark Mode */
-  --glass-bg: rgba(15, 23, 42, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(15, 23, 42, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.15);
   
   /* Gradient Mesh - Dark */
-  --gradient-mesh-bg: radial-gradient(at 0% 0%, hsla(210, 100%, 25%, 0.3) 0, transparent 50%),
-                      radial-gradient(at 100% 0%, hsla(195, 90%, 25%, 0.2) 0, transparent 50%),
-                      radial-gradient(at 100% 100%, hsla(25, 95%, 25%, 0.15) 0, transparent 50%),
-                      radial-gradient(at 0% 100%, hsla(210, 100%, 25%, 0.2) 0, transparent 50%);
+  --gradient-mesh-bg: radial-gradient(at 0% 0%, hsla(210, 100%, 25%, 0.4) 0, transparent 50%),
+                      radial-gradient(at 100% 0%, hsla(195, 90%, 25%, 0.3) 0, transparent 50%),
+                      radial-gradient(at 100% 100%, hsla(25, 95%, 25%, 0.2) 0, transparent 50%),
+                      radial-gradient(at 0% 100%, hsla(210, 100%, 25%, 0.3) 0, transparent 50%);
   
   --background: 222 47% 11%;
   --foreground: 210 40% 98%;
@@ -152,9 +152,9 @@
   --ring: 210 100% 55%;
   
   /* Soft Shadows for Dark Mode */
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-  --shadow-glass-lg: 0 12px 48px 0 rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 20px rgba(100, 181, 246, 0.4);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  --shadow-glass-lg: 0 20px 64px 0 rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 30px rgba(100, 181, 246, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
   
   /* Dark Elevation */
   --elevate-1: rgba(255, 255, 255, 0.05);
@@ -275,30 +275,30 @@
 @layer components {
   /* Premium Glass Card - Enhanced */
   .glass-card {
-    @apply relative rounded-2xl backdrop-blur-xl overflow-hidden border;
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    @apply relative rounded-2xl backdrop-blur-2xl overflow-hidden border;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
 
   .dark .glass-card {
-    background: rgba(15, 23, 42, 0.4);
-    border-color: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    background: rgba(15, 23, 42, 0.5);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   /* Glass Card Elevated - More Blur */
   .glass-card-lg {
-    @apply relative rounded-3xl backdrop-blur-2xl overflow-hidden border;
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.15);
+    @apply relative rounded-3xl backdrop-blur-3xl overflow-hidden border;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 20px 64px 0 rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 
   .dark .glass-card-lg {
-    background: rgba(15, 23, 42, 0.5);
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.4);
+    background: rgba(15, 23, 42, 0.6);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 64px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   /* Gradient Text Effect */
@@ -336,20 +336,56 @@
     animation: shimmer 2s infinite;
   }
 
+  /* Glass Input Fields */
+  .glass-input {
+    @apply backdrop-blur-lg border transition-all duration-300;
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .glass-input:focus {
+    @apply backdrop-blur-xl;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 20px rgba(33, 150, 243, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  .dark .glass-input {
+    background: rgba(15, 23, 42, 0.3);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .dark .glass-input:focus {
+    background: rgba(15, 23, 42, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 20px rgba(100, 181, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
   /* Glass Hover Elevation */
   .glass-hover {
     @apply transition-all duration-300 cursor-pointer;
   }
 
   .glass-hover:hover {
-    @apply backdrop-blur-2xl translate-y-[-4px];
-    background: rgba(255, 255, 255, 0.25) !important;
-    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.2) !important;
+    @apply backdrop-blur-3xl translate-y-[-6px];
+    background: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
   }
 
   .dark .glass-hover:hover {
-    background: rgba(15, 23, 42, 0.6) !important;
-    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4) !important;
+    background: rgba(15, 23, 42, 0.7) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  }
+
+  /* Glow Border Effect */
+  .glow-border {
+    border: 1px solid;
+    border-image: linear-gradient(135deg, rgba(33, 150, 243, 0.5), rgba(255, 152, 0, 0.5)) 1;
+    box-shadow: 0 0 20px rgba(33, 150, 243, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .dark .glow-border {
+    box-shadow: 0 0 20px rgba(100, 181, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 }
 
