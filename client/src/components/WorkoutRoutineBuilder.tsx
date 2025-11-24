@@ -56,8 +56,12 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
   
   // Helper to format weight for display without trailing .0
   const formatWeightValue = (weightInLbs: number): string => {
-    const formatted = formatWeight(weightInLbs, { includeUnit: false });
-    return formatted;
+    const converted = convertWeight(weightInLbs);
+    // Round to 1 decimal for kg, 0 for lbs
+    const precision = getUnitLabel() === "kg" ? 1 : 0;
+    const rounded = Math.round(converted * Math.pow(10, precision)) / Math.pow(10, precision);
+    // Return as string without .0 if it's a whole number
+    return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(precision);
   };
   
   const [name, setName] = useState("");
