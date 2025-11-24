@@ -9,7 +9,7 @@ I prefer detailed explanations and iterative development. Please ask before maki
 ## System Architecture
 
 ### UI/UX Decisions
-The application features a mobile-first design with responsive breakpoints. It employs a modern Glassmorphism aesthetic, characterized by frosted glass surfaces, semi-transparent backgrounds, and backdrop-blur effects. The color scheme utilizes blue and orange gradients, providing a vibrant yet clean interface. Typography is primarily Inter, with JetBrains Mono used for statistical and numerical displays. Dark mode is supported with a `ThemeProvider` and `ThemeToggle` component, ensuring consistent visual appeal across themes. Navigation is handled by a fixed bottom navigation bar with glass styling.
+The application features a mobile-first design with responsive breakpoints. It employs a modern Glassmorphism aesthetic, characterized by frosted glass surfaces, semi-transparent backgrounds, and backdrop-blur effects. The color scheme utilizes deep blue to vibrant orange gradients (#1a237e to #ff6f00), providing a premium liquid glass interface. All major pages feature gradient hero sections with mesh backgrounds. Typography is primarily Inter, with JetBrains Mono used for statistical and numerical displays. Dark mode is supported with a `ThemeProvider` and `ThemeToggle` component (accessible via Settings page), ensuring consistent visual appeal across themes. Navigation is handled by a fixed bottom navigation bar with glass styling showing 6 main sections.
 
 ### Technical Implementations
 - **Frontend**: React, TypeScript, Tailwind CSS, Shadcn UI, Recharts for data visualization, Wouter for routing, TanStack Query for state management, and React Hook Form with Zod for form validation.
