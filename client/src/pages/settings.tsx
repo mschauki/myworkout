@@ -67,6 +67,29 @@ export default function SettingsPage() {
     });
   };
 
+  const handleUnitSystemChange = (newUnitSystem: string) => {
+    setUnitSystem(newUnitSystem);
+    
+    // Optimistically update the cache immediately for instant UI updates
+    queryClient.setQueryData<Settings>(["/api/settings"], (oldData) => {
+      if (!oldData) return oldData;
+      return {
+        ...oldData,
+        unitSystem: newUnitSystem as "lbs" | "kg",
+      };
+    });
+    
+    // Auto-save unit system change to backend
+    updateSettingsMutation.mutate({
+      unitSystem: newUnitSystem,
+      firstDayOfWeek: parseInt(firstDayOfWeek),
+      autoStartTimer,
+      restTimerSound,
+      defaultRestDuration: parseInt(defaultRestDuration),
+      workoutHistoryRetentionDays: parseInt(workoutHistoryRetention),
+    });
+  };
+
   const dayLabels = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
   return (
@@ -102,7 +125,7 @@ export default function SettingsPage() {
             {isLoading ? (
               <Skeleton className="h-10 w-full" />
             ) : (
-              <Select value={unitSystem} onValueChange={setUnitSystem}>
+              <Select value={unitSystem} onValueChange={handleUnitSystemChange}>
                 <SelectTrigger data-testid="select-unit-system">
                   <SelectValue />
                 </SelectTrigger>
