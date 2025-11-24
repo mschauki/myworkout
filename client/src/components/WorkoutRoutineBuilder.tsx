@@ -15,6 +15,7 @@ import { Plus, X, Dumbbell, Timer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUnitSystem } from "@/hooks/use-unit-system";
 
 const WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 const ALL_DAYS = [...WEEKDAYS, "any"];
@@ -41,6 +42,7 @@ interface WorkoutRoutineBuilderProps {
 }
 
 export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRoutineBuilderProps) {
+  const { formatWeight, getUnitLabel, convertWeight, convertToLbs } = useUnitSystem();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [currentDay, setCurrentDay] = useState<string>("monday");
@@ -237,7 +239,8 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
       if (!isBodyweight && set.weight && set.weight.trim() !== "") {
         const weightValue = parseFloat(set.weight);
         if (!isNaN(weightValue) && weightValue > 0) {
-          config.weight = weightValue;
+          // Convert from user's unit to lbs for storage
+          config.weight = convertToLbs(weightValue);
         }
       }
       
@@ -614,7 +617,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                       <div className="text-xs text-muted-foreground mt-1">
                                         {exercise.setsConfig.map((set, i) => (
                                           <span key={i} className="inline-block mr-2">
-                                            Set {i + 1}: {set.weight ? `${set.weight} lbs × ` : ''}{set.reps} reps, {set.restPeriod}s rest
+                                            Set {i + 1}: {set.weight ? `${formatWeight(set.weight)} × ` : ''}{set.reps} reps, {set.restPeriod}s rest
                                           </span>
                                         ))}
                                       </div>
@@ -915,10 +918,10 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
                                       <Input
                                         type="number"
                                         min="0"
-                                        step="0.5"
+                                        step={getUnitLabel() === "kg" ? "0.5" : "5"}
                                         value={set.weight || ""}
                                         onChange={(e) => updatePerSet(index, 'weight', e.target.value)}
-                                        placeholder="Weight"
+                                        placeholder={`Weight (${getUnitLabel()})`}
                                         className="h-8 text-xs"
                                         data-testid={`input-set-${day}-${index}-weight`}
                                       />

@@ -25,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
+import { useUnitSystem } from "@/hooks/use-unit-system";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -35,6 +36,7 @@ const EQUIPMENT_OPTIONS = ["Barbell", "Dumbbell", "Machine", "Cable", "Bodyweigh
 const DAYS_OF_WEEK = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "any"] as const;
 
 export default function Exercises() {
+  const { formatWeight, getUnitLabel, convertWeight, convertToLbs } = useUnitSystem();
   const [selectedTab, setSelectedTab] = useState<"all" | "custom">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState("All");
@@ -350,11 +352,17 @@ export default function Exercises() {
       return;
     }
 
+    // Convert weights from user's unit to lbs before saving
+    const setsConfigInLbs = perSetConfig.map(set => ({
+      ...set,
+      weight: set.weight ? convertToLbs(set.weight) : undefined,
+    }));
+
     addToRoutineMutation.mutate({
       routineId: selectedRoutineId,
       exerciseId: selectedExercise.id,
       days: selectedDays,
-      setsConfig: perSetConfig,
+      setsConfig: setsConfigInLbs,
     });
   };
 
@@ -1066,16 +1074,16 @@ export default function Exercises() {
                             {!isBodyweight && (
                               <div>
                                 <Label htmlFor={`weight-${index}`} className="text-xs text-muted-foreground mb-1 block">
-                                  Weight (lbs)
+                                  Weight ({getUnitLabel()})
                                 </Label>
                                 <Input
                                   id={`weight-${index}`}
                                   type="number"
                                   min="0"
-                                  step="0.5"
+                                  step={getUnitLabel() === "kg" ? "0.5" : "5"}
                                   value={set.weight || ""}
                                   onChange={(e) => updatePerSet(index, 'weight', e.target.value)}
-                                  placeholder="Weight"
+                                  placeholder={`Weight (${getUnitLabel()})`}
                                   className="h-9 text-sm"
                                   data-testid={`input-set-${index}-weight`}
                                 />
