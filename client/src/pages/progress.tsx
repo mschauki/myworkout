@@ -179,11 +179,10 @@ export default function Progress() {
                 <div className="flex flex-col items-center gap-6">
                   <div className="flex justify-center w-full">
                     <DayPicker
-                      key={`${settings?.firstDayOfWeek || 0}`}
                       mode="single"
                       selected={selectedCalendarDay}
                       onSelect={setSelectedCalendarDay}
-                      firstDayOfWeek={settings?.firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6 || 0}
+                      weekStartsOn={settings?.firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6 || 0}
                     />
                   </div>
                   <div className="flex flex-col gap-2 text-sm w-full">
