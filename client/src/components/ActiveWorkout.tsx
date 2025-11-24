@@ -806,7 +806,12 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                                 type="number"
                                 min="0"
                                 step={getUnitLabel() === "kg" ? "0.5" : "2.5"}
-                                value={set.weight ? convertWeight(set.weight).toFixed(1) : ""}
+                                value={set.weight ? (() => {
+                                  const converted = convertWeight(set.weight);
+                                  const precision = getUnitLabel() === "kg" ? 1 : 0;
+                                  const rounded = Math.round(converted * Math.pow(10, precision)) / Math.pow(10, precision);
+                                  return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(precision);
+                                })() : ""}
                                 onChange={(e) => updateSet(currentExerciseIndex, setIndex, "weight", e.target.value)}
                                 disabled={set.completed}
                                 className="h-12 text-lg"
