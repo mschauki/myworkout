@@ -43,7 +43,11 @@ export function useUnitSystem() {
       ? decimals 
       : unitSystem === "kg" ? 1 : 0;
     
-    const formattedNumber = converted.toFixed(precision);
+    // Round to appropriate precision
+    const rounded = Math.round(converted * Math.pow(10, precision)) / Math.pow(10, precision);
+    
+    // If it's a whole number, return as integer string (no trailing .0)
+    const formattedNumber = Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(precision);
     
     if (includeUnit) {
       return `${formattedNumber} ${unitSystem}`;
