@@ -53,6 +53,13 @@ interface WorkoutRoutineBuilderProps {
 
 export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRoutineBuilderProps) {
   const { formatWeight, getUnitLabel, convertWeight, convertToLbs } = useUnitSystem();
+  
+  // Helper to format weight for display without trailing .0
+  const formatWeightValue = (weightInLbs: number): string => {
+    const formatted = formatWeight(weightInLbs, { includeUnit: false });
+    return formatted;
+  };
+  
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [currentDay, setCurrentDay] = useState<string>("monday");
@@ -321,7 +328,7 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
       reps: set.reps !== undefined ? String(set.reps) : undefined,
       duration: set.duration !== undefined ? String(set.duration) : undefined,
       restPeriod: String(set.restPeriod || 90),
-      weight: set.weight ? String(convertWeight(set.weight)) : "",
+      weight: set.weight ? formatWeightValue(set.weight) : "",
     }));
 
     setEditPerSetConfig(config);
