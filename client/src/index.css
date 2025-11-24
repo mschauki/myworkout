@@ -2,163 +2,180 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE (DEFAULT) - Liquid Design */
+/* LIGHT MODE (DEFAULT) - Material Design 3 */
 :root {
-  /* Liquid Design - Glassmorphism Effects */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --blur-amount: 16px;
-  --blur-amount-xl: 24px;
-  --blur-amount-2xl: 32px;
-  
-  /* Elevation System */
-  --button-outline: rgba(0, 0, 0, 0.08);
-  --badge-outline: rgba(0, 0, 0, 0.04);
-  --opaque-button-border-intensity: 8;
-  --elevate-1: rgba(0, 0, 0, 0.04);
-  --elevate-2: rgba(0, 0, 0, 0.08);
+  /* Material Design 3 - Elevation System */
+  --md-elevation-0: none;
+  --md-elevation-1: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px -1px rgba(0, 0, 0, 0.12);
+  --md-elevation-2: 0 3px 6px 0 rgba(0, 0, 0, 0.16), 0 3px 6px -2px rgba(0, 0, 0, 0.12);
+  --md-elevation-3: 0 10px 15px 0 rgba(0, 0, 0, 0.20), 0 4px 6px -2px rgba(0, 0, 0, 0.12);
+  --md-elevation-4: 0 12px 17px 0 rgba(0, 0, 0, 0.24), 0 5px 8px -2px rgba(0, 0, 0, 0.16);
+  --md-elevation-5: 0 16px 24px 0 rgba(0, 0, 0, 0.28), 0 6px 12px -2px rgba(0, 0, 0, 0.16);
 
-  /* Liquid Gradients */
-  --gradient-primary: linear-gradient(135deg, hsl(210, 100%, 50%) 0%, hsl(195, 90%, 50%) 100%);
-  --gradient-accent: linear-gradient(135deg, hsl(25, 95%, 53%) 0%, hsl(35, 95%, 58%) 100%);
-  --gradient-mesh-bg: radial-gradient(at 0% 0%, hsla(210, 100%, 95%, 0.8) 0, transparent 50%),
-                      radial-gradient(at 100% 0%, hsla(195, 90%, 95%, 0.6) 0, transparent 50%),
-                      radial-gradient(at 100% 100%, hsla(25, 95%, 95%, 0.4) 0, transparent 50%),
-                      radial-gradient(at 0% 100%, hsla(210, 100%, 95%, 0.5) 0, transparent 50%);
-  
-  /* Base Colors - Premium Light Mode */
-  --background: 220 20% 98%;
-  --foreground: 220 15% 12%;
-  --border: 220 15% 88%;
-  
-  /* Glass Card */
+  /* Material Design 3 - State Layers */
+  --state-layer-hover: rgba(0, 0, 0, 0.08);
+  --state-layer-focus: rgba(0, 0, 0, 0.12);
+  --state-layer-pressed: rgba(0, 0, 0, 0.16);
+  --state-layer-drag: rgba(0, 0, 0, 0.20);
+
+  /* Base Colors - Material Light */
+  --background: 0 0% 100%;
+  --foreground: 217 7% 20%;
+  --border: 217 13% 90%;
+
+  /* Surface Colors - Elevation-based */
+  --surface: 0 0% 100%;
+  --surface-dim: 217 13% 94%;
+  --surface-bright: 0 0% 100%;
+  --surface-container-lowest: 0 0% 100%;
+  --surface-container-low: 217 13% 97%;
+  --surface-container: 217 13% 95%;
+  --surface-container-high: 217 13% 93%;
+  --surface-container-highest: 217 13% 92%;
+
+  /* Card */
   --card: 0 0% 100%;
-  --card-foreground: 220 15% 12%;
-  --card-border: 220 15% 92%;
-  
-  /* Sidebar - Translucent */
-  --sidebar: 220 20% 97%;
-  --sidebar-foreground: 220 15% 20%;
-  --sidebar-border: 220 15% 88%;
+  --card-foreground: 217 7% 20%;
+  --card-border: 217 13% 90%;
+
+  /* Sidebar - Material */
+  --sidebar: 217 13% 97%;
+  --sidebar-foreground: 217 7% 20%;
+  --sidebar-border: 217 13% 90%;
   --sidebar-primary: 210 100% 50%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 220 20% 93%;
-  --sidebar-accent-foreground: 210 100% 50%;
+  --sidebar-accent: 210 100% 50%;
+  --sidebar-accent-foreground: 0 0% 100%;
   --sidebar-ring: 210 100% 50%;
-  
+
   /* Popover */
   --popover: 0 0% 100%;
-  --popover-foreground: 220 15% 12%;
-  --popover-border: 220 15% 88%;
-  
-  /* Primary - Vibrant Blue Gradient */
+  --popover-foreground: 217 7% 20%;
+  --popover-border: 217 13% 90%;
+
+  /* Primary Color - Vibrant Blue (Material) */
   --primary: 210 100% 50%;
   --primary-foreground: 0 0% 100%;
-  
-  /* Secondary - Soft Glass */
-  --secondary: 220 15% 93%;
-  --secondary-foreground: 220 15% 20%;
-  
-  /* Muted */
-  --muted: 220 15% 85%;
-  --muted-foreground: 220 10% 50%;
-  
-  /* Accent - Warm Orange Gradient */
+
+  /* Secondary - Complementary Orange */
+  --secondary: 25 95% 53%;
+  --secondary-foreground: 0 0% 100%;
+
+  /* Tertiary - Purple Accent */
+  --tertiary: 280 60% 50%;
+  --tertiary-foreground: 0 0% 100%;
+
+  /* Muted - Neutral Gray */
+  --muted: 217 13% 85%;
+  --muted-foreground: 217 7% 50%;
+
+  /* Accent - Same as Secondary for consistency */
   --accent: 25 95% 53%;
   --accent-foreground: 0 0% 100%;
-  
-  /* Destructive */
+
+  /* Destructive - Red for errors */
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  
+
   /* Input */
-  --input: 220 15% 95%;
+  --input: 217 13% 95%;
+  --input-border: 217 13% 85%;
   --ring: 210 100% 50%;
-  
-  /* Chart Colors - Gradient Palette */
+
+  /* Chart Colors - Material Palette */
   --chart-1: 210 100% 50%;
-  --chart-2: 195 90% 50%;
-  --chart-3: 170 85% 48%;
-  --chart-4: 150 80% 46%;
-  --chart-5: 135 75% 44%;
-  
-  /* Typography */
-  --font-sans: Inter, system-ui, -apple-system, sans-serif;
+  --chart-2: 25 95% 53%;
+  --chart-3: 280 60% 50%;
+  --chart-4: 142 76% 36%;
+  --chart-5: 350 89% 60%;
+
+  /* Typography - Roboto */
+  --font-sans: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: 'SF Mono', 'Roboto Mono', 'JetBrains Mono', monospace;
-  
-  /* Liquid Border Radius */
-  --radius: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-2xl: 2rem;
-  --radius-3xl: 3rem;
-  
-  /* Soft Shadows for Depth */
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
-  --shadow-glass-lg: 0 12px 48px 0 rgba(0, 0, 0, 0.12);
-  --shadow-glow: 0 0 20px rgba(33, 150, 243, 0.3);
+  --font-mono: 'Roboto Mono', 'SF Mono', 'JetBrains Mono', monospace;
+
+  /* Material Design Radius - 8dp = 0.5rem */
+  --radius: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+
+  /* Material Shadows */
+  --shadow-1: var(--md-elevation-1);
+  --shadow-2: var(--md-elevation-2);
+  --shadow-3: var(--md-elevation-3);
+  --shadow-4: var(--md-elevation-4);
+  --shadow-5: var(--md-elevation-5);
 }
 
-/* DARK MODE - Liquid Design */
+/* DARK MODE - Material Design 3 */
 .dark {
-  /* Glassmorphism for Dark Mode */
-  --glass-bg: rgba(15, 23, 42, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  
-  /* Gradient Mesh - Dark */
-  --gradient-mesh-bg: radial-gradient(at 0% 0%, hsla(210, 100%, 25%, 0.3) 0, transparent 50%),
-                      radial-gradient(at 100% 0%, hsla(195, 90%, 25%, 0.2) 0, transparent 50%),
-                      radial-gradient(at 100% 100%, hsla(25, 95%, 25%, 0.15) 0, transparent 50%),
-                      radial-gradient(at 0% 100%, hsla(210, 100%, 25%, 0.2) 0, transparent 50%);
-  
-  --background: 222 47% 11%;
-  --foreground: 210 40% 98%;
-  --border: 217 33% 17%;
-  
-  --card: 222 47% 14%;
-  --card-foreground: 210 40% 98%;
-  --card-border: 217 33% 20%;
-  
-  --sidebar: 222 47% 13%;
-  --sidebar-foreground: 210 40% 95%;
-  --sidebar-border: 217 33% 18%;
-  --sidebar-primary: 210 100% 55%;
+  /* Surface Colors - Dark Mode Elevation */
+  --background: 217 33% 10%;
+  --foreground: 217 13% 95%;
+  --border: 217 33% 20%;
+
+  --surface: 217 33% 10%;
+  --surface-dim: 217 33% 12%;
+  --surface-bright: 217 33% 25%;
+  --surface-container-lowest: 217 33% 8%;
+  --surface-container-low: 217 33% 14%;
+  --surface-container: 217 33% 16%;
+  --surface-container-high: 217 33% 20%;
+  --surface-container-highest: 217 33% 24%;
+
+  --card: 217 33% 14%;
+  --card-foreground: 217 13% 95%;
+  --card-border: 217 33% 22%;
+
+  --sidebar: 217 33% 13%;
+  --sidebar-foreground: 217 13% 95%;
+  --sidebar-border: 217 33% 20%;
+  --sidebar-primary: 210 100% 60%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 217 33% 20%;
-  --sidebar-accent-foreground: 210 100% 55%;
-  --sidebar-ring: 210 100% 55%;
-  
-  --popover: 222 47% 14%;
-  --popover-foreground: 210 40% 98%;
-  --popover-border: 217 33% 20%;
-  
-  --primary: 210 100% 55%;
+  --sidebar-accent: 210 100% 60%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-ring: 210 100% 60%;
+
+  --popover: 217 33% 14%;
+  --popover-foreground: 217 13% 95%;
+  --popover-border: 217 33% 22%;
+
+  --primary: 210 100% 60%;
   --primary-foreground: 0 0% 100%;
-  
-  --secondary: 217 33% 20%;
-  --secondary-foreground: 210 40% 95%;
-  
-  --muted: 217 33% 25%;
-  --muted-foreground: 215 20% 65%;
-  
-  --accent: 25 95% 58%;
+
+  --secondary: 25 95% 60%;
+  --secondary-foreground: 0 0% 100%;
+
+  --tertiary: 280 60% 60%;
+  --tertiary-foreground: 0 0% 100%;
+
+  --muted: 217 33% 30%;
+  --muted-foreground: 217 13% 70%;
+
+  --accent: 25 95% 60%;
   --accent-foreground: 0 0% 100%;
-  
-  --destructive: 0 63% 55%;
-  --destructive-foreground: 210 40% 98%;
-  
+
+  --destructive: 0 84% 65%;
+  --destructive-foreground: 0 0% 100%;
+
   --input: 217 33% 18%;
-  --ring: 210 100% 55%;
-  
-  /* Soft Shadows for Dark Mode */
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-  --shadow-glass-lg: 0 12px 48px 0 rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 20px rgba(100, 181, 246, 0.4);
-  
-  /* Dark Elevation */
-  --elevate-1: rgba(255, 255, 255, 0.05);
-  --elevate-2: rgba(255, 255, 255, 0.10);
+  --input-border: 217 33% 28%;
+  --ring: 210 100% 60%;
+
+  /* Material Shadows - Dark Mode */
+  --md-elevation-1: 0 1px 3px 0 rgba(0, 0, 0, 0.30), 0 1px 2px -1px rgba(0, 0, 0, 0.30);
+  --md-elevation-2: 0 3px 6px 0 rgba(0, 0, 0, 0.40), 0 3px 6px -2px rgba(0, 0, 0, 0.30);
+  --md-elevation-3: 0 10px 15px 0 rgba(0, 0, 0, 0.50), 0 4px 6px -2px rgba(0, 0, 0, 0.30);
+  --md-elevation-4: 0 12px 17px 0 rgba(0, 0, 0, 0.55), 0 5px 8px -2px rgba(0, 0, 0, 0.35);
+  --md-elevation-5: 0 16px 24px 0 rgba(0, 0, 0, 0.60), 0 6px 12px -2px rgba(0, 0, 0, 0.35);
+
+  /* State Layers - Dark */
+  --state-layer-hover: rgba(255, 255, 255, 0.08);
+  --state-layer-focus: rgba(255, 255, 255, 0.12);
+  --state-layer-pressed: rgba(255, 255, 255, 0.16);
+  --state-layer-drag: rgba(255, 255, 255, 0.20);
 }
 
 /* Color scheme for border calculations */
@@ -167,6 +184,7 @@
   --sidebar-accent-border: hsl(var(--sidebar-accent));
   --primary-border: hsl(var(--primary));
   --secondary-border: hsl(var(--secondary));
+  --tertiary-border: hsl(var(--tertiary));
   --muted-border: hsl(var(--muted));
   --accent-border: hsl(var(--accent));
   --destructive-border: hsl(var(--destructive));
@@ -181,15 +199,86 @@
     @apply font-sans antialiased text-foreground bg-background;
     min-height: 100vh;
   }
+
+  /* Material Typography Defaults */
+  h1 {
+    @apply text-6xl font-bold tracking-tight;
+  }
+
+  h2 {
+    @apply text-4xl font-bold tracking-tight;
+  }
+
+  h3 {
+    @apply text-3xl font-semibold;
+  }
+
+  h4 {
+    @apply text-2xl font-semibold;
+  }
+
+  h5 {
+    @apply text-xl font-medium;
+  }
+
+  p {
+    @apply text-base leading-relaxed;
+  }
 }
 
 /**
- * Smooth Transition Utilities
+ * Material Design 3 Utilities
  */
 @layer utilities {
-  /* Smooth Transitions */
-  .transition-smooth {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Material Elevation Shadows */
+  .elevation-0 {
+    box-shadow: var(--md-elevation-0);
+  }
+
+  .elevation-1 {
+    box-shadow: var(--md-elevation-1);
+  }
+
+  .elevation-2 {
+    box-shadow: var(--md-elevation-2);
+  }
+
+  .elevation-3 {
+    box-shadow: var(--md-elevation-3);
+  }
+
+  .elevation-4 {
+    box-shadow: var(--md-elevation-4);
+  }
+
+  .elevation-5 {
+    box-shadow: var(--md-elevation-5);
+  }
+
+  /* Material State Layers */
+  .state-hover {
+    background-color: var(--state-layer-hover);
+  }
+
+  .state-focus {
+    background-color: var(--state-layer-focus);
+  }
+
+  .state-pressed {
+    background-color: var(--state-layer-pressed);
+  }
+
+  /* Smooth Transitions - Material */
+  .transition-material {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .transition-emphasized {
+    transition: all 0.6s cubic-bezier(0.3, 0, 0, 1);
+  }
+
+  .transition-standard {
+    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
   }
 
   /* Hide search cancel button */
@@ -220,10 +309,15 @@
   }
 
   .toggle-elevate.toggle-elevated::before {
-    background-color: var(--elevate-2);
+    background-color: var(--state-layer-hover);
   }
 
-  .border.toggle-elevate::before {
+  .toggle-elevate-2.toggle-elevated::before {
+    background-color: var(--state-layer-pressed);
+  }
+
+  .border.toggle-elevate::before,
+  .border.toggle-elevate-2::before {
     inset: -1px;
   }
 
@@ -251,14 +345,13 @@
 
   .hover-elevate:hover:not(.no-default-hover-elevate)::after,
   .active-elevate:active:not(.no-default-active-elevate)::after {
-    background-color: var(--elevate-1);
+    background-color: var(--state-layer-hover);
   }
 
   .hover-elevate-2:hover:not(.no-default-hover-elevate)::after,
   .active-elevate-2:active:not(.no-default-active-elevate)::after {
-    background-color: var(--elevate-2);
+    background-color: var(--state-layer-pressed);
   }
-
 
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after,
   .border.active-elevate:not(.no-active-interaction-elevate)::after,
@@ -267,13 +360,37 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+
+  /* Ripple Effect Simulation */
+  .ripple::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    animation: ripple-animation 0.6s ease-out;
+  }
+
+  @keyframes ripple-animation {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
 }
 
-/* React DayPicker - Liquid Styling */
+/* React DayPicker - Material Styling */
 .rdp {
   --rdp-cell-size: 44px;
   --rdp-accent-color: hsl(var(--primary));
-  --rdp-background-color: hsl(var(--primary) / 0.1);
+  --rdp-background-color: hsl(var(--primary) / 0.12);
 }
 
 .rdp-months {
@@ -308,10 +425,8 @@
 .rdp-nav_button {
   height: 2rem;
   width: 2rem;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--blur-amount));
-  -webkit-backdrop-filter: blur(var(--blur-amount));
-  border: 1px solid var(--glass-border);
+  background: hsl(var(--surface-container));
+  border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   display: inline-flex;
   align-items: center;
@@ -319,16 +434,18 @@
   cursor: pointer;
   color: hsl(var(--foreground));
   padding: 0;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  box-shadow: var(--md-elevation-1);
 }
 
 .rdp-nav_button:hover {
-  background: hsl(var(--input));
-  transform: scale(1.05);
+  background: hsl(var(--surface-container-high));
+  transform: translateY(-2px);
+  box-shadow: var(--md-elevation-2);
 }
 
 .rdp-nav_button:active {
-  transform: scale(0.95);
+  transform: translateY(0);
 }
 
 .rdp-nav_button_previous {
@@ -352,8 +469,10 @@
   color: hsl(var(--muted-foreground));
   font-weight: 600;
   font-size: 0.75rem;
+  text-transform: uppercase;
   padding: 0.5rem 2px;
   text-align: center;
+  letter-spacing: 0.05em;
 }
 
 .rdp-row {
@@ -379,27 +498,27 @@
   background-color: transparent;
   color: hsl(var(--foreground));
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .rdp-day:hover:not(.rdp-day_disabled) {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--blur-amount));
-  -webkit-backdrop-filter: blur(var(--blur-amount));
-  border-color: var(--glass-border);
-  transform: scale(1.05);
+  background: hsl(var(--surface-container-high));
+  border-color: hsl(var(--border));
+  transform: translateY(-1px);
+  box-shadow: var(--md-elevation-1);
 }
 
 .rdp-day_selected:not([disabled]) {
-  background: var(--gradient-primary);
+  background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   border-color: transparent;
   font-weight: 600;
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--md-elevation-2);
 }
 
 .rdp-day_today:not(.rdp-day_selected) {
   border-color: hsl(var(--primary));
+  border-width: 2px;
   font-weight: 600;
 }
 
