@@ -10,8 +10,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Exercise } from "@shared/schema";
-import { Plus, X, Dumbbell, Timer } from "lucide-react";
+import { Plus, X, Dumbbell, Timer, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -75,6 +85,9 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
   const [editingExerciseKey, setEditingExerciseKey] = useState<string | null>(null);
   const [editPerSetConfig, setEditPerSetConfig] = useState<Array<{ reps?: string; duration?: string; restPeriod: string; weight?: string }>>([]);
 
+  // Delete routine state
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   const { toast } = useToast();
 
   const { data: exercises = [], isLoading } = useQuery<Exercise[]>({
@@ -106,6 +119,21 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
     },
     onError: () => {
       toast({ title: "Failed to update routine", variant: "destructive" });
+    },
+  });
+
+  const deleteRoutineMutation = useMutation({
+    mutationFn: async (routineId: string) => {
+      return apiRequest("DELETE", `/api/workout-routines/${routineId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/workout-routines"] });
+      toast({ title: "Routine deleted successfully" });
+      setShowDeleteDialog(false);
+      onComplete();
+    },
+    onError: () => {
+      toast({ title: "Failed to delete routine", variant: "destructive" });
     },
   });
 
@@ -1324,9 +1352,23 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
 
       {/* Submit */}
       <div className="flex items-center justify-between pt-4 border-t">
-        <p className="text-sm text-muted-foreground">
-          Total exercises: {getTotalExerciseCount()}
-        </p>
+        <div className="flex items-center gap-2">
+          {editingRoutine && (
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setShowDeleteDialog(true)}
+              disabled={deleteRoutineMutation.isPending}
+              data-testid="button-delete-routine"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Routine
+            </Button>
+          )}
+          <p className="text-sm text-muted-foreground">
+            Total exercises: {getTotalExerciseCount()}
+          </p>
+        </div>
         <Button 
           type="submit" 
           disabled={createRoutineMutation.isPending || updateRoutineMutation.isPending}
@@ -1335,6 +1377,28 @@ export function WorkoutRoutineBuilder({ onComplete, editingRoutine }: WorkoutRou
           {editingRoutine ? "Update Routine" : "Create Routine"}
         </Button>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="glass-card glass-hover">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Routine?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this workout routine. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => editingRoutine && deleteRoutineMutation.mutate(editingRoutine.id)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-delete"
+            >
+              {deleteRoutineMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </form>
   );
 }

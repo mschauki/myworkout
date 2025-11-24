@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Play, Dumbbell, Clock, Calendar, ChevronLeft, Trash2, ArrowRight, Pencil } from "lucide-react";
+import { Plus, Play, Dumbbell, Clock, Calendar, ChevronLeft, ArrowRight, Pencil } from "lucide-react";
 import { WorkoutRoutine, Exercise } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,16 +11,6 @@ import { WorkoutRoutineBuilder } from "@/components/WorkoutRoutineBuilder";
 import { ActiveWorkout } from "@/components/ActiveWorkout";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 const WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
@@ -31,7 +21,6 @@ export default function Workouts() {
   const [viewingDay, setViewingDay] = useState<string | null>(null);
   const [activeRoutineId, setActiveRoutineId] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
-  const [deleteRoutineId, setDeleteRoutineId] = useState<string | null>(null);
   const [viewingExerciseIndex, setViewingExerciseIndex] = useState<number | null>(null);
   const [startingExerciseIndex, setStartingExerciseIndex] = useState<number | null>(null);
   const { toast } = useToast();
@@ -130,22 +119,6 @@ export default function Workouts() {
       return days.includes("any") || days.includes(day);
     });
   };
-
-  // Delete mutation
-  const deleteMutation = useMutation({
-    mutationFn: async (routineId: string) => {
-      return apiRequest("DELETE", `/api/workout-routines/${routineId}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/workout-routines"] });
-      toast({ title: "Routine deleted successfully" });
-      setDeleteRoutineId(null);
-      setViewingRoutineId(null);
-    },
-    onError: () => {
-      toast({ title: "Failed to delete routine", variant: "destructive" });
-    },
-  });
 
   // Render builder dialog (always available)
   const builderDialog = (
@@ -411,31 +384,18 @@ export default function Workouts() {
                 <p className="text-base text-muted-foreground">{viewingRoutine.description}</p>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditingRoutineId(viewingRoutine.id);
-                  setIsBuilderOpen(true);
-                }}
-                data-testid="button-edit-routine"
-              >
-                <Pencil className="w-5 h-5" />
-              </Button>
-              <Button
-                variant="destructive"
-                size="icon"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setDeleteRoutineId(viewingRoutine.id);
-                }}
-                data-testid="button-delete-routine"
-              >
-                <Trash2 className="w-5 h-5" />
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditingRoutineId(viewingRoutine.id);
+                setIsBuilderOpen(true);
+              }}
+              data-testid="button-edit-routine"
+            >
+              <Pencil className="w-5 h-5" />
+            </Button>
           </div>
         </div>
 
@@ -480,28 +440,6 @@ export default function Workouts() {
             );
           })}
         </div>
-
-        {/* Delete Confirmation Dialog */}
-        <AlertDialog open={!!deleteRoutineId} onOpenChange={(open) => !open && setDeleteRoutineId(null)}>
-          <AlertDialogContent className="glass-card glass-hover">
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Routine?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will permanently delete this workout routine. This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => deleteRoutineId && deleteMutation.mutate(deleteRoutineId)}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                data-testid="button-confirm-delete"
-              >
-                {deleteMutation.isPending ? "Deleting..." : "Delete"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </div>
       </>
     );
