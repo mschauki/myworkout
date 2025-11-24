@@ -10,8 +10,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import { useUnitSystem } from "@/hooks/use-unit-system";
 
 export default function Progress() {
+  const { formatWeight, getUnitLabel, convertWeight } = useUnitSystem();
   const [selectedExercise, setSelectedExercise] = useState<string>("");
   const [timeRange, setTimeRange] = useState("3M");
   const [selectedCalendarDay, setSelectedCalendarDay] = useState<Date | undefined>(undefined);
@@ -50,12 +52,13 @@ export default function Progress() {
   // Get workout data for chart
   const chartData = workoutLogs.slice(0, 10).reverse().map((log, idx) => ({
     date: new Date(log.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    volume: log.totalVolume,
+    volume: convertWeight(log.totalVolume),
     workout: idx + 1,
   }));
 
   const totalWorkouts = workoutLogs.length;
-  const totalVolume = workoutLogs.reduce((sum, log) => sum + log.totalVolume, 0).toFixed(0);
+  const totalVolume = workoutLogs.reduce((sum, log) => sum + log.totalVolume, 0);
+  const displayTotalVolume = convertWeight(totalVolume).toFixed(getUnitLabel() === "kg" ? 1 : 0);
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
@@ -96,8 +99,8 @@ export default function Progress() {
                   <Skeleton className="h-12 w-24 bg-card border border-card-border" />
                 ) : (
                   <>
-                    <div className="text-4xl font-bold font-mono text-foreground" data-testid="text-total-volume">{totalVolume}</div>
-                    <p className="text-xs text-muted-foreground mt-2 uppercase tracking-wide">lbs</p>
+                    <div className="text-4xl font-bold font-mono text-foreground" data-testid="text-total-volume">{displayTotalVolume}</div>
+                    <p className="text-xs text-muted-foreground mt-2 uppercase tracking-wide">{getUnitLabel()}</p>
                   </>
                 )}
               </CardContent>
@@ -231,7 +234,7 @@ export default function Progress() {
                               </div>
                               <div className="text-right">
                                 <Badge variant="secondary">{log.duration} min</Badge>
-                                <p className="text-xs text-muted-foreground mt-1">{log.totalVolume.toFixed(0)} lbs</p>
+                                <p className="text-xs text-muted-foreground mt-1">{formatWeight(log.totalVolume)}</p>
                               </div>
                             </div>
                           ))}
@@ -326,8 +329,8 @@ export default function Progress() {
                   .map((workout, idx) => ({
                     workout: idx + 1,
                     date: workout.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                    weight: workout.weight,
-                    volume: workout.volume,
+                    weight: convertWeight(workout.weight),
+                    volume: convertWeight(workout.volume),
                   }));
 
                 return (
@@ -339,7 +342,7 @@ export default function Progress() {
                         <div className="flex items-center justify-between p-3 rounded-md border" data-testid="pr-max-weight">
                           <div>
                             <p className="text-sm text-muted-foreground">Best Weight</p>
-                            <p className="text-2xl font-bold font-mono">{maxWeight} lbs</p>
+                            <p className="text-2xl font-bold font-mono">{formatWeight(maxWeight)}</p>
                           </div>
                           <div className="text-right">
                             <Badge variant="secondary">{exerciseSets.find(s => s.weight === maxWeight)?.reps} reps</Badge>
@@ -357,7 +360,7 @@ export default function Progress() {
                             <p className="text-2xl font-bold font-mono">{maxReps} reps</p>
                           </div>
                           <div className="text-right">
-                            <Badge variant="secondary">{exerciseSets.find(s => s.reps === maxReps)?.weight} lbs</Badge>
+                            <Badge variant="secondary">{formatWeight(exerciseSets.find(s => s.reps === maxReps)?.weight || 0)}</Badge>
                             {maxRepsDate && (
                               <p className="text-xs text-muted-foreground mt-1">
                                 {maxRepsDate.toLocaleDateString()}
@@ -369,11 +372,11 @@ export default function Progress() {
                         <div className="flex items-center justify-between p-3 rounded-md border" data-testid="pr-max-volume">
                           <div>
                             <p className="text-sm text-muted-foreground">Best Volume (Single Set)</p>
-                            <p className="text-2xl font-bold font-mono">{maxVolume} lbs</p>
+                            <p className="text-2xl font-bold font-mono">{formatWeight(maxVolume)}</p>
                           </div>
                           <div className="text-right">
                             <Badge variant="secondary">
-                              {bestWeightSet?.weight} lbs × {bestWeightSet?.reps}
+                              {formatWeight(bestWeightSet?.weight || 0, { includeUnit: false })} {getUnitLabel()} × {bestWeightSet?.reps}
                             </Badge>
                             {maxVolumeDate && (
                               <p className="text-xs text-muted-foreground mt-1">
@@ -414,7 +417,7 @@ export default function Progress() {
                               stroke="hsl(var(--primary))" 
                               strokeWidth={2}
                               dot={{ fill: "hsl(var(--primary))", r: 4 }}
-                              name="Weight (lbs)"
+                              name={`Weight (${getUnitLabel()})`}
                             />
                           </LineChart>
                         </ResponsiveContainer>

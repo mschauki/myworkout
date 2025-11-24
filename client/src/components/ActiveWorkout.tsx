@@ -10,6 +10,7 @@ import { X, Check, Timer, Pause, Play, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useUnitSystem } from "@/hooks/use-unit-system";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,6 +46,7 @@ interface ExerciseLog {
 }
 
 export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0, onComplete }: ActiveWorkoutProps) {
+  const { formatWeight, getUnitLabel, convertWeight, convertToLbs } = useUnitSystem();
   const [startTime] = useState(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
   const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>([]);
@@ -183,6 +185,11 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
         // Don't allow negative or NaN values
         if (isNaN(parsedValue) || parsedValue < 0) {
           return logs;
+        }
+        
+        // Convert weight from user's unit to lbs for storage
+        if (field === 'weight') {
+          parsedValue = convertToLbs(parsedValue);
         }
       }
       
@@ -722,7 +729,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                       </Badge>
                       {!isTimeBased && getBest1RM(log.sets) > 0 && (
                         <Badge variant="default" className="text-sm bg-primary/90" data-testid={`badge-1rm-${currentExerciseIndex}`}>
-                          Est. 1RM: {Math.round(getBest1RM(log.sets))} lbs
+                          Est. 1RM: {formatWeight(Math.round(getBest1RM(log.sets)))}
                         </Badge>
                       )}
                     </div>
@@ -751,7 +758,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                   {/* Table Header */}
                   <div className={`grid ${isBodyweight ? 'grid-cols-8' : 'grid-cols-12'} gap-2 text-xs font-medium text-muted-foreground px-2`}>
                     <div className="col-span-2">Set</div>
-                    {!isBodyweight && <div className="col-span-4">Weight (lbs)</div>}
+                    {!isBodyweight && <div className="col-span-4">Weight ({getUnitLabel()})</div>}
                     <div className={isBodyweight ? 'col-span-6' : 'col-span-6'}>{isTimeBased ? 'Duration (s)' : 'Reps'}</div>
                   </div>
 
@@ -777,8 +784,8 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                               <Input
                                 type="number"
                                 min="0"
-                                step="5"
-                                value={set.weight || ""}
+                                step={getUnitLabel() === "kg" ? "2.5" : "5"}
+                                value={set.weight ? convertWeight(set.weight).toFixed(getUnitLabel() === "kg" ? 1 : 0) : ""}
                                 onChange={(e) => updateSet(currentExerciseIndex, setIndex, "weight", e.target.value)}
                                 disabled={set.completed}
                                 className="h-12 text-lg"

@@ -17,8 +17,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useUnitSystem } from "@/hooks/use-unit-system";
 
 export default function Home() {
+  const { formatWeight, getUnitLabel, convertWeight } = useUnitSystem();
   const [deleteLogId, setDeleteLogId] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -53,9 +55,10 @@ export default function Home() {
 
   const totalVolume = workoutLogs?.reduce((sum, log) => 
     sum + log.totalVolume, 0
-  ).toFixed(0) || "0";
+  ) || 0;
+  const displayTotalVolume = convertWeight(totalVolume).toFixed(getUnitLabel() === "kg" ? 1 : 0);
 
-  const currentWeight = bodyStats?.[0]?.weight ? bodyStats[0].weight.toFixed(1) : null;
+  const currentWeight = bodyStats?.[0]?.weight ? convertWeight(bodyStats[0].weight).toFixed(1) : null;
   
   const recentWorkouts = workoutLogs?.slice(0, 5) || [];
 
@@ -97,8 +100,8 @@ export default function Home() {
               <Skeleton className="h-12 w-24" />
             ) : (
               <>
-                <div className="text-5xl font-bold font-mono text-primary" data-testid="text-stat-volume">{totalVolume}</div>
-                <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest font-semibold">lbs lifted</p>
+                <div className="text-5xl font-bold font-mono text-primary" data-testid="text-stat-volume">{displayTotalVolume}</div>
+                <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest font-semibold">{getUnitLabel()} lifted</p>
               </>
             )}
           </CardContent>
@@ -132,7 +135,7 @@ export default function Home() {
             ) : currentWeight ? (
               <>
                 <div className="text-5xl font-bold font-mono text-emerald-500" data-testid="text-stat-weight">{currentWeight}</div>
-                <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest font-semibold">lbs</p>
+                <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest font-semibold">{getUnitLabel()}</p>
               </>
             ) : (
               <p className="text-sm text-muted-foreground">No data</p>
@@ -172,7 +175,7 @@ export default function Home() {
                     <div className="flex-1 min-w-0">
                       <h3 className="text-lg font-bold truncate mb-2" data-testid="text-workout-name">{log.routineName}</h3>
                       <p className="text-sm text-muted-foreground font-medium">
-                        {new Date(log.date).toLocaleDateString()} • {Math.floor(log.duration / 60)} min • {log.totalVolume.toFixed(0)} lbs
+                        {new Date(log.date).toLocaleDateString()} • {Math.floor(log.duration / 60)} min • {formatWeight(log.totalVolume)}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">

@@ -13,8 +13,10 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useUnitSystem } from "@/hooks/use-unit-system";
 
 export default function Profile() {
+  const { formatWeight, getUnitLabel, convertWeight, convertToLbs } = useUnitSystem();
   const [showAddStats, setShowAddStats] = useState(false);
   const { toast } = useToast();
 
@@ -48,13 +50,18 @@ export default function Profile() {
   });
 
   const onSubmit = form.handleSubmit((data) => {
-    addStatsMutation.mutate(data);
+    // Convert weight from user's unit to lbs for storage
+    const dataToSubmit = {
+      ...data,
+      weight: data.weight ? convertToLbs(data.weight) : null,
+    };
+    addStatsMutation.mutate(dataToSubmit);
   });
 
   const currentStats = bodyStats[0];
   const chartData = bodyStats.slice(0, 20).reverse().map(stat => ({
     date: new Date(stat.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    weight: stat.weight,
+    weight: convertWeight(stat.weight || 0),
     bodyFat: stat.bodyFat,
   }));
 
@@ -78,9 +85,9 @@ export default function Profile() {
             ) : currentStats?.weight ? (
               <>
                 <div className="text-4xl font-bold font-mono text-foreground" data-testid="text-current-weight">
-                  {currentStats.weight.toFixed(1)}
+                  {convertWeight(currentStats.weight).toFixed(1)}
                 </div>
-                <p className="text-xs text-muted-foreground mt-2 uppercase tracking-wide">lbs</p>
+                <p className="text-xs text-muted-foreground mt-2 uppercase tracking-wide">{getUnitLabel()}</p>
               </>
             ) : (
               <p className="text-sm text-muted-foreground">No data</p>
@@ -133,7 +140,7 @@ export default function Profile() {
                     name="weight"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Weight (lbs)</FormLabel>
+                        <FormLabel>Weight ({getUnitLabel()})</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -230,7 +237,7 @@ export default function Profile() {
                   stroke="hsl(var(--primary))" 
                   strokeWidth={2}
                   dot={{ fill: "hsl(var(--primary))", r: 4 }}
-                  name="Weight (lbs)"
+                  name={`Weight (${getUnitLabel()})`}
                 />
               </LineChart>
             </ResponsiveContainer>
