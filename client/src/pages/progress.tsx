@@ -218,6 +218,12 @@ export default function Progress() {
                       selected={selectedCalendarDay}
                       onSelect={setSelectedCalendarDay}
                       weekStartsOn={settings?.firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6 || 0}
+                      modifiers={{
+                        hasWorkout: workoutLogs.map(log => new Date(log.date))
+                      }}
+                      modifiersClassNames={{
+                        hasWorkout: "workout-day"
+                      }}
                     />
                   </div>
                   <div className="flex flex-col gap-2 text-sm w-full">
