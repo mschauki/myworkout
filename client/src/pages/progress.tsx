@@ -1,24 +1,30 @@
 import { useState, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Exercise, WorkoutLog, Settings } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Trash2 } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { useUnitSystem } from "@/hooks/use-unit-system";
 import { Link } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Progress() {
   const { formatWeight, getUnitLabel, convertWeight } = useUnitSystem();
   const [selectedExercise, setSelectedExercise] = useState<string>("");
   const [timeRange, setTimeRange] = useState("3M");
   const [selectedCalendarDay, setSelectedCalendarDay] = useState<Date | undefined>(undefined);
+  const [workoutToDelete, setWorkoutToDelete] = useState<WorkoutLog | null>(null);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: exercises = [], isLoading: exercisesLoading } = useQuery<Exercise[]>({
     queryKey: ["/api/exercises"],
@@ -32,6 +38,27 @@ export default function Progress() {
     queryKey: ["/api/settings"],
     staleTime: 0,
     gcTime: 0,
+  });
+
+  const deleteWorkoutMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/workout-logs/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/workout-logs"] });
+      toast({
+        title: "Workout deleted",
+        description: "The workout has been removed from your history.",
+      });
+      setWorkoutToDelete(null);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete workout. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
 
   // Refetch settings on mount and when component visibility changes
@@ -227,23 +254,34 @@ export default function Progress() {
                         </p>
                         <div className="space-y-2">
                           {dayWorkouts.map((log) => (
-                            <Link key={log.id} href={`/workout-log/${log.id}`}>
-                              <div className="flex items-center justify-between p-3 bg-background rounded-md border border-input hover-elevate active-elevate-2 cursor-pointer" data-testid={`card-workout-${log.id}`}>
-                                <div>
-                                  <p className="text-sm font-medium text-foreground">{log.routineName}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {new Date(log.date).toLocaleTimeString('en-US', { 
-                                      hour: '2-digit',
-                                      minute: '2-digit'
-                                    })}
-                                  </p>
+                            <div key={log.id} className="flex items-center gap-2" data-testid={`card-workout-${log.id}`}>
+                              <Link href={`/workout-log/${log.id}`} className="flex-1">
+                                <div className="flex items-center justify-between p-3 bg-background rounded-md border border-input hover-elevate active-elevate-2 cursor-pointer">
+                                  <div>
+                                    <p className="text-sm font-medium text-foreground">{log.routineName}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {new Date(log.date).toLocaleTimeString('en-US', { 
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                      })}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <Badge variant="secondary">{log.duration} min</Badge>
+                                    <p className="text-xs text-muted-foreground mt-1">{formatWeight(log.totalVolume)}</p>
+                                  </div>
                                 </div>
-                                <div className="text-right">
-                                  <Badge variant="secondary">{log.duration} min</Badge>
-                                  <p className="text-xs text-muted-foreground mt-1">{formatWeight(log.totalVolume)}</p>
-                                </div>
-                              </div>
-                            </Link>
+                              </Link>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setWorkoutToDelete(log)}
+                                className="shrink-0 text-muted-foreground hover:text-destructive"
+                                data-testid={`button-delete-workout-${log.id}`}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -441,6 +479,30 @@ export default function Progress() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Delete Workout Confirmation Dialog */}
+      <AlertDialog open={!!workoutToDelete} onOpenChange={(open) => !open && setWorkoutToDelete(null)}>
+        <AlertDialogContent className="glass-modal" data-testid="dialog-delete-workout">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Workout?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this workout from {workoutToDelete?.routineName}? 
+              This action cannot be undone and will remove all recorded sets and progress data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => workoutToDelete && deleteWorkoutMutation.mutate(workoutToDelete.id)}
+              disabled={deleteWorkoutMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-delete"
+            >
+              {deleteWorkoutMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
