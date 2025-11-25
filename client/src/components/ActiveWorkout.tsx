@@ -482,9 +482,17 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
   };
 
   const finishWorkout = () => {
-    const totalVolume = exerciseLogs.reduce((total, log) => {
+    // Filter to only include exercises with completed sets, and only save completed sets
+    const completedExerciseLogs = exerciseLogs
+      .map(log => ({
+        ...log,
+        sets: log.sets.filter(set => set.completed)
+      }))
+      .filter(log => log.sets.length > 0);
+
+    const totalVolume = completedExerciseLogs.reduce((total, log) => {
       return total + log.sets
-        .filter(set => set.completed && set.weight > 0 && (set.reps || 0) > 0)
+        .filter(set => set.weight > 0 && (set.reps || 0) > 0)
         .reduce((sum, set) => sum + (set.weight * (set.reps || 0)), 0);
     }, 0);
 
@@ -492,7 +500,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
       routineName: routine.name,
       date: new Date().toISOString(),
       duration: elapsedTime,
-      exercises: exerciseLogs,
+      exercises: completedExerciseLogs,
       totalVolume,
     });
   };
