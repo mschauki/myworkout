@@ -66,9 +66,9 @@ export default function Home() {
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-      {/* Hero Section with Ultra Glass */}
-      <div className="glass-hero mb-12">
-        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
+      {/* Hero Section with Gradient Mesh */}
+      <div className="relative mb-12 overflow-hidden rounded-3xl">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
         <div className="relative z-10 p-8 md:p-12">
           <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">Dashboard</h1>
           <p className="text-lg text-muted-foreground">Track your fitness journey with precision</p>
@@ -77,12 +77,10 @@ export default function Home() {
 
       {/* Stats Grid - Liquid Glass */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <Card data-testid="card-stat-workouts" className="glass-card-lg glass-hover">
+        <Card data-testid="card-stat-workouts" className="glass-card glass-hover">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">This Month</CardTitle>
-            <div className="glass-icon w-10 h-10">
-              <Calendar className="w-5 h-5 text-primary" />
-            </div>
+            <Calendar className="w-5 h-5 text-primary/70" />
           </CardHeader>
           <CardContent className="relative">
             {isLoading ? (
@@ -96,12 +94,10 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <Card data-testid="card-stat-volume" className="glass-card-lg glass-hover">
+        <Card data-testid="card-stat-volume" className="glass-card glass-hover">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Total Volume</CardTitle>
-            <div className="glass-icon w-10 h-10">
-              <TrendingUp className="w-5 h-5 text-primary" />
-            </div>
+            <TrendingUp className="w-5 h-5 text-accent/70" />
           </CardHeader>
           <CardContent className="relative">
             {isLoading ? (
@@ -115,12 +111,10 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <Card data-testid="card-stat-streak" className="glass-card-lg glass-hover">
+        <Card data-testid="card-stat-streak" className="glass-card glass-hover">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Streak</CardTitle>
-            <div className="glass-icon w-10 h-10">
-              <Flame className="w-5 h-5 text-orange-500" />
-            </div>
+            <Flame className="w-5 h-5 text-accent/70" />
           </CardHeader>
           <CardContent className="relative">
             {isLoading ? (
@@ -134,12 +128,10 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <Card data-testid="card-stat-weight" className="glass-card-lg glass-hover">
+        <Card data-testid="card-stat-weight" className="glass-card glass-hover">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2 relative">
             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Body Weight</CardTitle>
-            <div className="glass-icon w-10 h-10">
-              <Trophy className="w-5 h-5 text-emerald-500" />
-            </div>
+            <Trophy className="w-5 h-5 text-emerald-400/60" />
           </CardHeader>
           <CardContent className="relative">
             {isLoading ? (
@@ -162,20 +154,18 @@ export default function Home() {
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="glass-card">
+              <Card key={i}>
                 <CardContent className="p-5">
-                  <Skeleton className="h-6 w-40 mb-2 shimmer" />
-                  <Skeleton className="h-4 w-56 shimmer" />
+                  <Skeleton className="h-6 w-40 mb-2" />
+                  <Skeleton className="h-4 w-56" />
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : recentWorkouts.length === 0 ? (
-          <Card className="glass-card-lg">
+          <Card>
             <CardContent className="p-12 text-center">
-              <div className="glass-icon w-20 h-20 mx-auto mb-4">
-                <Dumbbell className="w-10 h-10 text-primary/60" />
-              </div>
+              <Dumbbell className="w-16 h-16 mx-auto mb-4 text-primary/40" />
               <p className="text-muted-foreground text-lg font-medium">No workouts yet</p>
               <p className="text-sm text-muted-foreground mt-2">Start your first workout to see it here</p>
             </CardContent>
@@ -183,7 +173,7 @@ export default function Home() {
         ) : (
           <div className="space-y-3">
             {recentWorkouts.map((log) => (
-              <Card key={log.id} className="glass-card glass-hover" data-testid={`card-workout-log-${log.id}`}>
+              <Card key={log.id} className="hover-elevate transition-all group relative overflow-hidden" data-testid={`card-workout-log-${log.id}`}>
                 <CardContent className="p-5 relative">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
@@ -193,14 +183,13 @@ export default function Home() {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="glass-stat text-right">
+                      <div className="text-right bg-card border border-card-border px-3 py-2 rounded-lg">
                         <p className="text-lg font-bold font-mono text-primary">{log.exercises.length}</p>
                         <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold">exercises</p>
                       </div>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="glass-button"
                         onClick={() => setDeleteLogId(log.id)}
                         data-testid={`button-delete-workout-${log.id}`}
                       >

@@ -63,9 +63,9 @@ export default function Progress() {
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-      {/* Hero Section with Ultra Glass */}
-      <div className="glass-hero mb-12 mx-4">
-        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
+      {/* Hero Section */}
+      <div className="relative mb-12 mx-4 overflow-hidden rounded-3xl">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
         <div className="relative z-10 p-8 md:p-12">
           <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">Progress</h1>
           <p className="text-lg text-muted-foreground">Track your fitness journey</p>
@@ -73,7 +73,7 @@ export default function Progress() {
       </div>
 
       <Tabs defaultValue="overview" className="mb-8">
-        <TabsList className="w-full glass-tabs rounded-xl">
+        <TabsList className="w-full bg-card border border-card-border">
           <TabsTrigger value="overview" className="flex-1" data-testid="tab-overview">Overview</TabsTrigger>
           <TabsTrigger value="calendar" className="flex-1" data-testid="tab-calendar">Calendar</TabsTrigger>
           <TabsTrigger value="exercises" className="flex-1" data-testid="tab-exercises">Exercises</TabsTrigger>
@@ -82,26 +82,26 @@ export default function Progress() {
         <TabsContent value="overview" className="space-y-6 mt-6">
           {/* Stats Summary */}
           <div className="grid grid-cols-2 gap-4">
-            <Card data-testid="card-total-workouts" className="glass-card-lg glass-hover">
+            <Card data-testid="card-total-workouts" className="glass-card glass-hover">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Workouts</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
-                  <Skeleton className="h-12 w-20 shimmer glass-surface" />
+                  <Skeleton className="h-12 w-20 bg-card border border-card-border" />
                 ) : (
                   <div className="text-4xl font-bold font-mono text-foreground" data-testid="text-total-workouts">{totalWorkouts}</div>
                 )}
               </CardContent>
             </Card>
 
-            <Card data-testid="card-total-volume" className="glass-card-lg glass-hover">
+            <Card data-testid="card-total-volume" className="glass-card glass-hover">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Volume</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
-                  <Skeleton className="h-12 w-24 shimmer glass-surface" />
+                  <Skeleton className="h-12 w-24 bg-card border border-card-border" />
                 ) : (
                   <>
                     <div className="text-4xl font-bold font-mono text-foreground" data-testid="text-total-volume">{displayTotalVolume}</div>
@@ -113,12 +113,12 @@ export default function Progress() {
           </div>
 
           {/* Volume Chart */}
-          <Card className="glass-card-lg glass-hover">
+          <Card className="glass-card glass-hover">
             <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
               <CardTitle className="text-base">Volume Progression</CardTitle>
               <div className="flex items-center gap-2">
                 <Select value={timeRange} onValueChange={setTimeRange}>
-                  <SelectTrigger className="w-[90px] h-8 text-sm glass-select rounded-lg" data-testid="select-time-range">
+                  <SelectTrigger className="w-[90px] h-8 text-sm" data-testid="select-time-range">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

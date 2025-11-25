@@ -66,9 +66,9 @@ export default function WorkoutLogDetail() {
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-      {/* Hero Section with Ultra Glass */}
-      <div className="glass-hero mb-12 mx-4">
-        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
+      {/* Hero Section */}
+      <div className="relative mb-12 mx-4 overflow-hidden rounded-3xl">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
         <div className="relative z-10 p-8 md:p-12">
           <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">Workout Details</h1>
           <p className="text-lg text-muted-foreground">Review your performance</p>
@@ -77,14 +77,14 @@ export default function WorkoutLogDetail() {
 
       {/* Header with back button */}
       <Link href="/progress">
-        <Button variant="ghost" className="glass-button mb-6" data-testid="button-back">
+        <Button variant="ghost" className="mb-6" data-testid="button-back">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Progress
         </Button>
       </Link>
 
       {/* Workout Summary Card */}
-      <Card className="glass-card-lg mb-6">
+      <Card className="bg-card border border-card-border mb-6">
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
@@ -100,26 +100,20 @@ export default function WorkoutLogDetail() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
-            <div className="glass-stat flex flex-col items-center">
-              <div className="glass-icon w-10 h-10 mb-2">
-                <Clock className="w-5 h-5 text-primary" />
-              </div>
+            <div className="flex flex-col items-center p-3 rounded-md border border-input bg-background">
+              <Clock className="w-5 h-5 text-muted-foreground mb-2" />
               <p className="text-2xl font-bold font-mono" data-testid="text-duration">{workoutLog.duration}</p>
               <p className="text-xs text-muted-foreground uppercase tracking-wide">Minutes</p>
             </div>
-            <div className="glass-stat flex flex-col items-center">
-              <div className="glass-icon w-10 h-10 mb-2">
-                <TrendingUp className="w-5 h-5 text-primary" />
-              </div>
+            <div className="flex flex-col items-center p-3 rounded-md border border-input bg-background">
+              <TrendingUp className="w-5 h-5 text-muted-foreground mb-2" />
               <p className="text-2xl font-bold font-mono" data-testid="text-total-volume">
                 {formatWeight(workoutLog.totalVolume, { includeUnit: false })}
               </p>
               <p className="text-xs text-muted-foreground uppercase tracking-wide">{getUnitLabel()}</p>
             </div>
-            <div className="glass-stat flex flex-col items-center">
-              <div className="glass-icon w-10 h-10 mb-2">
-                <Dumbbell className="w-5 h-5 text-primary" />
-              </div>
+            <div className="flex flex-col items-center p-3 rounded-md border border-input bg-background">
+              <Dumbbell className="w-5 h-5 text-muted-foreground mb-2" />
               <p className="text-2xl font-bold font-mono" data-testid="text-exercise-count">
                 {workoutLog.exercises.length}
               </p>

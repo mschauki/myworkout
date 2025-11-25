@@ -67,9 +67,9 @@ export default function Profile() {
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-      {/* Hero Section with Ultra Glass */}
-      <div className="glass-hero mb-12 mx-4">
-        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
+      {/* Hero Section */}
+      <div className="relative mb-12 mx-4 overflow-hidden rounded-3xl">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
         <div className="relative z-10 p-8 md:p-12">
           <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">Body Stats</h1>
           <p className="text-lg text-muted-foreground">Monitor your body composition</p>
@@ -78,16 +78,14 @@ export default function Profile() {
 
       {/* Current Stats */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <Card data-testid="card-current-weight" className="glass-card-lg glass-hover">
+        <Card data-testid="card-current-weight" className="glass-card glass-hover">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Current Weight</CardTitle>
-            <div className="glass-icon w-10 h-10">
-              <Weight className="w-5 h-5 text-primary" />
-            </div>
+            <Weight className="w-5 h-5 text-primary/60" />
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-12 w-24 shimmer glass-surface" />
+              <Skeleton className="h-12 w-24 bg-card border border-card-border" />
             ) : currentStats?.weight ? (
               <>
                 <div className="text-4xl font-bold font-mono text-foreground" data-testid="text-current-weight">
@@ -101,16 +99,14 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        <Card data-testid="card-current-bodyfat" className="glass-card-lg glass-hover">
+        <Card data-testid="card-current-bodyfat" className="glass-card glass-hover">
           <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Body Fat</CardTitle>
-            <div className="glass-icon w-10 h-10">
-              <TrendingDown className="w-5 h-5 text-emerald-500" />
-            </div>
+            <TrendingDown className="w-5 h-5 text-emerald-400/80" />
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-12 w-20 shimmer glass-surface" />
+              <Skeleton className="h-12 w-20 bg-card border border-card-border" />
             ) : currentStats?.bodyFat ? (
               <>
                 <div className="text-4xl font-bold font-mono text-foreground" data-testid="text-current-bodyfat">
@@ -126,12 +122,11 @@ export default function Profile() {
       </div>
 
       {/* Add Stats Form */}
-      <Card className="mb-6 glass-card">
+      <Card className="mb-6 bg-card border border-card-border">
         <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0">
           <CardTitle className="text-base">Body Measurements</CardTitle>
           <Button
             size="sm"
-            className={showAddStats ? "" : "glass-button"}
             variant={showAddStats ? "secondary" : "default"}
             onClick={() => setShowAddStats(!showAddStats)}
             data-testid="button-toggle-add-stats"
@@ -204,19 +199,17 @@ export default function Profile() {
       </Card>
 
       {/* Weight Chart */}
-      <Card className="glass-card-lg glass-hover">
+      <Card className="glass-card glass-hover">
         <CardHeader>
           <CardTitle className="text-base">Weight Progress</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <Skeleton className="h-64 w-full shimmer" />
+            <Skeleton className="h-64 w-full" />
           ) : chartData.length === 0 ? (
             <div className="h-64 flex items-center justify-center text-muted-foreground">
               <div className="text-center">
-                <div className="glass-icon w-16 h-16 mx-auto mb-3">
-                  <User className="w-8 h-8 text-primary/60" />
-                </div>
+                <User className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>No body stats yet</p>
                 <p className="text-sm mt-1">Add your first measurement to track progress</p>
               </div>

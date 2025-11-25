@@ -495,9 +495,9 @@ export default function Workouts() {
 
   return (
     <div className="pb-24 px-4 pt-8 max-w-6xl mx-auto">
-      {/* Hero Section with Ultra Glass */}
-      <div className="glass-hero mb-12 mx-4">
-        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
+      {/* Hero Section */}
+      <div className="relative mb-12 mx-4 overflow-hidden rounded-3xl">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "var(--gradient-mesh-bg)" }}></div>
         <div className="relative z-10 p-8 md:p-12">
           <h1 className="text-5xl md:text-6xl font-bold mb-2 text-gradient" data-testid="text-page-title">My Workouts</h1>
           <p className="text-lg text-muted-foreground">Train smarter, not harder</p>
@@ -511,24 +511,22 @@ export default function Workouts() {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="glass-card-lg">
+            <Card key={i} className="glass-card glass-hover">
               <CardContent className="p-4">
-                <Skeleton className="h-6 w-48 mb-3 shimmer" />
-                <Skeleton className="h-4 w-full mb-2 shimmer" />
-                <Skeleton className="h-4 w-32 shimmer" />
+                <Skeleton className="h-6 w-48 mb-3" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-32" />
               </CardContent>
             </Card>
           ))}
         </div>
       ) : routines.length === 0 ? (
-        <Card className="glass-card-lg">
+        <Card className="glass-card glass-hover">
           <CardContent className="p-12 text-center">
-            <div className="glass-icon w-20 h-20 mx-auto mb-4">
-              <Dumbbell className="w-10 h-10 text-primary/60" />
-            </div>
+            <Dumbbell className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-xl font-semibold mb-2">No workout routines yet</h3>
             <p className="text-muted-foreground mb-6">Create your first routine to get started</p>
-            <Button className="glass-button" onClick={() => setIsBuilderOpen(true)} data-testid="button-create-first-routine">
+            <Button onClick={() => setIsBuilderOpen(true)} data-testid="button-create-first-routine">
               <Plus className="w-4 h-4 mr-2" />
               Create Routine
             </Button>
@@ -539,7 +537,7 @@ export default function Workouts() {
           {routines.map((routine) => (
             <Card
               key={routine.id}
-              className="glass-card glass-hover cursor-pointer"
+              className="bg-card border border-card-border hover:scale-[1.01] transition-all cursor-pointer"
               onClick={() => setViewingRoutineId(routine.id)}
               data-testid={`card-routine-${routine.id}`}
             >
@@ -551,19 +549,17 @@ export default function Workouts() {
                       <p className="text-sm text-muted-foreground">{routine.description}</p>
                     )}
                   </div>
-                  <div className="glass-icon w-10 h-10">
-                    <ArrowRight className="w-5 h-5 text-primary" />
-                  </div>
+                  <ArrowRight className="w-6 h-6 text-foreground/40 flex-shrink-0" />
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                  <div className="glass-pill">
-                    <Dumbbell className="w-4 h-4 mr-2" />
+                  <div className="flex items-center gap-2">
+                    <Dumbbell className="w-4 h-4" />
                     <span>{routine.exercises.length} exercises</span>
                   </div>
-                  <div className="glass-pill">
-                    <Clock className="w-4 h-4 mr-2" />
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
                     <span>~{routine.exercises.length * 5} min</span>
                   </div>
                 </div>
