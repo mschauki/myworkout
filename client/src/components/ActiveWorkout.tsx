@@ -803,7 +803,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                               ? 'glass-surface border-2 border-primary text-primary'
                               : 'glass-surface'
                           }`}>
-                            {set.completed ? <Check className="w-5 h-5" /> : setIndex + 1}
+                            {setIndex + 1}
                           </div>
                           
                           {/* Inputs */}
