@@ -320,6 +320,18 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
     
     updateSet(exerciseIndex, setIndex, "completed", true);
     
+    // Scroll to the next set after a brief delay to allow state update
+    setTimeout(() => {
+      const nextSetIndex = setIndex + 1;
+      if (nextSetIndex < currentExercise.sets.length) {
+        // Scroll to next set in same exercise
+        const nextSetElement = document.querySelector(`[data-testid="row-set-${exerciseIndex}-${nextSetIndex}"]`);
+        if (nextSetElement) {
+          nextSetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }, 100);
+    
     if (isLastSet) {
       const allOthersComplete = currentExercise.sets.every((s, idx) => idx === setIndex || s.completed);
       if (allOthersComplete) {
