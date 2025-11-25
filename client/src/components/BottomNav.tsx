@@ -47,11 +47,6 @@ export function BottomNav() {
               
               {/* Label */}
               <span className="relative z-10 text-xs font-semibold tracking-tight">{item.label}</span>
-              
-              {/* Active indicator */}
-              {isActive && (
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary shadow-glow" data-testid={`indicator-active-${item.label.toLowerCase()}`} />
-              )}
             </Link>
           );
         })}
