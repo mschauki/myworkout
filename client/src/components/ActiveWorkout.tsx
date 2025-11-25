@@ -585,15 +585,8 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
         .reduce((sum, set) => sum + (set.weight * (set.reps || 0)), 0);
     }, 0);
 
-    // Get the day title from routine if available
-    const dayTitle = selectedDay && routine.dayTitles?.[selectedDay] 
-      ? routine.dayTitles[selectedDay] 
-      : undefined;
-
     saveWorkoutMutation.mutate({
       routineName: routine.name,
-      routineDay: selectedDay || undefined,
-      routineDayTitle: dayTitle,
       date: new Date().toISOString(),
       duration: elapsedTime,
       exercises: completedExerciseLogs,
