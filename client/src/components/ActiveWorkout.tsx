@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+const WORKOUT_PROGRESS_KEY = "jefit-workout-progress";
 
 interface ActiveWorkoutProps {
   routine: WorkoutRoutine;
@@ -44,15 +46,40 @@ interface ExerciseLog {
 
 export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0, onComplete }: ActiveWorkoutProps) {
   const { formatWeight, getUnitLabel, convertWeight, convertToLbs } = useUnitSystem();
-  const [startTime] = useState(Date.now());
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>([]);
-  const [restTimer, setRestTimer] = useState(0);
+  
+  // Load saved progress from localStorage
+  const getSavedProgress = () => {
+    try {
+      const saved = localStorage.getItem(WORKOUT_PROGRESS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Only restore if it's the same routine
+        if (parsed.routineId === routine.id && parsed.selectedDay === selectedDay) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load workout progress:", e);
+    }
+    return null;
+  };
+  
+  const savedProgress = useRef(getSavedProgress());
+  
+  const [startTime] = useState(() => savedProgress.current?.startTime || Date.now());
+  const [elapsedTime, setElapsedTime] = useState(() => {
+    if (savedProgress.current?.startTime) {
+      return Math.floor((Date.now() - savedProgress.current.startTime) / 1000);
+    }
+    return 0;
+  });
+  const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>(() => savedProgress.current?.exerciseLogs || []);
+  const [restTimer, setRestTimer] = useState(() => savedProgress.current?.restTimer || 0);
   const [restPaused, setRestPaused] = useState(false);
-  const [currentRestPeriod, setCurrentRestPeriod] = useState(90);
-  const [currentRestingExerciseIndex, setCurrentRestingExerciseIndex] = useState<number | null>(null);
-  const [currentRestingSetIndex, setCurrentRestingSetIndex] = useState<number | null>(null);
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(startingExerciseIndex);
+  const [currentRestPeriod, setCurrentRestPeriod] = useState(() => savedProgress.current?.currentRestPeriod || 90);
+  const [currentRestingExerciseIndex, setCurrentRestingExerciseIndex] = useState<number | null>(() => savedProgress.current?.currentRestingExerciseIndex ?? null);
+  const [currentRestingSetIndex, setCurrentRestingSetIndex] = useState<number | null>(() => savedProgress.current?.currentRestingSetIndex ?? null);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(() => savedProgress.current?.currentExerciseIndex ?? startingExerciseIndex);
   const [startingPointIndex] = useState(startingExerciseIndex);
   const [showRestPeriodDialog, setShowRestPeriodDialog] = useState(false);
   const [pendingRestPeriodChange, setPendingRestPeriodChange] = useState<{
@@ -72,6 +99,28 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
   const { data: exercises = [] } = useQuery<Exercise[]>({
     queryKey: ["/api/exercises"],
   });
+
+  // Save workout progress to localStorage whenever state changes
+  useEffect(() => {
+    if (exerciseLogs.length === 0) return;
+    
+    try {
+      const progress = {
+        routineId: routine.id,
+        selectedDay,
+        startTime,
+        exerciseLogs,
+        currentExerciseIndex,
+        restTimer,
+        currentRestPeriod,
+        currentRestingExerciseIndex,
+        currentRestingSetIndex,
+      };
+      localStorage.setItem(WORKOUT_PROGRESS_KEY, JSON.stringify(progress));
+    } catch (e) {
+      console.error("Failed to save workout progress:", e);
+    }
+  }, [exerciseLogs, currentExerciseIndex, restTimer, currentRestPeriod, currentRestingExerciseIndex, currentRestingSetIndex, routine.id, selectedDay, startTime]);
 
   // Initialize exercise logs once
   useEffect(() => {
@@ -144,7 +193,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
   useEffect(() => {
     if (restTimer > 0 && !restPaused) {
       const interval = setInterval(() => {
-        setRestTimer((prev) => {
+        setRestTimer((prev: number) => {
           const newTimer = Math.max(0, prev - 1);
           
           if (newTimer === 3 || newTimer === 2 || newTimer === 1) {
@@ -494,7 +543,18 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
     }
   };
 
+  const clearWorkoutProgress = () => {
+    try {
+      localStorage.removeItem(WORKOUT_PROGRESS_KEY);
+    } catch (e) {
+      console.error("Failed to clear workout progress:", e);
+    }
+  };
+
   const finishWorkout = () => {
+    // Clear saved progress since workout is finishing
+    clearWorkoutProgress();
+    
     // Filter to only include exercises with completed sets, and only save completed sets
     const completedExerciseLogs = exerciseLogs
       .map(log => ({
@@ -928,6 +988,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
             <AlertDialogCancel 
               onClick={() => {
                 setShowExitConfirmDialog(false);
+                clearWorkoutProgress();
                 onComplete();
               }}
               className="glass-button"
