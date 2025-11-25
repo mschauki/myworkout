@@ -12,7 +12,7 @@ import { useUnitSystem } from "@/hooks/use-unit-system";
 export default function WorkoutLogDetail() {
   const [, params] = useRoute("/workout-log/:id");
   const logId = params?.id;
-  const { formatWeight, getUnitLabel, convertWeight } = useUnitSystem();
+  const { formatWeight, getUnitLabel } = useUnitSystem();
 
   const { data: workoutLogs = [], isLoading: logsLoading } = useQuery<WorkoutLog[]>({
     queryKey: ["/api/workout-logs"],
@@ -186,7 +186,7 @@ export default function WorkoutLogDetail() {
                       {!isBodyweight && (
                         <div className="col-span-4 flex items-center">
                           <span className="text-sm font-mono" data-testid={`text-weight-${exerciseIndex}-${setIndex}`}>
-                            {set.weight > 0 ? formatWeight(convertWeight(set.weight)) : '-'}
+                            {set.weight > 0 ? formatWeight(set.weight) : '-'}
                           </span>
                         </div>
                       )}

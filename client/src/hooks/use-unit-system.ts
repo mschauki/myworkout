@@ -33,20 +33,32 @@ export function useUnitSystem() {
 
   /**
    * Format weight with appropriate precision and unit label
+   * Preserves decimals to avoid rounding errors (e.g., 2.5 lbs stays 2.5, not 3)
    */
   const formatWeight = (weightInLbs: number, options?: { includeUnit?: boolean; decimals?: number }): string => {
     const { includeUnit = true, decimals } = options || {};
     const converted = convertWeight(weightInLbs);
     
-    // Use appropriate decimal precision based on unit
-    const precision = decimals !== undefined 
-      ? decimals 
-      : unitSystem === "kg" ? 1 : 0;
+    // Determine precision: use provided decimals, or auto-detect based on value
+    let precision: number;
+    if (decimals !== undefined) {
+      precision = decimals;
+    } else {
+      // Check if the converted value has meaningful decimals
+      // Use 1 decimal for kg, and for lbs preserve decimals if present
+      const hasDecimals = !Number.isInteger(converted) && Math.abs(converted - Math.round(converted)) > 0.01;
+      if (unitSystem === "kg") {
+        precision = 1;
+      } else {
+        // For lbs: show 1 decimal if value has decimals, otherwise show whole number
+        precision = hasDecimals ? 1 : 0;
+      }
+    }
     
     // Round to appropriate precision
     const rounded = Math.round(converted * Math.pow(10, precision)) / Math.pow(10, precision);
     
-    // If it's a whole number, return as integer string (no trailing .0)
+    // Format the number - show as integer if it's a whole number, otherwise use precision
     const formattedNumber = Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(precision);
     
     if (includeUnit) {
