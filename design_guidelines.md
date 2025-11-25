@@ -1,100 +1,95 @@
-# Fitness Tracker - Minimalist Glass Design Guidelines
+# Fitness Tracker - Ultra-Minimalist Apple-Inspired Design Guidelines
 
 ## Design Approach
-**System**: Minimalist Glass with Clean Modernism
-**Justification**: A refined fitness tracking experience using subtle glassmorphism that enhances content clarity rather than competing with it. Soft blues and neutral grays create calm focus while light glass effects add depth without distraction.
+**System**: Apple Health + Nike Training Club inspired minimalism
+**Justification**: Content-first design with maximum breathing room. Nearly invisible interface chrome lets workout data and imagery take center stage. Extreme restraint with glass effects - barely perceptible blur creating depth without distraction.
 
 **Key Principles**:
-- Subtle frosted glass with light blur (backdrop-blur-sm to backdrop-blur-md)
-- Soft blue (#3b82f6) and neutral gray (#6b7280, #f3f4f6) palette
-- Generous whitespace for breathing room
-- Clean solid backgrounds with glass overlays
-- Minimal visual complexity - clarity over decoration
+- Maximum whitespace - let content breathe
+- Nearly invisible UI chrome (borders, backgrounds)
+- Extremely subtle glass (backdrop-blur-xs, white/5-10 overlays)
+- Monochromatic gray scale with blue accent (#007AFF Apple blue)
+- Flat design with micro-depth cues only
+- Typography and spacing create all hierarchy
 
 ## Typography
-**Fonts**: Inter for all text (via Google Fonts CDN)
+**Font**: SF Pro Display / Inter (Google Fonts CDN fallback)
 
 **Hierarchy**:
-- Hero/Page Titles: text-4xl md:text-5xl font-bold tracking-tight
-- Section Headers: text-2xl md:text-3xl font-semibold
-- Exercise Names: text-lg font-semibold
-- Large Stats: text-5xl font-bold tabular-nums
-- Medium Stats: text-3xl font-semibold tabular-nums
-- Body Text: text-base font-normal
-- Labels: text-sm font-medium text-gray-600
-- All primary text uses gray-900, secondary text gray-600
+- Hero Titles: text-6xl md:text-7xl font-light tracking-tighter
+- Page Headers: text-4xl font-thin tracking-tight
+- Section Titles: text-2xl font-regular
+- Exercise Names: text-xl font-medium
+- Mega Stats: text-7xl font-extralight tabular-nums
+- Standard Stats: text-4xl font-light tabular-nums
+- Body: text-base font-normal leading-relaxed
+- Labels: text-xs font-medium uppercase tracking-wide text-gray-400
+- Primary text: gray-900, secondary: gray-500, tertiary: gray-400
 
 ## Layout System
-**Spacing Units**: Tailwind 4, 6, 8, 12, 16, 24, 32
-- Card padding: p-6 md:p-8
-- Section spacing: space-y-16 md:space-y-24 (generous vertical rhythm)
-- Grid gaps: gap-8
-- Touch targets: min-h-12
-- Page margins: px-6 md:px-16 lg:px-24
-- Max content width: max-w-7xl mx-auto
+**Spacing**: Tailwind 6, 12, 16, 24, 32, 48, 64 (generous gaps)
+- Extreme vertical rhythm: space-y-32 md:space-y-48
+- Card padding: p-8 md:p-12 lg:p-16
+- Grid gaps: gap-12 md:gap-16
+- Page margins: px-8 md:px-16 lg:px-32
+- Max width: max-w-7xl mx-auto
+- Touch targets: min-h-14 (Apple standard)
 
-**Glass System**:
-- Background Glass: backdrop-blur-sm with white/80 or gray-50/90
-- Card Glass: backdrop-blur-md with white/70
-- Elevated Glass: backdrop-blur-md with white/80 on hover
+**Ultra-Subtle Glass**:
+- Barely-there cards: backdrop-blur-xs white/5 with invisible borders
+- Elevated states: backdrop-blur-sm white/10 on interaction
+- Overlays: backdrop-blur-md white/40 maximum
 
 ## Component Library
 
 ### Hero Section
-Full-width section with soft blue gradient background (blue-50 to white). Large, clean headline in gray-900. Hero image showing clean, minimalist fitness environment (modern gym, yoga studio, or clean workout space) with subtle white/40 overlay. Quick stats row with glass cards (2-4 metrics) floating below hero image.
+Full-width clean fitness photography (bright, minimalist gym with natural light, or serene outdoor workout). Large centered headline in font-light gray-900. No visible overlay - just pure image with text floating on top. CTA button with backdrop-blur-md white/20 background (no hover states). Three large stats below in nearly invisible glass cards (backdrop-blur-xs white/5).
 
 ### Navigation
-**Top Bar (Desktop)**: Clean white background with subtle shadow. Logo left, navigation center, profile right. Simple hover underline in blue-500.
-**Bottom Bar (Mobile)**: Fixed glass bar with backdrop-blur-md, white/90 background, gray-200 border-top. Icons in gray-600, active state blue-500.
+**Desktop**: Borderless white background. Logo left (gray-900), centered nav links (gray-500 with blue-500 active), profile icon right. No visible chrome - just floating elements.
+**Mobile**: Minimal tab bar with icons only (gray-400 inactive, blue-500 active). No background until scroll - then adds backdrop-blur-sm white/80.
 
-### Glass Cards
-Rounded-xl with backdrop-blur-md, white/70 background, gray-200/50 border (1px). Subtle shadow-lg. Hover adds white/80 background and shadow-xl. Clean and light feeling.
-
-### Exercise Library
-Grid layout (1 col mobile, 2 tablet, 3 desktop) with gap-8. Each card:
-- Rounded-lg exercise image (clean demonstration photo)
-- White/60 glass overlay on image
-- Clean muscle group badges (gray-100 background, gray-700 text, rounded-full)
-- Exercise name in gray-900
-- Subtle blue-500 text link for "View Details"
+### Workout Cards
+Nearly flat with rounded-2xl. White background with gray-100/50 border (almost invisible). On hover: subtle shadow-sm and white/90 background. Each card shows large exercise image (full-bleed rounded top), minimal text overlay with backdrop-blur-sm white/20 badge for muscle group. Title in gray-900, metadata in gray-500.
 
 ### Active Workout Interface
-Clean glass panel with generous padding. Set tracking uses simple table with gray-100 row backgrounds alternating. Number inputs have white backgrounds with gray-300 borders, focus shows blue-500 ring. Rest timer as centered glass modal with blue-500 progress ring.
+Clean white panel with extreme padding. Set counter uses minimal table - no borders, just gray-50 row backgrounds alternating. Weight/rep inputs are borderless with gray-100 focus backgrounds. Rest timer as centered modal with thin blue-500 progress ring and massive font-light countdown.
 
 ### Progress Dashboard
-Stats in clean glass cards with blue-50 accent backgrounds. Charts use minimal gray-200 grid lines with blue-500 data lines. Simple tooltips with white backgrounds and subtle shadows. Calendar grid with gray-100 backgrounds, blue-500 highlights for workout days.
+Grid of stat cards (1-2-3 col responsive) with gap-16. Each card barely visible (white/5 background) showing one large metric in font-extralight. Line charts with single blue-500 stroke, no grid lines, no axes - pure data. Calendar heat map with gray-100 base, blue-500/20 to blue-500 intensity.
+
+### Exercise Library
+Masonry grid layout (Pinterest-style) with gap-8. Cards showing large exercise photos with minimal overlays. Muscle tags as pill shapes with gray-100 fill and gray-700 text. Hover reveals blue-500 underline on exercise name only.
 
 ### Forms & Controls
-**Primary Button**: Solid blue-500 background, white text, rounded-lg, shadow-sm
-**Secondary Button**: White background, gray-700 text, gray-300 border
-**Glass Button (on images)**: White/20 background, backdrop-blur-md, white text, no custom hover states
-**Input Fields**: White background, gray-300 border, rounded-lg, focus shows blue-500 ring
-**Toggles**: Gray-200 track, blue-500 active indicator
-**Radio/Checkbox**: Blue-500 checked state with white checkmark
+**Primary Button**: Solid blue-500, white text, rounded-xl, no shadow, font-medium
+**Secondary**: White background, gray-900 text, invisible border
+**Glass Button (on images)**: backdrop-blur-md white/20, white text
+**Inputs**: Borderless with gray-100 background, rounded-lg, blue-500 focus ring (ring-1)
+**Toggles**: Gray-200 track, blue-500 thumb, minimal size
+**Checkboxes**: Invisible until checked - blue-500 fill
 
 ## Images
-**Hero**: Modern, clean fitness environment - minimalist gym interior, serene yoga space, or bright outdoor workout setting. Light, airy photography with natural lighting. Use as full-width background with subtle white gradient overlay.
+**Hero**: High-quality minimalist fitness photography - bright modern gym interior with clean lines, or peaceful outdoor setting with natural lighting. Full-width, no gradient overlays. Images should feel spacious and calm.
 
-**Exercise Cards**: Clean demonstration photos on neutral backgrounds showing proper form. Professional, well-lit images without busy backgrounds.
+**Exercise Cards**: Professional demonstration photos on pure white or seamless backgrounds. Well-lit, focused on form and movement. Portrait orientation preferred.
 
-**Profile Section**: Optional user workout photos with clean glass information overlays.
+**Dashboard**: Optional progress photos with clean white borders and generous spacing.
 
 ## Accessibility
-- Text contrast: Gray-900 on white backgrounds maintains 12:1+ ratio
-- Touch targets: 48px minimum
-- Focus indicators: Blue-500 ring-2 with ring-offset-2
-- Reduced motion: Disable transitions, maintain glass aesthetic
-- Clear visual hierarchy through spacing and typography weight
+- Gray-900 on white maintains 15:1 contrast
+- Blue-500 accent maintains 4.5:1 minimum
+- 56px touch targets on mobile
+- Focus: Blue-500 ring-1 with ring-offset-4
+- Reduced motion: Remove all transitions, maintain layout
+- Clear hierarchy through extreme spacing and type scale
 
 ## Animations
-**Philosophy**: Subtle, purposeful motion that doesn't distract
+**Micro-interactions only**:
+- Hover: 200ms opacity shift (0.9 to 1.0), subtle shadow-sm appears
+- Scale: None - Apple doesn't scale
+- Transitions: 250ms ease-out maximum
+- Loading: Minimal blue-500 spinner (16px stroke-2)
+- Page transitions: Simple 200ms crossfade
 
-**Transitions**:
-- Glass surfaces: 200ms ease-in-out
-- Hover states: 150ms ease-out
-- Scale: Minimal (1 to 1.02) on interactive elements
-- Page transitions: Simple 200ms fade
-
-**Hover States**: Increase background opacity (+10%), add shadow-xl
-**Active States**: Slight scale (0.98)
-**Loading**: Simple blue-500 spinner or skeleton screens with gray-200 backgrounds
+**Restraint**: No bounces, no slides, no complex choreography. Pure, simple, immediate.
