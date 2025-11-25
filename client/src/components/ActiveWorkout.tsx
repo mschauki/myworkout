@@ -65,6 +65,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
     exerciseIndex: number;
   } | null>(null);
   const [showExitConfirmDialog, setShowExitConfirmDialog] = useState(false);
+  const [showIncompleteWorkoutDialog, setShowIncompleteWorkoutDialog] = useState(false);
 
   const { toast } = useToast();
 
@@ -481,6 +482,18 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
     setPendingRestPeriodChange(null);
   };
 
+  const isWorkoutComplete = () => {
+    return exerciseLogs.every(log => log.sets.every(set => set.completed));
+  };
+
+  const handleFinishClick = () => {
+    if (isWorkoutComplete()) {
+      finishWorkout();
+    } else {
+      setShowIncompleteWorkoutDialog(true);
+    }
+  };
+
   const finishWorkout = () => {
     // Filter to only include exercises with completed sets, and only save completed sets
     const completedExerciseLogs = exerciseLogs
@@ -592,7 +605,7 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                 </div>
               ) : (
                 <Button
-                  onClick={finishWorkout}
+                  onClick={handleFinishClick}
                   disabled={saveWorkoutMutation.isPending || completedSets === 0}
                   className="h-10 px-4"
                   data-testid="button-finish-workout"
@@ -931,6 +944,35 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
               data-testid="button-exit-save"
             >
               Save & Exit
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Incomplete Workout Confirmation Dialog */}
+      <AlertDialog open={showIncompleteWorkoutDialog} onOpenChange={setShowIncompleteWorkoutDialog}>
+        <AlertDialogContent className="glass-modal" data-testid="dialog-incomplete-workout">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Finish Workout Early?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You've completed {completedSets} of {totalSets} sets. Would you like to save your progress and end the workout?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              className="glass-button"
+              data-testid="button-incomplete-continue"
+            >
+              Keep Going
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                setShowIncompleteWorkoutDialog(false);
+                finishWorkout();
+              }}
+              data-testid="button-incomplete-save"
+            >
+              Save & Finish
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
