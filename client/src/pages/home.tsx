@@ -188,11 +188,13 @@ export default function Home() {
                 <CardContent className="p-5 relative">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <h3 className="text-lg font-bold truncate" data-testid="text-workout-name">{log.routineName}</h3>
-                        <Badge variant="secondary" className="shrink-0" data-testid={`badge-day-${log.id}`}>
-                          {new Date(log.date).toLocaleDateString('en-US', { weekday: 'short' })}
-                        </Badge>
+                        {log.routineDay && (
+                          <Badge variant="secondary" className="shrink-0" data-testid={`badge-day-${log.id}`}>
+                            {log.routineDayTitle || log.routineDay.charAt(0).toUpperCase() + log.routineDay.slice(1)}
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground font-medium">
                         {new Date(log.date).toLocaleDateString()} • {Math.floor(log.duration / 60)} min • {formatWeight(log.totalVolume)}

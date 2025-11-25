@@ -55,6 +55,8 @@ export type InsertWorkoutRoutine = z.infer<typeof insertWorkoutRoutineSchema>;
 export const workoutLogs = pgTable("workout_logs", {
   id: varchar("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   routineName: varchar("routine_name", { length: 255 }).notNull(),
+  routineDay: varchar("routine_day", { length: 50 }), // The day in the routine (e.g., "monday", "tuesday", "any")
+  routineDayTitle: varchar("routine_day_title", { length: 255 }), // Custom title for the day (e.g., "Arms + Abs")
   date: timestamp("date").notNull().defaultNow(),
   duration: integer("duration").notNull(),
   exercises: jsonb("exercises").notNull().$type<Array<{
