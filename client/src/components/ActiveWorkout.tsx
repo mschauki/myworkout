@@ -859,6 +859,21 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
                     <Plus className="w-4 h-4 mr-2" />
                     Add Set
                   </Button>
+
+                  {/* Finish Workout Button - shown on last exercise when all sets are complete */}
+                  {currentExerciseIndex === exerciseLogs.length - 1 && 
+                   completedInExercise === totalInExercise && 
+                   totalInExercise > 0 && (
+                    <Button
+                      onClick={handleFinishClick}
+                      disabled={saveWorkoutMutation.isPending}
+                      className="w-full h-14 text-lg font-semibold mt-4"
+                      data-testid="button-finish-workout-bottom"
+                    >
+                      <Check className="w-5 h-5 mr-2" />
+                      Finish Workout
+                    </Button>
+                  )}
                 </div>
 
                 {/* Bottom Navigation */}
