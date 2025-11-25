@@ -695,47 +695,6 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
         </div>
       </div>
 
-      {/* Exercise Navigation Dots */}
-      <div className="glass-surface border-b border-white/20 py-3 px-4">
-        <div className="flex items-center justify-center gap-2 flex-wrap max-w-6xl mx-auto">
-          {exerciseLogs.map((log, idx) => {
-            const completedInEx = log.sets.filter(s => s.completed).length;
-            const totalInEx = log.sets.length;
-            const isComplete = completedInEx === totalInEx && totalInEx > 0;
-            const isCurrent = idx === currentExerciseIndex;
-            const hasProgress = completedInEx > 0 && !isComplete;
-            
-            return (
-              <button
-                key={idx}
-                onClick={() => setCurrentExerciseIndex(idx)}
-                className={`relative transition-all duration-200 rounded-full ${
-                  isCurrent 
-                    ? 'w-10 h-10 glass-card border-2 border-primary shadow-lg scale-110' 
-                    : isComplete
-                    ? 'w-8 h-8 bg-primary/90 border border-primary'
-                    : hasProgress
-                    ? 'w-8 h-8 glass-badge border-2 border-primary/50'
-                    : 'w-8 h-8 glass-badge'
-                } flex items-center justify-center`}
-                data-testid={`button-exercise-nav-${idx}`}
-              >
-                {isComplete ? (
-                  <Check className="w-4 h-4 text-white" />
-                ) : (
-                  <span className={`text-xs font-bold ${isCurrent ? 'text-primary' : ''}`}>
-                    {idx + 1}
-                  </span>
-                )}
-                {hasProgress && !isComplete && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Main Content - Current Exercise */}
       {exerciseLogs.length > 0 && (
         <div className="flex-1 flex flex-col">
