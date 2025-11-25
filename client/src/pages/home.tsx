@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Calendar, Dumbbell, Flame, TrendingUp, Trophy, Trash2 } from "lucide-react";
 import { WorkoutLog, BodyStats } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -60,7 +61,7 @@ export default function Home() {
 
   const currentWeight = bodyStats?.[0]?.weight ? convertWeight(bodyStats[0].weight).toFixed(1) : null;
   
-  const recentWorkouts = workoutLogs?.slice(0, 5) || [];
+  const recentWorkouts = workoutLogs?.slice(0, 3) || [];
 
   const isLoading = logsLoading || statsLoading;
 
@@ -187,7 +188,12 @@ export default function Home() {
                 <CardContent className="p-5 relative">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold truncate mb-2" data-testid="text-workout-name">{log.routineName}</h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-lg font-bold truncate" data-testid="text-workout-name">{log.routineName}</h3>
+                        <Badge variant="secondary" className="shrink-0" data-testid={`badge-day-${log.id}`}>
+                          {new Date(log.date).toLocaleDateString('en-US', { weekday: 'short' })}
+                        </Badge>
+                      </div>
                       <p className="text-sm text-muted-foreground font-medium">
                         {new Date(log.date).toLocaleDateString()} • {Math.floor(log.duration / 60)} min • {formatWeight(log.totalVolume)}
                       </p>
