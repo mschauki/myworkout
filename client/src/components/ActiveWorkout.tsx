@@ -351,7 +351,11 @@ export function ActiveWorkout({ routine, selectedDay, startingExerciseIndex = 0,
         }
         
         if (nextIndex !== exerciseIndex) {
-          setTimeout(() => setCurrentExerciseIndex(nextIndex), 300);
+          setTimeout(() => {
+            setCurrentExerciseIndex(nextIndex);
+            // Scroll to top of the page when moving to next exercise
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 300);
         }
       }
     }
